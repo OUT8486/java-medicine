@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.CustomerMapper">
+
+    <!-- 客户结果映射 -->
+    <resultMap id="CustomerResultMap" type="com.example.spring_boot.pojo.Customer">
+        <id property="customer_id" column="customer_id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="id_card" column="id_card"/>
+    </resultMap>
+
+    <!-- 新增客户 -->
+    <insert id="insertCustomer" parameterType="com.example.spring_boot.pojo.Customer">
+        INSERT INTO customer (
+            customer_id,
+            name,
+            phone,
+            address,
+            id_card
+        ) VALUES (
+            #{customer_id},
+            #{name},
+            #{phone},
+            #{address},
+            #{id_card}
+        )
+    </insert>
+
+    <!-- 修改客户信息 -->
+    <update id="updateCustomer" parameterType="com.example.spring_boot.pojo.Customer">
+        UPDATE customer
+        SET
+            name = #{name},
+            phone = #{phone},
+            address = #{address},
+            id_card = #{id_card}
+        WHERE customer_id = #{customer_id}
+    </update>
+
+    <!-- 删除客户 -->
+    <delete id="deleteCustomer">
+        DELETE FROM customer
+        WHERE customer_id = #{customer_id}
+    </delete>
+
+    <!-- 根据ID查询客户 -->
+    <select id="selectCustomerById" resultMap="CustomerResultMap">
+        select * from customer
+        where customer_id = #{customer_id}
+    </select>
+
+    <!-- 查询所有客户 -->
+    <select id="selectAllCustomers" resultMap="CustomerResultMap">
+        select * from customer
+        order by customer_id
+    </select>
+
+    <!-- 根据姓名查询客户 -->
+    <select id="selectCustomersByName" resultMap="CustomerResultMap">
+        select * from customer
+        where name like CONCAT('%', #{name}, '%')
+        order by customer_id
+    </select>
+
+    <!-- 根据电话查询客户 -->
+    <select id="selectCustomerByPhone" resultMap="CustomerResultMap">
+        select * from customer
+        where phone = #{phone}
+    </select>
+
+</mapper>

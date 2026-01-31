@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.EmployeeMapper">
+
+    <!-- 员工结果映射（与数据库表字段一致） -->
+    <resultMap id="EmployeeResultMap" type="com.example.spring_boot.pojo.Employee">
+        <id property="employee_id" column="employee_id"/>
+        <result property="name" column="name"/>
+        <result property="post" column="post"/>
+    </resultMap>
+
+    <!-- 新增员工 -->
+    <insert id="insertEmployee" parameterType="com.example.spring_boot.pojo.Employee">
+        INSERT INTO employee (
+            employee_id,
+            name,
+            post
+        ) VALUES (
+            #{employee_id},
+            #{name},
+            #{post}
+        )
+    </insert>
+
+    <!-- 修改员工信息 -->
+    <update id="updateEmployee" parameterType="com.example.spring_boot.pojo.Employee">
+        UPDATE employee
+        SET
+            name = #{name},
+            post = #{post}
+        WHERE employee_id = #{employee_id}
+    </update>
+
+    <!-- 删除员工 -->
+    <delete id="deleteEmployee">
+        DELETE FROM employee
+        WHERE employee_id = #{employee_id}
+    </delete>
+
+    <!-- 根据ID查询员工 -->
+    <select id="selectEmployeeById" resultMap="EmployeeResultMap">
+        select * from employee
+        where employee_id = #{employee_id}
+    </select>
+
+    <!-- 查询所有员工 -->
+    <select id="selectAllEmployees" resultMap="EmployeeResultMap">
+        select * from employee
+        order by employee_id
+    </select>
+
+    <!-- 根据姓名查询员工 -->
+    <select id="selectEmployeesByName" resultMap="EmployeeResultMap">
+        select * from employee
+        where name like CONCAT('%', #{name}, '%')
+        order by employee_id
+    </select>
+
+    <!-- 根据岗位（post）查询员工 -->
+    <select id="selectEmployeesByPost" resultMap="EmployeeResultMap">
+        select * from employee
+        where post = #{post}
+        order by employee_id
+    </select>
+
+    <!-- 员工登录验证 -->
+    <select id="selectByUsernameAndPassword" resultMap="EmployeeResultMap">
+        select * from employee
+        where username = #{username} and password = #{password}
+    </select>
+
+</mapper>

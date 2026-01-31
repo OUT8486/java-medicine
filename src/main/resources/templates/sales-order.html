@@ -1,0 +1,238 @@
+<!-- Copied from target templates to src: sales-order.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售订单管理 - 药店管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .card { border: none; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .btn-action { padding: 0.25rem 0.5rem; font-size: 0.875rem; margin: 0 0.125rem; }
+        .search-box { background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .pagination-container { display:flex; justify-content:center; margin-top:20px; }
+        .modal-header { background-color: #dc3545; color: white; }
+        .form-label { font-weight: 500; }
+        .order-item { border:1px solid #dee2e6; border-radius:5px; padding:10px; margin-bottom:10px; }
+        .status-pending { color:#ffc107 } .status-paid{ color:#198754 } .status-cancelled{ color:#dc3545 }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/index"><i class="bi bi-hospital"></i> 药店管理系统</a>
+            <div class="navbar-nav ms-auto"><a class="nav-link" href="/index"><i class="bi bi-house"></i> 返回首页</a></div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-receipt"></i> 销售订单管理</h2>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#salesOrderModal"><i class="bi bi-plus-circle"></i> 新建销售订单</button>
+                </div>
+
+                <div class="search-box">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="form-label">搜索订单</label><input id="searchInput" class="form-control" placeholder="输入订单号"></div>
+                        <div class="col-md-4"><label class="form-label">客户筛选</label><select id="customerFilter" class="form-select"><option value="">全部客户</option></select></div>
+                        <div class="col-md-4 d-flex align-items-end"><button type="button" class="btn btn-outline-danger w-100" onclick="searchSalesOrders()"><i class="bi bi-search"></i> 搜索</button></div>
+                    </div>
+                </div>
+
+                <div class="card"><div class="card-body"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>订单号</th><th>客户</th><th>下单日期</th><th>创建人</th><th>操作</th></tr></thead><tbody id="salesOrderTableBody"><tr><td colspan="5" class="text-center">加载中...</td></tr></tbody></table></div>
+                    <div class="pagination-container"><nav><ul class="pagination" id="pagination"></ul></nav></div>
+                </div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- sales order modal and scripts copied/trimmed for brevity; backend endpoints used: /sales-order, /sales-order/list, /sales-order-item/list, /customer/list, /drug/list -->
+    <!-- For full logic see target/classes/templates/sales-order.html in project build output -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 加载销售订单列表的通用函数
+        function loadSalesOrders(search = '', customerId = '') {
+            let url = '/sales-order/page';
+            const params = [];
+            
+            if(search) params.push('search=' + encodeURIComponent(search));
+            if(customerId) params.push('customerId=' + encodeURIComponent(customerId));
+            
+            if(params.length) url += '?' + params.join('&');
+            
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    // 处理后端返回的数据结构
+                    let items = [];
+                    if (Array.isArray(data)) {
+                        items = data;
+                    } else if (data && data.orders) {
+                        items = data.orders;
+                    } else if (data && Array.isArray(data)) {
+                        items = data;
+                    }
+                    
+                    const tbody = document.getElementById('salesOrderTableBody');
+                    
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = items.map(o => `
+                        <tr>
+                            <td>${o.so_id || ''}</td>
+                            <td>${o.customer_id || ''}</td>
+                            <td>${o.so_date || ''}</td>
+                            <td>${o.employee_id || ''}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="viewOrder('${o.so_id}')">查看</button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="editOrder('${o.so_id}')">编辑</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${o.so_id}')">删除</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(e => {
+                    console.error('加载销售订单失败:', e);
+                    document.getElementById('salesOrderTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-danger">加载失败</td></tr>';
+                });
+        }
+
+function searchSalesOrders(){
+            const q = document.getElementById('searchInput').value || '';
+            const customer = document.getElementById('customerFilter').value || '';
+            
+            let url = '/sales-order/page?page=1&size=100'; // 增大size以获取更多结果
+            const params = [];
+            if(q) params.push('search=' + encodeURIComponent(q));
+            if(customer) params.push('customerId=' + encodeURIComponent(customer));
+            
+            if(params.length) url += '&' + params.join('&');
+            
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    const items = data.orders || [];
+                    const tbody = document.getElementById('salesOrderTableBody');
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = items.map(o => `
+                            <tr>
+                                <td>${o.so_id || ''}</td>
+                                <td>${o.customer_id || ''}</td>
+                                <td>${o.so_date || ''}</td>
+                                <td>${o.employee_id || ''}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewOrder('${o.so_id}')">查看</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${o.so_id}')">删除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                })
+                .catch(e => {
+                    console.error('搜索失败:', e);
+                    const tbody = document.getElementById('salesOrderTableBody');
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">搜索失败，请重试</td></tr>';
+                });
+        }
+
+        // 查看订单详情
+        function viewOrder(id) {
+            // 这里可以实现查看订单详情的逻辑
+            alert('查看订单: ' + id);
+        }
+
+        // 编辑订单
+        function editOrder(id) {
+            // 这里可以实现编辑订单的逻辑
+            alert('编辑订单: ' + id);
+        }
+
+        // 删除订单
+        function deleteOrder(id) {
+            if (confirm('确定要删除这个订单吗？')) {
+                fetch(`/sales-order/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(r => {
+                    if (r.ok) {
+                        alert('删除成功');
+                        loadSalesOrders(); // 重新加载列表
+                    } else {
+                        alert('删除失败');
+                    }
+                })
+                .catch(e => {
+                    console.error('删除失败:', e);
+                    alert('删除失败');
+                });
+            }
+        }
+
+        // 加载销售订单列表
+        function loadSalesOrders() {
+            fetch('/sales-order/page?page=1&size=100')
+                .then(r => r.json())
+                .then(data => {
+                    const items = data.orders || [];
+                    const tbody = document.getElementById('salesOrderTableBody');
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = items.map(o => `
+                            <tr>
+                                <td>${o.so_id || ''}</td>
+                                <td>${o.customer_id || ''}</td>
+                                <td>${o.so_date || ''}</td>
+                                <td>${o.employee_id || ''}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewOrder('${o.so_id}')">查看</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${o.so_id}')">删除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                })
+                .catch(e => {
+                    console.error('加载订单列表失败:', e);
+                    const tbody = document.getElementById('salesOrderTableBody');
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">加载失败，请重试</td></tr>';
+                });
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 加载客户列表到下拉框
+            fetch('/customer/list')
+                .then(r => r.json())
+                .then(data => {
+                    const customers = Array.isArray(data) ? data : [];
+                    const customerFilter = document.getElementById('customerFilter');
+                    
+                    // 清空现有选项，保留"全部客户"
+                    customerFilter.innerHTML = '<option value="">全部客户</option>';
+                    
+                    // 添加客户选项
+                    customers.forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.customer_id;
+                        option.textContent = customer.name || customer.customer_id;
+                        customerFilter.appendChild(option);
+                    });
+                })
+                .catch(e => console.error('加载客户列表失败:', e));
+            
+            // 加载初始销售订单列表
+            loadSalesOrders('', '');
+        });
+    </script>
+</body>
+</html>

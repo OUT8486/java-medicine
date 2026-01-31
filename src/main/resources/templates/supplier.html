@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>供应商管理 - 药店管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .card { box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/index">药店管理系统</a>
+            <div class="navbar-nav ms-auto"><a class="nav-link" href="/index">返回首页</a></div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>供应商管理</h2>
+            <a class="btn btn-success" href="/supplier-form.html">添加供应商</a>
+        </div>
+
+        <div class="card p-3 mb-3">
+            <div class="row g-2 mb-3">
+                <div class="col-md-4"><input id="q_name" class="form-control" placeholder="供应商名称"></div>
+                <div class="col-md-4"><input id="q_phone" class="form-control" placeholder="联系电话"></div>
+                <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-outline-primary" onclick="loadSuppliers()">搜索</button><button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">重置</button></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>供应商ID</th>
+                            <th>供应商名称</th>
+                            <th>联系电话</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierTableBody"><tr><td colspan="5" class="text-center">加载中...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 供应商使用独立表单页面 (supplier-form.html) 进行新增/编辑 -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadSuppliers);
+
+        function normalizeListResponse(data) {
+            if (Array.isArray(data)) return { items: data, total: data.length };
+            if (data && typeof data === 'object') {
+                for (const k of Object.keys(data)) {
+                    if (Array.isArray(data[k])) return { items: data[k], total: data.total || data[k].length };
+                }
+                if (Array.isArray(data.items)) return { items: data.items, total: data.total || data.items.length };
+            }
+            return { items: [], total: 0 };
+        }
+
+        function loadSuppliers() {
+            const tbody = document.getElementById('supplierTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">加载中...</td></tr>';
+
+            const qNameRaw = (document.getElementById('q_name').value || '').trim().toLowerCase();
+            const qPhoneRaw = (document.getElementById('q_phone').value || '').trim();
+
+            // Always fetch full list, then filter client-side to ensure search works
+            fetch('/supplier/list')
+                .then(r => r.json())
+                .then(data => {
+                    const { items } = normalizeListResponse(data);
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无数据</td></tr>';
+                        return;
+                    }
+
+                    const filtered = items.filter(s => {
+                        const name = (s.name || '').toString().toLowerCase();
+                        const phone = (s.contact_phone || '').toString();
+                        if (qNameRaw && qPhoneRaw) {
+                            return name.includes(qNameRaw) && phone.includes(qPhoneRaw);
+                        } else if (qNameRaw) {
+                            return name.includes(qNameRaw);
+                        } else if (qPhoneRaw) {
+                            return phone.includes(qPhoneRaw);
+                        }
+                        return true;
+                    });
+
+                    if (filtered.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">无匹配结果</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = filtered.map(s => `
+                        <tr>
+                            <td>${s.supplier_id || ''}</td>
+                            <td>${s.name || ''}</td>
+                            <td>${s.contact_phone || ''}</td>
+                            <td>${s.status!=null ? (s.status==1? '启用':'停用') : ''}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="editSupplier('${s.supplier_id}')">编辑</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSupplier('${s.supplier_id}')">删除</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">加载失败</td></tr>';
+                    console.error(e);
+                });
+        }
+        
+            function clearSearch(){ document.getElementById('q_name').value=''; document.getElementById('q_phone').value=''; loadSuppliers(); }
+
+        function editSupplier(id) {
+            // 跳转到供应商表单页面用于编辑
+            window.location.href = `/supplier-form.html?id=${id}`;
+        }
+
+        function deleteSupplier(id) {
+            if (!confirm('确认删除？')) return;
+            fetch(`/supplier/${id}`, { method: 'DELETE' })
+                .then(r => {
+                    if (r.ok) {
+                        loadSuppliers();
+                        alert('删除成功');
+                    } else {
+                        alert('删除失败');
+                    }
+                });
+        }
+
+        // 新增/编辑通过独立页面 supplier-form.html 处理
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.DrugMapper">
+
+    <!-- 药品基础信息结果映射：属性名改为下划线（匹配实体类下划线字段） -->
+    <resultMap id="DrugResultMap" type="com.example.spring_boot.pojo.Drug">
+        <id property="drug_id" column="drug_id"/>          <!-- 属性名从drugId→drug_id -->
+        <result property="generic_name" column="generic_name"/> <!-- genericName→generic_name -->
+        <result property="approval_no" column="approval_no"/>   <!-- approvalNo→approval_no -->
+        <result property="dosage_form" column="dosage_form"/>   <!-- dosageForm→dosage_form -->
+        <result property="specification" column="specification"/>
+        <result property="unit" column="unit"/>
+        <result property="purchase_price" column="purchase_price"/> <!-- purchasePrice→purchase_price -->
+        <result property="retail_price" column="retail_price"/>     <!-- retailPrice→retail_price -->
+        <result property="manufacturer_id" column="manufacturer_id"/> <!-- manufacturerId→manufacturer_id -->
+    </resultMap>
+
+    <!-- 药品+生产厂家联合结果映射：属性名改为下划线 -->
+    <resultMap id="DrugWithManufacturerResultMap" type="com.example.spring_boot.pojo.DrugWithManufacturer">
+        <id property="drug_id" column="drug_id"/>
+        <result property="generic_name" column="generic_name"/>
+        <result property="approval_no" column="approval_no"/>
+        <result property="dosage_form" column="dosage_form"/>
+        <result property="specification" column="specification"/>
+        <result property="unit" column="unit"/>
+        <result property="purchase_price" column="purchase_price"/>
+        <result property="retail_price" column="retail_price"/>
+        <result property="manufacturer_id" column="manufacturer_id"/>
+        <result property="manufacturer_name" column="name"/> <!-- manufacturerName→manufacturer_name -->
+    </resultMap>
+
+    <!-- 插入药品：占位符改为下划线（匹配实体类下划线字段） -->
+    <insert id="insertDrug" parameterType="com.example.spring_boot.pojo.Drug">
+        INSERT INTO drug (
+            drug_id,
+            generic_name,
+            approval_no,
+            dosage_form,
+            specification,
+            unit,
+            purchase_price,
+            retail_price,
+            manufacturer_id
+        ) VALUES (
+            #{drug_id},        <!-- drugId→drug_id -->
+            #{generic_name},  <!-- genericName→generic_name -->
+            #{approval_no},   <!-- approvalNo→approval_no -->
+            #{dosage_form},   <!-- dosageForm→dosage_form -->
+            #{specification},
+            #{unit},
+            #{purchase_price},<!-- purchasePrice→purchase_price -->
+            #{retail_price},  <!-- retailPrice→retail_price -->
+            #{manufacturer_id}<!-- manufacturerId→manufacturer_id -->
+        )
+    </insert>
+
+    <!-- 更新药品：占位符改为下划线 -->
+    <update id="updateDrug" parameterType="com.example.spring_boot.pojo.Drug">
+        UPDATE drug
+        SET
+            generic_name = #{generic_name},
+            approval_no = #{approval_no},
+            dosage_form = #{dosage_form},
+            specification = #{specification},
+            unit = #{unit},
+            purchase_price = #{purchase_price},
+            retail_price = #{retail_price},
+            manufacturer_id = #{manufacturer_id}
+        WHERE drug_id = #{drug_id}
+    </update>
+
+    <!-- 删除药品：占位符改为下划线 -->
+    <delete id="deleteDrug">
+        DELETE FROM drug
+        WHERE drug_id = #{drug_id}
+    </delete>
+
+    <!-- 根据ID查询药品：参数占位符改为下划线 -->
+    <select id="selectDrugById" resultMap="DrugResultMap">
+        select * from drug
+        where drug_id = #{drug_id}
+    </select>
+
+    <!-- 查询所有药品（无过滤条件） -->
+    <select id="selectAllDrugs" resultMap="DrugResultMap">
+        select * from drug
+    </select>
+
+    <!-- 多表连接查询：参数占位符改为下划线 -->
+    <select id="selectDrugWithManufacturer" resultMap="DrugWithManufacturerResultMap">
+        select m.name, d.*
+        from drug d
+        inner join manufacturer m on d.manufacturer_id = m.manufacturer_id
+        where d.drug_id = #{drug_id}
+    </select>
+</mapper>

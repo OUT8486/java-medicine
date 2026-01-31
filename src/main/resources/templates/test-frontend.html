@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端功能测试页面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>登录注册前端功能测试</h2>
+        
+        <!-- 登录测试 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>登录功能测试</h5>
+            </div>
+            <div class="card-body">
+                <form id="testLoginForm">
+                    <div class="mb-3">
+                        <label for="test_username" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="test_username" value="admin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="test_password" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="test_password" value="123456">
+                    </div>
+                    <button type="submit" class="btn btn-primary">测试登录</button>
+                </form>
+                <div id="loginResult" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- 注册测试 -->
+        <div class="card">
+            <div class="card-header">
+                <h5>注册功能测试</h5>
+            </div>
+            <div class="card-body">
+                <form id="testRegisterForm">
+                    <div class="mb-3">
+                        <label for="test_user_id" class="form-label">用户ID</label>
+                        <input type="text" class="form-control" id="test_user_id" value="TEST_FRONTEND">
+                    </div>
+                    <div class="mb-3">
+                        <label for="test_reg_username" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="test_reg_username" value="frontend_test">
+                    </div>
+                    <div class="mb-3">
+                        <label for="test_reg_password" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="test_reg_password" value="123456">
+                    </div>
+                    <div class="mb-3">
+                        <label for="test_role" class="form-label">角色</label>
+                        <select class="form-select" id="test_role">
+                            <option value="用户" selected>普通用户</option>
+                            <option value="管理员">管理员</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">测试注册</button>
+                </form>
+                <div id="registerResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测试登录功能
+        document.getElementById('testLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('test_username').value;
+            const password = document.getElementById('test_password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            const formData = new FormData();
+            formData.append('user_name', username);
+            formData.append('password', password);
+            
+            fetch('/login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('登录响应数据:', data);
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>登录成功!</strong><br>
+                            角色: ${data.role}<br>
+                            消息: ${data.message}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>登录失败!</strong><br>
+                            消息: ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('登录错误:', error);
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>请求失败!</strong><br>
+                        错误: ${error.message}
+                    </div>
+                `;
+            });
+        });
+
+        // 测试注册功能
+        document.getElementById('testRegisterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('test_user_id').value;
+            const username = document.getElementById('test_reg_username').value;
+            const password = document.getElementById('test_reg_password').value;
+            const role = document.getElementById('test_role').value;
+            const resultDiv = document.getElementById('registerResult');
+            
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('user_name', username);
+            formData.append('password', password);
+            formData.append('role', role);
+            
+            fetch('/register', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('注册响应数据:', data);
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>注册成功!</strong><br>
+                            消息: ${data.message}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>注册失败!</strong><br>
+                            消息: ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('注册错误:', error);
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>请求失败!</strong><br>
+                        错误: ${error.message}
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

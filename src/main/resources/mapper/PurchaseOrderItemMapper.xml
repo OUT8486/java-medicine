@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.PurchaseOrderItemMapper">
+
+    <!-- 采购订单项结果映射 -->
+    <resultMap id="PurchaseOrderItemResultMap" type="com.example.spring_boot.pojo.PurchaseOrderItem">
+        <id property="poi_id" column="poi_id"/>
+        <result property="po_id" column="po_id"/>
+        <result property="drug_id" column="drug_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="price" column="price"/>
+        
+    </resultMap>
+
+    <!-- 新增采购订单项 -->
+    <insert id="insertPurchaseOrderItem" parameterType="com.example.spring_boot.pojo.PurchaseOrderItem">
+        INSERT INTO purchaseorderitem (
+            poi_id,
+            po_id,
+            drug_id,
+            quantity,
+            price
+        ) VALUES (
+            #{poi_id},
+            #{po_id},
+            #{drug_id},
+            #{quantity},
+            #{price}
+        )
+    </insert>
+
+    <!-- 修改采购订单项 -->
+    <update id="updatePurchaseOrderItem" parameterType="com.example.spring_boot.pojo.PurchaseOrderItem">
+        UPDATE purchaseorderitem SET
+            po_id = #{po_id},
+            drug_id = #{drug_id},
+            quantity = #{quantity},
+            price = #{price}
+        WHERE poi_id = #{poi_id}
+    </update>
+
+    <!-- 删除采购订单项 -->
+    <delete id="deletePurchaseOrderItem">
+        DELETE FROM purchaseorderitem
+        WHERE poi_id = #{poi_id}
+    </delete>
+
+    <!-- 根据ID查询采购订单项 -->
+    <select id="selectPurchaseOrderItemById" resultMap="PurchaseOrderItemResultMap">
+        select * from purchaseorderitem
+        where poi_id = #{poi_id}
+    </select>
+
+<!-- 查询所有采购订单项 -->
+    <select id="selectAllPurchaseOrderItems" resultMap="PurchaseOrderItemResultMap">
+        SELECT poi_id, po_id, drug_id, quantity, price
+        FROM purchaseorderitem
+        ORDER BY po_id, poi_id
+    </select>
+
+    <!-- 根据采购订单ID查询所有订单项 -->
+    <select id="selectPurchaseOrderItemsByPoId" parameterType="string" resultMap="PurchaseOrderItemResultMap">
+        SELECT poi_id, po_id, drug_id, quantity, price
+        FROM purchaseorderitem
+        WHERE po_id = #{po_id}
+        ORDER BY poi_id
+    </select>
+
+    <!-- 根据药品ID查询采购订单项 -->
+    <select id="selectPurchaseOrderItemsByDrugId" resultMap="PurchaseOrderItemResultMap">
+        select * from purchaseorderitem
+        where drug_id = #{drug_id}
+        order by po_id
+    </select>
+
+    <!-- 更新采购订单项小计 -->
+    <update id="updateSubtotal">
+        UPDATE purchaseorderitem
+        SET subtotal = #{subtotal}
+        WHERE poi_id = #{poi_id}
+    </update>
+
+    <!-- 批量添加采购订单项 -->
+    <insert id="batchInsertPurchaseOrderItems" parameterType="java.util.List">
+        INSERT INTO purchaseorderitem (
+            poi_id,
+            po_id,
+            drug_id,
+            quantity,
+            price,
+            subtotal
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+                #{item.poi_id},
+                #{item.po_id},
+                #{item.drug_id},
+                #{item.quantity},
+                #{item.price},
+                #{item.subtotal}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据采购订单ID删除所有订单项 -->
+    <delete id="deletePurchaseOrderItemsByPoId">
+        DELETE FROM purchaseorderitem
+        WHERE po_id = #{po_id}
+    </delete>
+
+</mapper>

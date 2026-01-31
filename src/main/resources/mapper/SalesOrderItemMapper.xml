@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.SalesOrderItemMapper">
+
+    <!-- 销售订单项结果映射 -->
+    <resultMap id="SalesOrderItemResultMap" type="com.example.spring_boot.pojo.SalesOrderItem">
+        <id property="soi_id" column="soi_id"/>
+        <result property="so_id" column="so_id"/>
+        <result property="drug_id" column="drug_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="price" column="price"/>
+        
+        <result property="batch_no" column="batch_no"/>
+    </resultMap>
+
+    <!-- 新增销售订单项 -->
+    <insert id="insertSalesOrderItem" parameterType="com.example.spring_boot.pojo.SalesOrderItem">
+        INSERT INTO salesorderitem (
+            soi_id,
+            so_id,
+            drug_id,
+            quantity,
+            price,
+            batch_no
+        ) VALUES (
+            #{soi_id},
+            #{so_id},
+            #{drug_id},
+            #{quantity},
+            #{price},
+            #{batch_no}
+        )
+    </insert>
+
+    <!-- 修改销售订单项 -->
+    <update id="updateSalesOrderItem" parameterType="com.example.spring_boot.pojo.SalesOrderItem">
+        UPDATE salesorderitem SET
+            so_id = #{so_id},
+            drug_id = #{drug_id},
+            quantity = #{quantity},
+            price = #{price},
+            batch_no = #{batch_no}
+        WHERE soi_id = #{soi_id}
+    </update>
+
+    <!-- 删除销售订单项 -->
+    <delete id="deleteSalesOrderItem">
+        DELETE FROM salesorderitem
+        WHERE soi_id = #{soi_id}
+    </delete>
+
+    <!-- 根据ID查询销售订单项 -->
+    <select id="selectSalesOrderItemById" resultMap="SalesOrderItemResultMap">
+        select * from salesorderitem
+        where soi_id = #{soi_id}
+    </select>
+
+<!-- 查询所有销售订单项 -->
+    <select id="selectAllSalesOrderItems" resultMap="SalesOrderItemResultMap">
+        SELECT soi_id, so_id, drug_id, quantity, price, batch_no
+        FROM salesorderitem
+        ORDER BY so_id, soi_id
+    </select>
+
+    <!-- 根据销售订单ID查询所有订单项 -->
+    <select id="selectSalesOrderItemsBySoId" parameterType="string" resultMap="SalesOrderItemResultMap">
+        SELECT soi_id, so_id, drug_id, quantity, price, batch_no
+        FROM sales_order_item
+        WHERE so_id = #{so_id}
+        ORDER BY soi_id
+    </select>
+
+    <!-- 根据药品ID查询销售订单项 -->
+    <select id="selectSalesOrderItemsByDrugId" resultMap="SalesOrderItemResultMap">
+        select * from sales_order_item
+        where drug_id = #{drug_id}
+        order by so_id
+    </select>
+
+    <!-- 根据批号查询销售订单项 -->
+    <select id="selectSalesOrderItemsByBatchNo" resultMap="SalesOrderItemResultMap">
+        select * from sales_order_item
+        where batch_no = #{batch_no}
+        order by so_id
+    </select>
+
+    <!-- 更新销售订单项小计 -->
+    <update id="updateSubtotal">
+        UPDATE sales_order_item
+        SET subtotal = #{subtotal}
+        WHERE soi_id = #{soi_id}
+    </update>
+
+    <!-- 批量添加销售订单项 -->
+    <insert id="batchInsertSalesOrderItems" parameterType="java.util.List">
+        INSERT INTO salesorderitem (
+            soi_id,
+            so_id,
+            drug_id,
+            quantity,
+            price,
+            subtotal,
+            batch_no
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+                #{item.soi_id},
+                #{item.so_id},
+                #{item.drug_id},
+                #{item.quantity},
+                #{item.price},
+                #{item.subtotal},
+                #{item.batch_no}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据销售订单ID删除所有订单项 -->
+    <delete id="deleteSalesOrderItemsBySoId">
+        DELETE FROM sales_order_item
+        WHERE so_id = #{so_id}
+    </delete>
+
+</mapper>

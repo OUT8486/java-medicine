@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购订单项管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark"><div class="container-fluid"><a class="navbar-brand" href="/index">药店管理系统</a></div></nav>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3"><h3>采购订单项</h3><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus"></i> 新增项</button></div>
+    <div class="card p-3 mb-3">
+      <div class="row g-2">
+        <div class="col-md-4"><input id="q_po_id" class="form-control" placeholder="采购订单ID"></div>
+        <div class="col-md-4"><input id="q_drug_id" class="form-control" placeholder="药品ID"></div>
+        <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-outline-primary" onclick="loadList()">搜索</button><button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">重置</button></div>
+      </div>
+    </div>
+    <div id="tableWrap"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const apiBase = '/purchase-order-item'; let currentEditId = null;
+    async function loadList(){
+      const wrap = document.getElementById('tableWrap'); wrap.innerHTML = '<div class="text-center">加载中...</div>';
+      const terms = Array.from(document.querySelectorAll('[id^="q_"] , [id^="search"]')).map(i=> (i.value||'').toString().trim().toLowerCase()).filter(Boolean);
+      try{
+        const res = await fetch(apiBase + '/list');
+        const d = await res.json();
+        const items = Array.isArray(d)?d:(d.items||d.list||[]);
+        const filtered = items.filter(it=>{ const s = JSON.stringify(it).toLowerCase(); return terms.every(t=> s.includes(t)); });
+        displayItems(filtered);
+      }catch(e){ console.error(e); wrap.innerHTML = '<div class="text-danger">加载失败</div>'; }
+    }
+    function displayItems(items){ const wrap=document.getElementById('tableWrap'); let html=`<table class="table table-striped"><thead><tr><th>项ID</th><th>采购订单ID</th><th>药品ID</th><th>数量</th><th>单价</th><th>小计</th><th>操作</th></tr></thead><tbody>`; for(const it of items){ html+=`<tr><td>${it.poi_id||''}</td><td>${it.po_id||''}</td><td>${it.drug_id||''}</td><td>${it.quantity||''}</td><td>${it.price||''}</td><td>${it.subtotal||''}</td><td><button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.poi_id}')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${it.poi_id}')">删除</button></td></tr>`;} html+=`</tbody></table>`; wrap.innerHTML=html; }
+    function clearSearch(){ document.getElementById('q_po_id').value=''; document.getElementById('q_drug_id').value=''; loadList(); }
+    function openAddModal(){ currentEditId=null; showModal('新增采购订单项', {}); }
+    function showModal(title,data){ const modalId='entityModal'; const inputs=`<div class="mb-2"><input id="f_poi_id" class="form-control" placeholder="项ID" value="${data.poi_id||''}"></div><div class="mb-2"><input id="f_po_id" class="form-control" placeholder="采购订单ID" value="${data.po_id||''}"></div><div class="mb-2"><input id="f_drug_id" class="form-control" placeholder="药品ID" value="${data.drug_id||''}"></div><div class="mb-2"><input id="f_quantity" class="form-control" placeholder="数量" value="${data.quantity||''}"></div><div class="mb-2"><input id="f_price" class="form-control" placeholder="单价" value="${data.price||''}"></div><div class="mb-2"><input id="f_subtotal" class="form-control" placeholder="小计" value="${data.subtotal||''}"></div>`; const html=`<div class="modal" tabindex="-1" id="${modalId}"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">${inputs}</div><div class="modal-footer"><button class="btn btn-primary" onclick="saveItem()">保存</button></div></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); const modal=new bootstrap.Modal(document.getElementById(modalId)); modal.show(); document.getElementById(modalId).addEventListener('hidden.bs.modal',()=>document.getElementById(modalId).remove()); }
+    async function saveItem(){ const payload={ poi_id:document.getElementById('f_poi_id').value, po_id:document.getElementById('f_po_id').value, drug_id:document.getElementById('f_drug_id').value, quantity:parseInt(document.getElementById('f_quantity').value||0), price:parseFloat(document.getElementById('f_price').value||0), subtotal:parseFloat(document.getElementById('f_subtotal').value||0) }; const method=currentEditId?'PUT':'POST'; const url=currentEditId?`${apiBase}/${currentEditId}`:apiBase; await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); location.reload(); }
+    async function editItem(id){ currentEditId=id; const res=await fetch(`${apiBase}/${id}`); const data=await res.json(); showModal('编辑采购订单项',data); }
+    async function deleteItem(id){ if(!confirm('确认删除?')) return; await fetch(`${apiBase}/${id}`,{method:'DELETE'}); loadList(); }
+    window.onload=loadList;
+  </script>
+</body>
+</html>

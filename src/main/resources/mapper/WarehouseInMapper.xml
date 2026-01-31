@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_boot.mapper.WarehouseInMapper">
+
+    <!-- 入库单结果映射 -->
+    <resultMap id="WarehouseInResultMap" type="com.example.spring_boot.pojo.WarehouseIn">
+        <id property="wi_id" column="wi_id"/>
+        <result property="po_id" column="po_id"/>
+        <result property="warehouse_id" column="warehouse_id"/>
+        <result property="in_date" column="in_date"/>
+        <result property="batch_no" column="batch_no"/>
+        <result property="validity_date" column="validity_date"/>
+        <result property="operator" column="operator"/>
+    </resultMap>
+
+    <!-- 新增入库单 -->
+    <insert id="insertWarehouseIn" parameterType="com.example.spring_boot.pojo.WarehouseIn">
+        INSERT INTO warehousein (
+            wi_id,
+            po_id,
+            warehouse_id,
+            in_date,
+            batch_no,
+            validity_date,
+            operator
+        ) VALUES (
+            #{wi_id},
+            #{po_id},
+            #{warehouse_id},
+            #{in_date},
+            #{batch_no},
+            #{validity_date},
+            #{operator}
+        )
+    </insert>
+
+    <!-- 修改入库单 -->
+    <update id="updateWarehouseIn" parameterType="com.example.spring_boot.pojo.WarehouseIn">
+        UPDATE warehousein SET
+            po_id = #{po_id},
+            warehouse_id = #{warehouse_id},
+            in_date = #{in_date},
+            batch_no = #{batch_no},
+            validity_date = #{validity_date},
+            operator = #{operator}
+        WHERE wi_id = #{wi_id}
+    </update>
+
+    <!-- 删除入库单 -->
+    <delete id="deleteWarehouseIn">
+        DELETE FROM warehousein
+        WHERE wi_id = #{wi_id}
+    </delete>
+
+    <!-- 根据ID查询入库单 -->
+    <select id="selectWarehouseInById" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where wi_id = #{wi_id}
+    </select>
+
+    <!-- 查询所有入库单 -->
+    <select id="selectAllWarehouseIns" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        order by in_date desc
+    </select>
+
+    <!-- 根据采购订单ID查询入库单 -->
+    <select id="selectWarehouseInsByPoId" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where po_id = #{po_id}
+        order by in_date desc
+    </select>
+
+    <!-- 根据仓库ID查询入库单 -->
+    <select id="selectWarehouseInsByWarehouseId" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where warehouse_id = #{warehouse_id}
+        order by in_date desc
+    </select>
+
+    <!-- 根据操作员查询入库单 -->
+    <select id="selectWarehouseInsByOperator" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where operator = #{operator}
+        order by in_date desc
+    </select>
+
+    <!-- 根据日期范围查询入库单 -->
+    <select id="selectWarehouseInsByDateRange" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where in_date between #{start_date} and #{end_date}
+        order by in_date desc
+    </select>
+
+    <!-- 根据批号查询入库单 -->
+    <select id="selectWarehouseInsByBatchNo" resultMap="WarehouseInResultMap">
+        select * from warehousein
+        where batch_no = #{batch_no}
+        order by in_date desc
+    </select>
+
+</mapper>
