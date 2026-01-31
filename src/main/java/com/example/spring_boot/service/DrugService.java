@@ -1,8 +1,8 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.DrugMapper;
-import com.example.spring_boot.pojo.Drug;
-import com.example.spring_boot.pojo.DrugWithManufacturer;
+import com.example.spring_boot.dao.DrugMapper;
+import com.example.spring_boot.entity.Drug;
+import com.example.spring_boot.entity.DrugWithManufacturer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

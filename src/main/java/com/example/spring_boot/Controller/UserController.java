@@ -3,7 +3,7 @@ package com.example.spring_boot.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.example.spring_boot.pojo.Users;
+import com.example.spring_boot.entity.Users;
 import com.example.spring_boot.service.UserService;
 
 import org.springframework.web.bind.annotation.GetMapping;

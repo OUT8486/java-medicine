@@ -2,34 +2,42 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.ManufacturerMapper">
+<mapper namespace="com.example.spring_boot.dao.ManufacturerMapper">
 
-    <!-- 生产厂家结果映射（与数据库字段 manufacturer_id,name,credit_code 匹配） -->
-    <resultMap id="ManufacturerResultMap" type="com.example.spring_boot.pojo.Manufacturer">
+    <!-- 生产厂家结果映射 -->
+    <resultMap id="ManufacturerResultMap" type="com.example.spring_boot.entity.Manufacturer">
         <id property="manufacturer_id" column="manufacturer_id"/>
         <result property="name" column="name"/>
-        <result property="credit_code" column="credit_code"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="contact_person" column="contact_person"/>
     </resultMap>
 
     <!-- 新增生产厂家 -->
-    <insert id="insertManufacturer" parameterType="com.example.spring_boot.pojo.Manufacturer">
+    <insert id="insertManufacturer" parameterType="com.example.spring_boot.entity.Manufacturer">
         INSERT INTO manufacturer (
             manufacturer_id,
             name,
-            credit_code
+            address,
+            phone,
+            contact_person
         ) VALUES (
             #{manufacturer_id},
             #{name},
-            #{credit_code}
+            #{address},
+            #{phone},
+            #{contact_person}
         )
     </insert>
 
     <!-- 修改生产厂家信息 -->
-    <update id="updateManufacturer" parameterType="com.example.spring_boot.pojo.Manufacturer">
+    <update id="updateManufacturer" parameterType="com.example.spring_boot.entity.Manufacturer">
         UPDATE manufacturer
         SET
             name = #{name},
-            credit_code = #{credit_code}
+            address = #{address},
+            phone = #{phone},
+            contact_person = #{contact_person}
         WHERE manufacturer_id = #{manufacturer_id}
     </update>
 
@@ -50,14 +58,5 @@
         select * from manufacturer
         order by manufacturer_id
     </select>
-
-    <!-- 根据名称查询生产厂家 -->
-    <select id="selectManufacturersByName" resultMap="ManufacturerResultMap">
-        select * from manufacturer
-        where name like CONCAT('%', #{name}, '%')
-        order by manufacturer_id
-    </select>
-
-    <!-- （删除按联系人查询，数据库不含该列） -->
 
 </mapper>

@@ -1,8 +1,8 @@
-package com.example.spring_boot.mapper;
+package com.example.spring_boot.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.spring_boot.pojo.Employee;
+import com.example.spring_boot.entity.Employee;
 
 import java.util.List;
 

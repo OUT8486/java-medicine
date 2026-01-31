@@ -1,7 +1,8 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.PurchaseOrderItemMapper;
-import com.example.spring_boot.pojo.PurchaseOrderItem;
+import com.example.spring_boot.dao.PurchaseOrderItemMapper;
+import com.example.spring_boot.entity.PurchaseOrderItem;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

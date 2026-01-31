@@ -1,7 +1,7 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.InventoryMapper;
-import com.example.spring_boot.pojo.Inventory;
+import com.example.spring_boot.dao.InventoryMapper;
+import com.example.spring_boot.entity.Inventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

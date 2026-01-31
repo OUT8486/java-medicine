@@ -1,7 +1,7 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.CustomerMapper;
-import com.example.spring_boot.pojo.Customer;
+import com.example.spring_boot.dao.CustomerMapper;
+import com.example.spring_boot.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

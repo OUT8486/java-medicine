@@ -1,8 +1,8 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.SalesOrderMapper;
-import com.example.spring_boot.mapper.SalesOrderItemMapper;
-import com.example.spring_boot.pojo.SalesOrder;
+import com.example.spring_boot.dao.SalesOrderMapper;
+import com.example.spring_boot.dao.SalesOrderItemMapper;
+import com.example.spring_boot.entity.SalesOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

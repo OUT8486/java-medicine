@@ -2,46 +2,58 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.InventoryMapper">
+<mapper namespace="com.example.spring_boot.dao.InventoryMapper">
 
     <!-- 库存结果映射 -->
-    <resultMap id="InventoryResultMap" type="com.example.spring_boot.pojo.Inventory">
+    <resultMap id="InventoryResultMap" type="com.example.spring_boot.entity.Inventory">
         <id property="inventory_id" column="inventory_id"/>
         <result property="drug_id" column="drug_id"/>
         <result property="warehouse_id" column="warehouse_id"/>
-        <result property="batch_no" column="batch_no"/>
         <result property="quantity" column="quantity"/>
-        <result property="validity_date" column="validity_date"/>
+        <result property="batch_number" column="batch_number"/>
+        <result property="production_date" column="production_date"/>
+        <result property="expiry_date" column="expiry_date"/>
+        <result property="purchase_price" column="purchase_price"/>
+        <result property="sale_price" column="sale_price"/>
     </resultMap>
 
     <!-- 新增库存记录 -->
-    <insert id="insertInventory" parameterType="com.example.spring_boot.pojo.Inventory">
+    <insert id="insertInventory" parameterType="com.example.spring_boot.entity.Inventory">
         INSERT INTO inventory (
             inventory_id,
             drug_id,
             warehouse_id,
-            batch_no,
             quantity,
-            validity_date
+            batch_number,
+            production_date,
+            expiry_date,
+            purchase_price,
+            sale_price
         ) VALUES (
             #{inventory_id},
             #{drug_id},
             #{warehouse_id},
-            #{batch_no},
             #{quantity},
-            #{validity_date}
+            #{batch_number},
+            #{production_date},
+            #{expiry_date},
+            #{purchase_price},
+            #{sale_price}
         )
     </insert>
 
-    <!-- 修改库存信息 -->
-    <update id="updateInventory" parameterType="com.example.spring_boot.pojo.Inventory">
+    <!-- 修改库存记录 -->
+    <update id="updateInventory" parameterType="com.example.spring_boot.entity.Inventory">
         UPDATE inventory
         SET
             drug_id = #{drug_id},
             warehouse_id = #{warehouse_id},
-            batch_no = #{batch_no},
             quantity = #{quantity},
-            validity_date = #{validity_date}
+            batch_number = #{batch_number},
+            production_date = #{production_date},
+            expiry_date = #{expiry_date},
+            purchase_price = #{purchase_price},
+            sale_price = #{sale_price}
         WHERE inventory_id = #{inventory_id}
     </update>
 
@@ -51,59 +63,16 @@
         WHERE inventory_id = #{inventory_id}
     </delete>
 
-    <!-- 根据ID查询库存 -->
+    <!-- 根据ID查询库存记录 -->
     <select id="selectInventoryById" resultMap="InventoryResultMap">
         select * from inventory
         where inventory_id = #{inventory_id}
     </select>
 
-    <!-- 查询所有库存 -->
+    <!-- 查询所有库存记录 -->
     <select id="selectAllInventories" resultMap="InventoryResultMap">
         select * from inventory
-        order by warehouse_id, drug_id
+        order by inventory_id
     </select>
-
-    <!-- 根据药品ID查询库存 -->
-    <select id="selectInventoriesByDrugId" resultMap="InventoryResultMap">
-        select * from inventory
-        where drug_id = #{drug_id}
-        order by warehouse_id, batch_no
-    </select>
-
-    <!-- 根据仓库ID查询库存 -->
-    <select id="selectInventoriesByWarehouseId" resultMap="InventoryResultMap">
-        select * from inventory
-        where warehouse_id = #{warehouse_id}
-        order by drug_id, batch_no
-    </select>
-
-    <!-- 根据批号查询库存 -->
-    <select id="selectInventoriesByBatchNo" resultMap="InventoryResultMap">
-        select * from inventory
-        where batch_no = #{batch_no}
-        order by warehouse_id, drug_id
-    </select>
-
-    <!-- 查询即将过期的库存 -->
-    <select id="selectInventoriesNearExpiry" resultMap="InventoryResultMap">
-        select * from inventory
-        where validity_date &lt;= #{days_before_expiry}
-        and validity_date &gt;= CURRENT_DATE()
-        order by validity_date
-    </select>
-
-    <!-- 查询库存不足的药品 -->
-    <select id="selectLowStockInventories" resultMap="InventoryResultMap">
-        select * from inventory
-        where quantity &lt; #{threshold}
-        order by quantity
-    </select>
-
-    <!-- 更新库存数量 -->
-    <update id="updateInventoryQuantity">
-        UPDATE inventory
-        SET quantity = #{quantity}
-        WHERE inventory_id = #{inventory_id}
-    </update>
 
 </mapper>

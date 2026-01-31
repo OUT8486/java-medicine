@@ -1,7 +1,7 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.EmployeeMapper;
-import com.example.spring_boot.pojo.Employee;
+import com.example.spring_boot.dao.EmployeeMapper;
+import com.example.spring_boot.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -2,42 +2,42 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.WarehouseMapper">
+<mapper namespace="com.example.spring_boot.dao.WarehouseMapper">
 
     <!-- 仓库结果映射 -->
-    <resultMap id="WarehouseResultMap" type="com.example.spring_boot.pojo.Warehouse">
+    <resultMap id="WarehouseResultMap" type="com.example.spring_boot.entity.Warehouse">
         <id property="warehouse_id" column="warehouse_id"/>
         <result property="name" column="name"/>
-        <result property="location" column="location"/>
+        <result property="address" column="address"/>
         <result property="manager" column="manager"/>
-        <result property="manager_phone" column="manager_phone"/>
+        <result property="phone" column="phone"/>
     </resultMap>
 
     <!-- 新增仓库 -->
-    <insert id="insertWarehouse" parameterType="com.example.spring_boot.pojo.Warehouse">
+    <insert id="insertWarehouse" parameterType="com.example.spring_boot.entity.Warehouse">
         INSERT INTO warehouse (
             warehouse_id,
             name,
-            location,
+            address,
             manager,
-            manager_phone
+            phone
         ) VALUES (
             #{warehouse_id},
             #{name},
-            #{location},
+            #{address},
             #{manager},
-            #{manager_phone}
+            #{phone}
         )
     </insert>
 
     <!-- 修改仓库信息 -->
-    <update id="updateWarehouse" parameterType="com.example.spring_boot.pojo.Warehouse">
+    <update id="updateWarehouse" parameterType="com.example.spring_boot.entity.Warehouse">
         UPDATE warehouse
         SET
             name = #{name},
-            location = #{location},
+            address = #{address},
             manager = #{manager},
-            manager_phone = #{manager_phone}
+            phone = #{phone}
         WHERE warehouse_id = #{warehouse_id}
     </update>
 
@@ -56,27 +56,6 @@
     <!-- 查询所有仓库 -->
     <select id="selectAllWarehouses" resultMap="WarehouseResultMap">
         select * from warehouse
-        order by warehouse_id
-    </select>
-
-    <!-- 根据名称查询仓库 -->
-    <select id="selectWarehousesByName" resultMap="WarehouseResultMap">
-        select * from warehouse
-        where name like CONCAT('%', #{name}, '%')
-        order by warehouse_id
-    </select>
-
-    <!-- 根据位置查询仓库 -->
-    <select id="selectWarehousesByLocation" resultMap="WarehouseResultMap">
-        select * from warehouse
-        where location like CONCAT('%', #{location}, '%')
-        order by warehouse_id
-    </select>
-
-    <!-- 根据管理员查询仓库 -->
-    <select id="selectWarehousesByManager" resultMap="WarehouseResultMap">
-        select * from warehouse
-        where manager like CONCAT('%', #{manager}, '%')
         order by warehouse_id
     </select>
 

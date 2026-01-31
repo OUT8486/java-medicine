@@ -3,8 +3,8 @@ package com.example.spring_boot.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.spring_boot.mapper.UserMapper;
-import com.example.spring_boot.pojo.Users;
+import com.example.spring_boot.dao.UserMapper;
+import com.example.spring_boot.entity.Users;
 
 @Service
 public class UserService {

@@ -1,7 +1,7 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.SalesOrderMapper;
-import com.example.spring_boot.pojo.SalesOrder;
+import com.example.spring_boot.dao.SalesOrderMapper;
+import com.example.spring_boot.entity.SalesOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

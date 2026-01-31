@@ -1,7 +1,7 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.SupplierMapper;
-import com.example.spring_boot.pojo.Supplier;
+import com.example.spring_boot.dao.SupplierMapper;
+import com.example.spring_boot.entity.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

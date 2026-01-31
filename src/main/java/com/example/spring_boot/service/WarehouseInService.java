@@ -1,7 +1,7 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.WarehouseInMapper;
-import com.example.spring_boot.pojo.WarehouseIn;
+import com.example.spring_boot.dao.WarehouseInMapper;
+import com.example.spring_boot.entity.WarehouseIn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

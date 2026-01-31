@@ -1,8 +1,8 @@
-package com.example.spring_boot.mapper;
+package com.example.spring_boot.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.spring_boot.pojo.SalesOrder;
+import com.example.spring_boot.entity.SalesOrder;
 
 import java.math.BigDecimal;
 import java.util.Date;

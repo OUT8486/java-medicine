@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.SalesOrderMapper">
+<mapper namespace="com.example.spring_boot.dao.SalesOrderMapper">
 
     <!-- 销售订单结果映射（与数据库 salesorder 表一致） -->
-    <resultMap id="SalesOrderResultMap" type="com.example.spring_boot.pojo.SalesOrder">
+    <resultMap id="SalesOrderResultMap" type="com.example.spring_boot.entity.SalesOrder">
         <id property="so_id" column="so_id"/>
         <result property="customer_id" column="customer_id"/>
         <result property="so_date" column="so_date"/>
@@ -14,7 +14,7 @@
     </resultMap>
 
     <!-- 新增销售订单 -->
-    <insert id="insertSalesOrder" parameterType="com.example.spring_boot.pojo.SalesOrder">
+    <insert id="insertSalesOrder" parameterType="com.example.spring_boot.entity.SalesOrder">
         INSERT INTO salesorder (
             so_id,
             customer_id,
@@ -31,7 +31,7 @@
     </insert>
 
     <!-- 修改销售订单 -->
-    <update id="updateSalesOrder" parameterType="com.example.spring_boot.pojo.SalesOrder">
+    <update id="updateSalesOrder" parameterType="com.example.spring_boot.entity.SalesOrder">
         UPDATE salesorder SET
             customer_id = #{customer_id},
             so_date = #{so_date},

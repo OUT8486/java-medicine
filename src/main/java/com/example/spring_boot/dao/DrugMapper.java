@@ -1,11 +1,11 @@
-package com.example.spring_boot.mapper;
+package com.example.spring_boot.dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.spring_boot.pojo.Drug;
-import com.example.spring_boot.pojo.DrugWithManufacturer;
+import com.example.spring_boot.entity.Drug;
+import com.example.spring_boot.entity.DrugWithManufacturer;
 
 @Mapper
 public interface DrugMapper {

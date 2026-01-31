@@ -1,7 +1,7 @@
 package com.example.spring_boot.service;
 
-import com.example.spring_boot.mapper.ManufacturerMapper;
-import com.example.spring_boot.pojo.Manufacturer;
+import com.example.spring_boot.dao.ManufacturerMapper;
+import com.example.spring_boot.entity.Manufacturer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.PurchaseOrderMapper;
-import com.example.spring_boot.mapper.PurchaseOrderItemMapper;
-import com.example.spring_boot.pojo.PurchaseOrder;
+import com.example.spring_boot.dao.PurchaseOrderMapper;
+import com.example.spring_boot.dao.PurchaseOrderItemMapper;
+import com.example.spring_boot.entity.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

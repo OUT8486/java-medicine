@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.CustomerMapper">
+<mapper namespace="com.example.spring_boot.dao.CustomerMapper">
 
     <!-- 客户结果映射 -->
-    <resultMap id="CustomerResultMap" type="com.example.spring_boot.pojo.Customer">
+    <resultMap id="CustomerResultMap" type="com.example.spring_boot.entity.Customer">
         <id property="customer_id" column="customer_id"/>
         <result property="name" column="name"/>
         <result property="phone" column="phone"/>
@@ -14,7 +14,7 @@
     </resultMap>
 
     <!-- 新增客户 -->
-    <insert id="insertCustomer" parameterType="com.example.spring_boot.pojo.Customer">
+    <insert id="insertCustomer" parameterType="com.example.spring_boot.entity.Customer">
         INSERT INTO customer (
             customer_id,
             name,
@@ -31,7 +31,7 @@
     </insert>
 
     <!-- 修改客户信息 -->
-    <update id="updateCustomer" parameterType="com.example.spring_boot.pojo.Customer">
+    <update id="updateCustomer" parameterType="com.example.spring_boot.entity.Customer">
         UPDATE customer
         SET
             name = #{name},

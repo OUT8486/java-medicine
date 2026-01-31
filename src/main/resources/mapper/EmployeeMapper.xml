@@ -2,34 +2,46 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.EmployeeMapper">
+<mapper namespace="com.example.spring_boot.dao.EmployeeMapper">
 
     <!-- 员工结果映射（与数据库表字段一致） -->
-    <resultMap id="EmployeeResultMap" type="com.example.spring_boot.pojo.Employee">
+    <resultMap id="EmployeeResultMap" type="com.example.spring_boot.entity.Employee">
         <id property="employee_id" column="employee_id"/>
         <result property="name" column="name"/>
         <result property="post" column="post"/>
+        <result property="phone" column="phone"/>
+        <result property="hire_date" column="hire_date"/>
+        <result property="salary" column="salary"/>
     </resultMap>
 
     <!-- 新增员工 -->
-    <insert id="insertEmployee" parameterType="com.example.spring_boot.pojo.Employee">
+    <insert id="insertEmployee" parameterType="com.example.spring_boot.entity.Employee">
         INSERT INTO employee (
             employee_id,
             name,
-            post
+            post,
+            phone,
+            hire_date,
+            salary
         ) VALUES (
             #{employee_id},
             #{name},
-            #{post}
+            #{post},
+            #{phone},
+            #{hire_date},
+            #{salary}
         )
     </insert>
 
     <!-- 修改员工信息 -->
-    <update id="updateEmployee" parameterType="com.example.spring_boot.pojo.Employee">
+    <update id="updateEmployee" parameterType="com.example.spring_boot.entity.Employee">
         UPDATE employee
         SET
             name = #{name},
-            post = #{post}
+            post = #{post},
+            phone = #{phone},
+            hire_date = #{hire_date},
+            salary = #{salary}
         WHERE employee_id = #{employee_id}
     </update>
 
@@ -49,26 +61,6 @@
     <select id="selectAllEmployees" resultMap="EmployeeResultMap">
         select * from employee
         order by employee_id
-    </select>
-
-    <!-- 根据姓名查询员工 -->
-    <select id="selectEmployeesByName" resultMap="EmployeeResultMap">
-        select * from employee
-        where name like CONCAT('%', #{name}, '%')
-        order by employee_id
-    </select>
-
-    <!-- 根据岗位（post）查询员工 -->
-    <select id="selectEmployeesByPost" resultMap="EmployeeResultMap">
-        select * from employee
-        where post = #{post}
-        order by employee_id
-    </select>
-
-    <!-- 员工登录验证 -->
-    <select id="selectByUsernameAndPassword" resultMap="EmployeeResultMap">
-        select * from employee
-        where username = #{username} and password = #{password}
     </select>
 
 </mapper>

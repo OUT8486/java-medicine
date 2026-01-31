@@ -2,38 +2,42 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.spring_boot.mapper.SupplierMapper">
+<mapper namespace="com.example.spring_boot.dao.SupplierMapper">
 
-    <!-- 供应商结果映射（与数据库表结构一致） -->
-    <resultMap id="SupplierResultMap" type="com.example.spring_boot.pojo.Supplier">
+    <!-- 供应商结果映射 -->
+    <resultMap id="SupplierResultMap" type="com.example.spring_boot.entity.Supplier">
         <id property="supplier_id" column="supplier_id"/>
         <result property="name" column="name"/>
-        <result property="contact_phone" column="contact_phone"/>
-        <result property="status" column="status"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="contact_person" column="contact_person"/>
     </resultMap>
 
     <!-- 新增供应商 -->
-    <insert id="insertSupplier" parameterType="com.example.spring_boot.pojo.Supplier">
+    <insert id="insertSupplier" parameterType="com.example.spring_boot.entity.Supplier">
         INSERT INTO supplier (
             supplier_id,
             name,
-            contact_phone,
-            status
+            address,
+            phone,
+            contact_person
         ) VALUES (
             #{supplier_id},
             #{name},
-            #{contact_phone},
-            #{status}
+            #{address},
+            #{phone},
+            #{contact_person}
         )
     </insert>
 
     <!-- 修改供应商信息 -->
-    <update id="updateSupplier" parameterType="com.example.spring_boot.pojo.Supplier">
+    <update id="updateSupplier" parameterType="com.example.spring_boot.entity.Supplier">
         UPDATE supplier
         SET
             name = #{name},
-            contact_phone = #{contact_phone},
-            status = #{status}
+            address = #{address},
+            phone = #{phone},
+            contact_person = #{contact_person}
         WHERE supplier_id = #{supplier_id}
     </update>
 
@@ -54,15 +58,5 @@
         select * from supplier
         order by supplier_id
     </select>
-
-    <!-- 根据名称查询供应商 -->
-    <select id="selectSuppliersByName" resultMap="SupplierResultMap">
-        select * from supplier
-        where name like CONCAT('%', #{name}, '%')
-        order by supplier_id
-    </select>
-
-    <!-- 根据名称查询供应商 -->
-    <!-- 已有 selectSuppliersByName 定义，保留简单查询 -->
 
 </mapper>

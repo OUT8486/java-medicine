@@ -1,7 +1,7 @@
 package com.example.spring_boot.Controller;
 
-import com.example.spring_boot.mapper.WarehouseMapper;
-import com.example.spring_boot.pojo.Warehouse;
+import com.example.spring_boot.dao.WarehouseMapper;
+import com.example.spring_boot.entity.Warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
