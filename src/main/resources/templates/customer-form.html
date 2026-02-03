@@ -3,40 +3,339 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>客户表单</title>
+  <title>客户信息管理</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>.container{max-width:800px}</style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .form-container { max-width: 800px; margin: 0 auto; }
+    .form-section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    .section-title { color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 10px; margin-bottom: 20px; }
+    .required::after { content: " *"; color: red; }
+    .help-text { font-size: 0.875em; color: #6c757d; }
+    .btn-action { padding: 10px 20px; font-weight: 500; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark"><div class="container-fluid"><a class="navbar-brand" href="/index">药店管理系统</a></div></nav>
-  <div class="container mt-4">
-    <h3 id="title">客户 - 新建</h3>
-    <form id="form" class="card p-3">
-      <div class="mb-3"><label class="form-label">客户ID</label><input id="customer_id" class="form-control"></div>
-      <div class="mb-3"><label class="form-label">姓名</label><input id="name" class="form-control" required></div>
-      <div class="mb-3"><label class="form-label">类型</label><input id="type" class="form-control"></div>
-      <div class="mb-3"><label class="form-label">联系电话</label><input id="contact_phone" class="form-control"></div>
-      <div class="d-flex gap-2"><button class="btn btn-primary">保存</button><a class="btn btn-secondary" href="/customer">返回</a></div>
-    </form>
-  </div>
-  <script>
-    function qs(name){const u=new URLSearchParams(location.search);return u.get(name);} 
-    const id = qs('id');
-    if(id){ document.getElementById('title').textContent='客户 - 编辑'; fetch(`/customer/${id}`).then(r=>r.json()).then(c=>{ c=c||{}; document.getElementById('customer_id').value=c.customer_id||''; document.getElementById('name').value=c.name||''; document.getElementById('type').value=c.type||''; document.getElementById('contact_phone').value=c.contact_phone||'';}).catch(e=>console.error(e)); }
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/index">
+        <i class="bi bi-hospital"></i> 药店管理系统
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/customer">
+          <i class="bi bi-people"></i> 客户管理
+        </a>
+      </div>
+    </div>
+  </nav>
 
-    document.getElementById('form').addEventListener('submit', function(e){
-      e.preventDefault();
-      const payload = {
-        customer_id: document.getElementById('customer_id').value,
-        name: document.getElementById('name').value,
+  <div class="container mt-4">
+    <div class="form-container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 id="pageTitle">
+          <i class="bi bi-person-plus"></i> 新增客户
+        </h2>
+        <div>
+          <a href="/customer" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> 返回列表
+          </a>
+        </div>
+      </div>
+
+      <form id="customerForm" class="needs-validation" novalidate>
+        <!-- 基本信息部分 -->
+        <div class="form-section">
+          <h4 class="section-title">
+            <i class="bi bi-info-circle"></i> 基本信息
+          </h4>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="customer_id" class="form-label required">客户编号</label>
+              <input type="text" class="form-control" id="customer_id" name="customer_id" 
+                     placeholder="请输入客户编号" maxlength="20" required>
+              <div class="invalid-feedback">请输入客户编号</div>
+              <div class="help-text">唯一标识客户的编号，建议使用字母数字组合</div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="name" class="form-label required">客户名称</label>
+              <input type="text" class="form-control" id="name" name="name" 
+                     placeholder="请输入客户姓名或企业名称" maxlength="50" required>
+              <div class="invalid-feedback">请输入客户名称</div>
+              <div class="help-text">个人客户填写姓名，企业客户填写公司名称</div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="type" class="form-label required">客户类型</label>
+              <select class="form-select" id="type" name="type" required>
+                <option value="">请选择客户类型</option>
+                <option value="个人">个人</option>
+                <option value="企业">企业</option>
+              </select>
+              <div class="invalid-feedback">请选择客户类型</div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="contact_phone" class="form-label">联系电话</label>
+              <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
+                     placeholder="请输入11位手机号" maxlength="11">
+              <div class="invalid-feedback">请输入正确的11位手机号</div>
+              <div class="help-text">用于联系客户的手机号码</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <div>
+            <button type="button" class="btn btn-outline-secondary btn-action" onclick="resetForm()">
+              <i class="bi bi-arrow-counterclockwise"></i> 重置
+            </button>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary btn-action" id="submitBtn">
+              <i class="bi bi-save"></i> <span id="submitText">保存客户</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 获取URL参数
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      const customerId = getUrlParameter('id');
+      
+      if (customerId) {
+        // 编辑模式
+        document.getElementById('pageTitle').innerHTML = '<i class="bi bi-pencil"></i> 编辑客户';
+        document.getElementById('submitText').textContent = '更新客户';
+        loadCustomerData(customerId);
+        
+        // 编辑模式下客户编号设为只读
+        document.getElementById('customer_id').readOnly = true;
+        document.getElementById('customer_id').classList.add('bg-light');
+      }
+      
+      // 绑定表单提交事件
+      document.getElementById('customerForm').addEventListener('submit', handleFormSubmit);
+      
+      // 绑定电话号码输入验证
+      document.getElementById('contact_phone').addEventListener('input', validatePhone);
+      
+      // 绑定客户编号唯一性检查
+      document.getElementById('customer_id').addEventListener('blur', checkCustomerIdUniqueness);
+    });
+
+    // 加载客户数据（编辑模式）
+    async function loadCustomerData(customerId) {
+      try {
+        const response = await fetch(`/customer/${customerId}`);
+        if (response.ok) {
+          const customer = await response.json();
+          if (customer) {
+            document.getElementById('customer_id').value = customer.customer_id || '';
+            document.getElementById('name').value = customer.name || '';
+            document.getElementById('type').value = customer.type || '';
+            document.getElementById('contact_phone').value = customer.contact_phone || '';
+          }
+        } else {
+          alert('客户信息不存在');
+          window.location.href = '/customer';
+        }
+      } catch (error) {
+        console.error('加载客户数据失败:', error);
+        alert('加载客户数据失败');
+      }
+    }
+
+    // 表单提交处理
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      // 表单验证
+      if (!validateForm()) {
+        return;
+      }
+      
+      // 获取表单数据
+      const formData = {
+        customer_id: document.getElementById('customer_id').value.trim(),
+        name: document.getElementById('name').value.trim(),
         type: document.getElementById('type').value,
-        contact_phone: document.getElementById('contact_phone').value
+        contact_phone: document.getElementById('contact_phone').value.trim()
       };
-      const url = id ? `/customer/${id}` : '/customer';
-      const method = id ? 'PUT' : 'POST';
-      fetch(url, {method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)})
-        .then(r=>{ if(r.ok) location.href='/customer'; else alert('保存失败'); })
-        .catch(e=>{ console.error(e); alert('保存失败'); });
+      
+      // 设置按钮状态
+      const submitBtn = document.getElementById('submitBtn');
+      const submitText = document.getElementById('submitText');
+      const originalText = submitText.textContent;
+      
+      submitBtn.disabled = true;
+      submitText.textContent = customerId ? '更新中...' : '保存中...';
+      
+      try {
+        const customerId = getUrlParameter('id');
+        const url = customerId ? `/customer/${customerId}` : '/customer';
+        const method = customerId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          alert(result.message || (customerId ? '客户更新成功！' : '客户添加成功！'));
+          window.location.href = '/customer';
+        } else {
+          alert(result.message || '操作失败，请重试');
+        }
+      } catch (error) {
+        console.error('保存客户失败:', error);
+        alert('网络错误，请检查网络连接后重试');
+      } finally {
+        // 恢复按钮状态
+        submitBtn.disabled = false;
+        submitText.textContent = originalText;
+      }
+    }
+
+    // 表单验证
+    function validateForm() {
+      let isValid = true;
+      const form = document.getElementById('customerForm');
+      
+      // 客户编号验证
+      const customerId = document.getElementById('customer_id');
+      if (!customerId.value.trim()) {
+        customerId.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        customerId.classList.remove('is-invalid');
+      }
+      
+      // 客户名称验证
+      const name = document.getElementById('name');
+      if (!name.value.trim()) {
+        name.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        name.classList.remove('is-invalid');
+      }
+      
+      // 客户类型验证
+      const type = document.getElementById('type');
+      if (!type.value) {
+        type.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        type.classList.remove('is-invalid');
+      }
+      
+      // 电话号码验证
+      const phone = document.getElementById('contact_phone');
+      if (phone.value && !validatePhoneFormat(phone.value)) {
+        phone.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        phone.classList.remove('is-invalid');
+      }
+      
+      // 触发表单验证样式
+      form.classList.add('was-validated');
+      
+      return isValid;
+    }
+
+    // 电话号码格式验证
+    function validatePhoneFormat(phone) {
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      return phoneRegex.test(phone);
+    }
+
+    // 电话号码输入实时验证
+    function validatePhone() {
+      const phoneInput = document.getElementById('contact_phone');
+      const phone = phoneInput.value;
+      
+      if (phone && !validatePhoneFormat(phone)) {
+        phoneInput.classList.add('is-invalid');
+      } else {
+        phoneInput.classList.remove('is-invalid');
+      }
+    }
+
+    // 检查客户编号唯一性
+    async function checkCustomerIdUniqueness() {
+      const customerIdInput = document.getElementById('customer_id');
+      const customerId = customerIdInput.value.trim();
+      
+      if (!customerId) return;
+      
+      // 编辑模式下不需要检查自己
+      const editingId = getUrlParameter('id');
+      if (editingId && editingId === customerId) return;
+      
+      try {
+        const response = await fetch(`/customer/${customerId}`);
+        if (response.ok) {
+          // 客户已存在
+          customerIdInput.classList.add('is-invalid');
+          customerIdInput.setCustomValidity('该客户编号已存在');
+        } else {
+          // 客户不存在，可以使用
+          customerIdInput.classList.remove('is-invalid');
+          customerIdInput.setCustomValidity('');
+        }
+      } catch (error) {
+        console.error('检查客户编号唯一性失败:', error);
+      }
+    }
+
+    // 重置表单
+    function resetForm() {
+      if (confirm('确定要重置表单吗？所有未保存的更改将丢失。')) {
+        const form = document.getElementById('customerForm');
+        form.reset();
+        form.classList.remove('was-validated');
+        
+        // 清除验证状态
+        const inputs = form.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+          input.classList.remove('is-invalid', 'is-valid');
+        });
+        
+        // 如果是编辑模式，恢复原始数据
+        const customerId = getUrlParameter('id');
+        if (customerId) {
+          loadCustomerData(customerId);
+        }
+      }
+    }
+
+    // 页面离开提醒
+    window.addEventListener('beforeunload', function(e) {
+      const form = document.getElementById('customerForm');
+      if (form.checkValidity() === false || form.classList.contains('was-validated')) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
     });
   </script>
 </body>

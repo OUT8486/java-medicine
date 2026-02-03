@@ -8,9 +8,8 @@
     <resultMap id="CustomerResultMap" type="com.example.spring_boot.entity.Customer">
         <id property="customer_id" column="customer_id"/>
         <result property="name" column="name"/>
-        <result property="phone" column="phone"/>
-        <result property="address" column="address"/>
-        <result property="id_card" column="id_card"/>
+        <result property="type" column="type"/>
+        <result property="contact_phone" column="contact_phone"/>
     </resultMap>
 
     <!-- 新增客户 -->
@@ -18,15 +17,13 @@
         INSERT INTO customer (
             customer_id,
             name,
-            phone,
-            address,
-            id_card
+            type,
+            contact_phone
         ) VALUES (
             #{customer_id},
             #{name},
-            #{phone},
-            #{address},
-            #{id_card}
+            #{type},
+            #{contact_phone}
         )
     </insert>
 
@@ -35,41 +32,53 @@
         UPDATE customer
         SET
             name = #{name},
-            phone = #{phone},
-            address = #{address},
-            id_card = #{id_card}
+            type = #{type},
+            contact_phone = #{contact_phone}
         WHERE customer_id = #{customer_id}
     </update>
 
     <!-- 删除客户 -->
-    <delete id="deleteCustomer">
+    <delete id="deleteCustomer" parameterType="string">
         DELETE FROM customer
         WHERE customer_id = #{customer_id}
     </delete>
 
     <!-- 根据ID查询客户 -->
-    <select id="selectCustomerById" resultMap="CustomerResultMap">
-        select * from customer
-        where customer_id = #{customer_id}
+    <select id="selectCustomerById" parameterType="string" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        WHERE customer_id = #{customer_id}
     </select>
 
     <!-- 查询所有客户 -->
     <select id="selectAllCustomers" resultMap="CustomerResultMap">
-        select * from customer
-        order by customer_id
+        SELECT * FROM customer
+        ORDER BY customer_id
     </select>
 
     <!-- 根据姓名查询客户 -->
-    <select id="selectCustomersByName" resultMap="CustomerResultMap">
-        select * from customer
-        where name like CONCAT('%', #{name}, '%')
-        order by customer_id
+    <select id="selectCustomersByName" parameterType="string" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        WHERE name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY customer_id
     </select>
 
-    <!-- 根据电话查询客户 -->
-    <select id="selectCustomerByPhone" resultMap="CustomerResultMap">
-        select * from customer
-        where phone = #{phone}
+    <!-- 根据联系电话查询客户 -->
+    <select id="selectCustomerByPhone" parameterType="string" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        WHERE contact_phone = #{phone}
+    </select>
+
+    <!-- 根据客户类型查询客户 -->
+    <select id="selectCustomersByType" parameterType="string" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        WHERE type = #{type}
+        ORDER BY customer_id
+    </select>
+
+    <!-- 根据联系电话查询客户（精确匹配） -->
+    <select id="selectCustomersByContactPhone" parameterType="string" resultMap="CustomerResultMap">
+        SELECT * FROM customer
+        WHERE contact_phone = #{contact_phone}
     </select>
 
 </mapper>

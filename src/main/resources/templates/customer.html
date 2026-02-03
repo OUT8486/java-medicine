@@ -6,123 +6,386 @@
   <title>客户管理</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-  <style> .search-row .col {padding-right:8px;} </style>
+  <style>
+    .search-row .col {padding-right:8px;}
+    .customer-card { border-left: 4px solid #0d6efd; }
+    .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .action-buttons .btn { margin: 0 2px; }
+  </style>
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="/index"><i class="bi bi-hospital"></i> 药店管理系统</a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/index"><i class="bi bi-house"></i> 返回首页</a>
+    </div>
   </div>
 </nav>
 
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>客户管理</h2>
-    <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus"></i> 新增客户</button>
-  </div>
-
-  <div class="card p-3 mb-4">
-    <div class="row search-row g-2">
-      <div class="col-md-4"><input id="q_name" class="form-control" placeholder="客户姓名"></div>
-      <div class="col-md-4"><input id="q_type" class="form-control" placeholder="客户类型"></div>
-      <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-outline-primary" onclick="loadList()">搜索</button><button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">重置</button></div>
+  <!-- 页面标题和统计 -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2><i class="bi bi-people"></i> 客户管理</h2>
+      <p class="text-muted">管理药店的客户信息，包括个人客户和企业客户</p>
+    </div>
+    <div class="col-md-4">
+      <div class="card stats-card h-100">
+        <div class="card-body text-center">
+          <h5>客户总数</h5>
+          <h2 id="totalCustomers">0</h2>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="tableWrap"></div>
+  <!-- 操作按钮 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="bi bi-person-plus"></i> 新增客户
+      </button>
+      <button class="btn btn-outline-secondary" onclick="refreshData()">
+        <i class="bi bi-arrow-clockwise"></i> 刷新
+      </button>
+    </div>
+    <div class="d-flex gap-2">
+      <select id="typeFilter" class="form-select" style="width: auto;" onchange="filterByType()">
+        <option value="">全部类型</option>
+        <option value="个人">个人</option>
+        <option value="企业">企业</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 搜索区域 -->
+  <div class="card p-3 mb-4">
+    <div class="row search-row g-2">
+      <div class="col-md-3">
+        <input id="q_name" class="form-control" placeholder="客户姓名/企业名称">
+      </div>
+      <div class="col-md-3">
+        <input id="q_phone" class="form-control" placeholder="联系电话">
+      </div>
+      <div class="col-md-3">
+        <select id="q_type" class="form-select">
+          <option value="">客户类型</option>
+          <option value="个人">个人</option>
+          <option value="企业">企业</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary" onclick="searchCustomers()">
+          <i class="bi bi-search"></i> 搜索
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">
+          <i class="bi bi-x-circle"></i> 重置
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 客户列表 -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>客户ID</th>
+              <th>客户名称</th>
+              <th>客户类型</th>
+              <th>联系电话</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="customerTableBody">
+            <tr>
+              <td colspan="5" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">加载中...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 分页 -->
+      <nav aria-label="客户列表分页">
+        <ul class="pagination justify-content-center" id="pagination">
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const apiBase = '/customer';
-let currentEditId = null;
+let currentCustomers = [];
+let currentPage = 1;
+const pageSize = 10;
 
-async function loadList(){
-  const tbWrap = document.getElementById('tableWrap');
-  tbWrap.innerHTML = '<div class="text-center">加载中...</div>';
-  const terms = Array.from(document.querySelectorAll('[id^="q_"] , [id^="search"]')).map(i=> (i.value||'').toString().trim().toLowerCase()).filter(Boolean);
-  try{
-    const res = await fetch(apiBase + '/list');
-    const d = await res.json();
-    let items = Array.isArray(d)?d: (d.items||d.list||[]);
-    const filtered = items.filter(it=>{ const s=JSON.stringify(it).toLowerCase(); return terms.every(t=> s.includes(t)); });
-    displayItems(filtered);
-  }catch(e){ console.error(e); tbWrap.innerHTML = '<div class="text-danger">加载失败</div>'; }
-}
-
-function displayItems(items){
-  const wrap = document.getElementById('tableWrap');
-  let html = `<table class="table table-striped"><thead><tr>`;
-  html += `<th>客户ID</th><th>姓名</th><th>类型</th><th>联系电话</th><th>操作</th>`;
-  html += `</tr></thead><tbody>`;
-  for(const it of items){
-    html += `<tr>`;
-    html += `<td>${it.customer_id||''}</td>`;
-    html += `<td>${it.name||''}</td>`;
-    html += `<td>${it.type||''}</td>`;
-    html += `<td>${it.contact_phone||''}</td>`;
-    html += `<td><button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.customer_id}')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${it.customer_id}')">删除</button></td>`;
-    html += `</tr>`;
+// 加载客户列表
+async function loadCustomers(page = 1, searchParams = {}) {
+  try {
+    showLoading();
+    
+    let url = `${apiBase}/list`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // 处理不同的响应格式
+    let customers = [];
+    if (Array.isArray(data)) {
+      customers = data;
+    } else if (data && data.customers) {
+      customers = data.customers;
+    } else if (data && Array.isArray(data.list)) {
+      customers = data.list;
+    }
+    
+    currentCustomers = customers;
+    currentPage = page;
+    
+    // 应用搜索过滤
+    const filteredCustomers = filterCustomers(customers, searchParams);
+    
+    // 更新统计数据
+    document.getElementById('totalCustomers').textContent = customers.length;
+    
+    // 显示数据
+    displayCustomers(filteredCustomers);
+    
+  } catch (error) {
+    console.error('加载客户列表失败:', error);
+    showError('加载客户列表失败，请刷新重试');
   }
-  html += `</tbody></table>`;
-  wrap.innerHTML = html;
 }
 
-function clearSearch(){ document.getElementById('q_name').value=''; document.getElementById('q_type').value=''; loadList(); }
-
-function openAddModal(){ currentEditId = null; showModal('新增客户', {}); }
-
-function showModal(title, data){
-  const modalId = 'entityModal';
-  const inputs = `
-    <div class="mb-2"><input id="f_customer_id" class="form-control" placeholder="客户ID" value="${data.customer_id||''}"></div>
-    <div class="mb-2"><input id="f_name" class="form-control" placeholder="姓名" value="${data.name||''}"></div>
-    <div class="mb-2"><input id="f_type" class="form-control" placeholder="类型" value="${data.type||''}"></div>
-    <div class="mb-2"><input id="f_contact_phone" class="form-control" placeholder="联系电话" value="${data.contact_phone||''}"></div>
-  `;
-  const html = `
-  <div class="modal" tabindex="-1" id="${modalId}">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body">${inputs}</div>
-        <div class="modal-footer"><button class="btn btn-primary" onclick="saveItem()">保存</button></div>
-      </div>
-    </div>
-  </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-  const modal = new bootstrap.Modal(document.getElementById(modalId));
-  modal.show();
-  document.getElementById(modalId).addEventListener('hidden.bs.modal', ()=> document.getElementById(modalId).remove());
+// 过滤客户数据
+function filterCustomers(customers, searchParams) {
+  return customers.filter(customer => {
+    const nameMatch = !searchParams.name || 
+      (customer.name && customer.name.toLowerCase().includes(searchParams.name.toLowerCase()));
+    const phoneMatch = !searchParams.phone || 
+      (customer.contact_phone && customer.contact_phone.includes(searchParams.phone));
+    const typeMatch = !searchParams.type || customer.type === searchParams.type;
+    
+    return nameMatch && phoneMatch && typeMatch;
+  });
 }
 
-async function saveItem(){
-  const payload = {
-    customer_id: document.getElementById('f_customer_id').value,
-    name: document.getElementById('f_name').value,
-    type: document.getElementById('f_type').value,
-    contact_phone: document.getElementById('f_contact_phone').value
+// 显示客户列表
+function displayCustomers(customers) {
+  const tbody = document.getElementById('customerTableBody');
+  
+  if (!customers || customers.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">暂无客户数据</td></tr>';
+    return;
+  }
+  
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, customers.length);
+  const pageCustomers = customers.slice(startIndex, endIndex);
+  
+  tbody.innerHTML = pageCustomers.map(customer => `
+    <tr class="customer-card">
+      <td><strong>${customer.customer_id || '-'}</strong></td>
+      <td>${customer.name || '-'}</td>
+      <td>
+        <span class="badge bg-${customer.type === '企业' ? 'success' : 'primary'}">
+          ${customer.type || '-'}
+        </span>
+      </td>
+      <td>${customer.contact_phone || '-'}</td>
+      <td class="action-buttons">
+        <button class="btn btn-sm btn-outline-primary" onclick="viewCustomer('${customer.customer_id}')">
+          <i class="bi bi-eye"></i> 查看
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="editCustomer('${customer.customer_id}')">
+          <i class="bi bi-pencil"></i> 编辑
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteCustomer('${customer.customer_id}')">
+          <i class="bi bi-trash"></i> 删除
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  
+  // 更新分页
+  updatePagination(customers.length);
+}
+
+// 更新分页控件
+function updatePagination(totalCount) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const pagination = document.getElementById('pagination');
+  
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+  
+  let paginationHtml = '';
+  
+  // 上一页
+  if (currentPage > 1) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">上一页</a>
+      </li>
+    `;
+  }
+  
+  // 页码
+  for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+    paginationHtml += `
+      <li class="page-item ${i === currentPage ? 'active' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+      </li>
+    `;
+  }
+  
+  // 下一页
+  if (currentPage < totalPages) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">下一页</a>
+      </li>
+    `;
+  }
+  
+  pagination.innerHTML = paginationHtml;
+}
+
+// 分页切换
+function changePage(page) {
+  currentPage = page;
+  const searchParams = getSearchParams();
+  displayCustomers(filterCustomers(currentCustomers, searchParams));
+}
+
+// 获取搜索参数
+function getSearchParams() {
+  return {
+    name: document.getElementById('q_name').value.trim(),
+    phone: document.getElementById('q_phone').value.trim(),
+    type: document.getElementById('q_type').value
   };
-  const method = currentEditId ? 'PUT' : 'POST';
-  const url = currentEditId ? `${apiBase}/${currentEditId}` : apiBase;
-  await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-  location.reload();
 }
 
-async function editItem(id){
-  currentEditId = id;
-  const res = await fetch(`${apiBase}/${id}`);
-  const data = await res.json();
-  showModal('编辑客户', data);
+// 搜索功能
+function searchCustomers() {
+  const searchParams = getSearchParams();
+  const filteredCustomers = filterCustomers(currentCustomers, searchParams);
+  currentPage = 1;
+  displayCustomers(filteredCustomers);
 }
 
-async function deleteItem(id){
-  if(!confirm('确认删除?')) return;
-  await fetch(`${apiBase}/${id}`, {method:'DELETE'});
-  loadList();
+// 类型筛选
+function filterByType() {
+  const type = document.getElementById('typeFilter').value;
+  document.getElementById('q_type').value = type;
+  searchCustomers();
 }
 
-window.onload = loadList;
+// 清空搜索
+function clearSearch() {
+  document.getElementById('q_name').value = '';
+  document.getElementById('q_phone').value = '';
+  document.getElementById('q_type').value = '';
+  document.getElementById('typeFilter').value = '';
+  currentPage = 1;
+  displayCustomers(currentCustomers);
+}
+
+// 刷新数据
+function refreshData() {
+  loadCustomers();
+}
+
+// 显示加载状态
+function showLoading() {
+  document.getElementById('customerTableBody').innerHTML = `
+    <tr>
+      <td colspan="5" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">加载中...</span>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// 显示错误信息
+function showError(message) {
+  document.getElementById('customerTableBody').innerHTML = `
+    <tr>
+      <td colspan="5" class="text-center text-danger">
+        <i class="bi bi-exclamation-triangle"></i> ${message}
+      </td>
+    </tr>
+  `;
+}
+
+// 查看客户详情
+function viewCustomer(id) {
+  window.location.href = `/customer/form?id=${id}`;
+}
+
+// 编辑客户
+function editCustomer(id) {
+  window.location.href = `/customer/form?id=${id}`;
+}
+
+// 新增客户
+function openAddModal() {
+  window.location.href = '/customer/form';
+}
+
+// 删除客户
+async function deleteCustomer(id) {
+  if (!confirm('确定要删除这个客户吗？此操作不可恢复！')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${apiBase}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      alert('客户删除成功！');
+      loadCustomers();
+    } else {
+      const result = await response.json();
+      alert(`删除失败：${result.message || '未知错误'}`);
+    }
+  } catch (error) {
+    console.error('删除客户失败:', error);
+    alert('删除失败，请稍后重试');
+  }
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  loadCustomers();
+  
+  // 回车键搜索
+  document.getElementById('q_name').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchCustomers();
+  });
+  
+  document.getElementById('q_phone').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchCustomers();
+  });
+});
 </script>
 </body>
 </html>

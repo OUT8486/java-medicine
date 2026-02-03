@@ -42,6 +42,7 @@
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="/drug">药品</a></li>
+        <li class="nav-item"><a class="nav-link" href="/customer">客户</a></li>
         <li class="nav-item"><a class="nav-link" href="/inventory">库存</a></li>
         <li class="nav-item"><a class="nav-link" href="/purchase-order">采购</a></li>
         <li class="nav-item"><a class="nav-link" href="/sales-order">销售</a></li>
@@ -81,6 +82,7 @@
       <p class="lead">集中管理供应商、药品、库存与订单。快速进入下面的模块开始操作。</p>
       <div class="d-flex gap-2 flex-wrap">
         <a class="btn btn-light btn-sm" href="/drug"><i class="bi bi-pill me-1"></i> 药品管理</a>
+        <a class="btn btn-light btn-sm" href="/customer"><i class="bi bi-people me-1"></i> 客户管理</a>
         <a class="btn btn-light btn-sm" href="/inventory"><i class="bi bi-box-seam me-1"></i> 库存管理</a>
         <a class="btn btn-light btn-sm" href="/purchase-order"><i class="bi bi-cart-plus me-1"></i> 采购订单</a>
         <a class="btn btn-light btn-sm" href="/sales-order"><i class="bi bi-receipt me-1"></i> 销售订单</a>
@@ -106,6 +108,19 @@
       </a>
     </div>
     <div class="col-12 col-md-4">
+      <a class="module-link" href="/customer">
+        <div class="card quick-card p-3">
+          <div class="d-flex align-items-center">
+            <div class="me-3 fs-3 text-info"><i class="bi bi-person-lines-fill"></i></div>
+            <div>
+              <div class="fw-bold">客户管理</div>
+              <div class="text-muted small">管理客户信息与联系方式</div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
       <a class="module-link" href="/drug">
         <div class="card quick-card p-3">
           <div class="d-flex align-items-center">
@@ -118,6 +133,9 @@
         </div>
       </a>
     </div>
+  </div>
+
+  <div class="row mt-3 g-3">
     <div class="col-12 col-md-4">
       <a class="module-link" href="/inventory">
         <div class="card quick-card p-3">
@@ -131,9 +149,6 @@
         </div>
       </a>
     </div>
-  </div>
-
-  <div class="row mt-3 g-3">
     <div class="col-12 col-md-4">
       <a class="module-link" href="/purchase-order">
         <div class="card quick-card p-3">
@@ -160,6 +175,9 @@
         </div>
       </a>
     </div>
+  </div>
+
+  <div class="row mt-3 g-3">
     <div class="col-12 col-md-4">
       <a class="module-link" href="/warehouse">
         <div class="card quick-card p-3">
