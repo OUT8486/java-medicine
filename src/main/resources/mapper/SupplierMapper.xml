@@ -8,9 +8,8 @@
     <resultMap id="SupplierResultMap" type="com.example.spring_boot.entity.Supplier">
         <id property="supplier_id" column="supplier_id"/>
         <result property="name" column="name"/>
-        <result property="address" column="address"/>
-        <result property="phone" column="phone"/>
-        <result property="contact_person" column="contact_person"/>
+        <result property="contact_phone" column="contact_phone"/>
+        <result property="status" column="status"/>
     </resultMap>
 
     <!-- 新增供应商 -->
@@ -18,15 +17,13 @@
         INSERT INTO supplier (
             supplier_id,
             name,
-            address,
-            phone,
-            contact_person
+            contact_phone,
+            status
         ) VALUES (
             #{supplier_id},
             #{name},
-            #{address},
-            #{phone},
-            #{contact_person}
+            #{contact_phone},
+            #{status}
         )
     </insert>
 
@@ -35,9 +32,8 @@
         UPDATE supplier
         SET
             name = #{name},
-            address = #{address},
-            phone = #{phone},
-            contact_person = #{contact_person}
+            contact_phone = #{contact_phone},
+            status = #{status}
         WHERE supplier_id = #{supplier_id}
     </update>
 
@@ -49,14 +45,17 @@
 
     <!-- 根据ID查询供应商 -->
     <select id="selectSupplierById" resultMap="SupplierResultMap">
-        select * from supplier
-        where supplier_id = #{supplier_id}
+        SELECT * FROM supplier WHERE supplier_id = #{supplier_id}
     </select>
 
     <!-- 查询所有供应商 -->
     <select id="selectAllSuppliers" resultMap="SupplierResultMap">
-        select * from supplier
-        order by supplier_id
+        SELECT * FROM supplier ORDER BY supplier_id
+    </select>
+
+    <!-- 根据名称查询供应商 -->
+    <select id="selectSuppliersByName" resultMap="SupplierResultMap">
+        SELECT * FROM supplier WHERE name LIKE CONCAT('%', #{name}, '%')
     </select>
 
 </mapper>

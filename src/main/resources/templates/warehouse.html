@@ -58,9 +58,6 @@
       <div class="col-md-4">
         <input id="q_name" class="form-control" placeholder="仓库名称">
       </div>
-      <div class="col-md-4">
-        <input id="q_location" class="form-control" placeholder="仓库位置">
-      </div>
       <div class="col-md-4 d-flex gap-2">
         <button type="button" class="btn btn-outline-primary" onclick="searchWarehouses()">
           <i class="bi bi-search"></i> 搜索
@@ -79,16 +76,15 @@
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>仓库ID</th>
+              <th>仓库编号</th>
               <th>仓库名称</th>
               <th>位置</th>
-              <th>容量</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="warehouseTableBody">
             <tr>
-              <td colspan="5" class="text-center">
+              <td colspan="4" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">加载中...</span>
                 </div>
@@ -168,7 +164,7 @@ function displayWarehouses(warehouses) {
   const tbody = document.getElementById('warehouseTableBody');
   
   if (!warehouses || warehouses.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">暂无仓库数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">暂无仓库数据</td></tr>';
     return;
   }
   
@@ -181,7 +177,6 @@ function displayWarehouses(warehouses) {
       <td><strong>${warehouse.warehouse_id || '-'}</strong></td>
       <td>${warehouse.name || '-'}</td>
       <td>${warehouse.location || '-'}</td>
-      <td>${warehouse.capacity || '-'}</td>
       <td class="action-buttons">
         <button class="btn btn-sm btn-outline-primary" onclick="viewWarehouse('${warehouse.warehouse_id}')">
           <i class="bi bi-eye"></i> 查看
@@ -252,8 +247,7 @@ function changePage(page) {
 // 获取搜索参数
 function getSearchParams() {
   return {
-    name: document.getElementById('q_name').value.trim(),
-    location: document.getElementById('q_location').value.trim()
+    name: document.getElementById('q_name').value.trim()
   };
 }
 
@@ -353,9 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'Enter') searchWarehouses();
   });
   
-  document.getElementById('q_location').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') searchWarehouses();
-  });
 });
 </script>
 </body>

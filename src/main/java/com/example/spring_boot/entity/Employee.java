@@ -10,7 +10,5 @@ import lombok.NoArgsConstructor;
 public class Employee {
     private String employee_id;      // 员工编号
     private String name;             // 员工姓名
-    private String position;         // 职位
-    private String contact_phone;    // 联系电话
-    private Integer status;          // 在职状态（0离职/1在职）
+    private String post;             // 岗位（采购/销售/库管/审核等）
 }

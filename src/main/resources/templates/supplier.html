@@ -67,7 +67,7 @@
         <input id="q_name" class="form-control" placeholder="供应商名称">
       </div>
       <div class="col-md-3">
-        <input id="q_contact" class="form-control" placeholder="联系人">
+        <input id="q_contact" class="form-control" placeholder="联系电话">
       </div>
       <div class="col-md-3">
         <select id="q_status" class="form-select">
@@ -97,7 +97,6 @@
             <tr>
               <th>供应商ID</th>
               <th>供应商名称</th>
-              <th>联系人</th>
               <th>联系电话</th>
               <th>状态</th>
               <th>操作</th>
@@ -105,7 +104,7 @@
           </thead>
           <tbody id="supplierTableBody">
             <tr>
-              <td colspan="6" class="text-center">
+              <td colspan="5" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">加载中...</span>
                 </div>
@@ -174,8 +173,8 @@ function filterSuppliers(suppliers, searchParams) {
     const nameMatch = !searchParams.name || 
       (supplier.name && supplier.name.toLowerCase().includes(searchParams.name.toLowerCase()));
     const contactMatch = !searchParams.contact || 
-      (supplier.contact_person && supplier.contact_person.toLowerCase().includes(searchParams.contact.toLowerCase()));
-    const statusMatch = !searchParams.status || supplier.status === searchParams.status;
+      (supplier.contact_phone && supplier.contact_phone.includes(searchParams.contact));
+    const statusMatch = !searchParams.status || supplier.status == searchParams.status;
     
     return nameMatch && contactMatch && statusMatch;
   });
@@ -186,7 +185,7 @@ function displaySuppliers(suppliers) {
   const tbody = document.getElementById('supplierTableBody');
   
   if (!suppliers || suppliers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无供应商数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">暂无供应商数据</td></tr>';
     return;
   }
   
@@ -198,11 +197,10 @@ function displaySuppliers(suppliers) {
     <tr class="supplier-card">
       <td><strong>${supplier.supplier_id || '-'}</strong></td>
       <td>${supplier.name || '-'}</td>
-      <td>${supplier.contact_person || '-'}</td>
-      <td>${supplier.phone || '-'}</td>
+      <td>${supplier.contact_phone || '-'}</td>
       <td>
         <span class="badge bg-${getStatusBadgeClass(supplier.status)}">
-          ${supplier.status || '-'}
+          ${getStatusText(supplier.status)}
         </span>
       </td>
       <td class="action-buttons">
@@ -225,12 +223,22 @@ function displaySuppliers(suppliers) {
 
 // 获取状态对应的徽章样式
 function getStatusBadgeClass(status) {
+  const statusNum = parseInt(status);
   const statusClasses = {
-    '合作中': 'success',
-    '暂停合作': 'warning',
-    '终止合作': 'danger'
+    1: 'success',
+    0: 'danger'
   };
-  return statusClasses[status] || 'secondary';
+  return statusClasses[statusNum] || 'secondary';
+}
+
+// 获取状态文本
+function getStatusText(status) {
+  const statusNum = parseInt(status);
+  const statusTexts = {
+    1: '合作中',
+    0: '暂停合作'
+  };
+  return statusTexts[statusNum] || '未知状态';
 }
 
 // 更新分页控件
@@ -325,7 +333,7 @@ function refreshData() {
 function showLoading() {
   document.getElementById('supplierTableBody').innerHTML = `
     <tr>
-      <td colspan="6" class="text-center">
+      <td colspan="5" class="text-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">加载中...</span>
         </div>
@@ -338,7 +346,7 @@ function showLoading() {
 function showError(message) {
   document.getElementById('supplierTableBody').innerHTML = `
     <tr>
-      <td colspan="6" class="text-center text-danger">
+      <td colspan="5" class="text-center text-danger">
         <i class="bi bi-exclamation-triangle"></i> ${message}
       </td>
     </tr>

@@ -65,16 +65,16 @@
   <div class="card p-3 mb-4">
     <div class="row search-row g-2">
       <div class="col-md-3">
-        <input id="q_drug_name" class="form-control" placeholder="药品名称">
+        <input id="q_drug_id" class="form-control" placeholder="药品ID">
       </div>
       <div class="col-md-3">
         <input id="q_batch_no" class="form-control" placeholder="批号">
       </div>
       <div class="col-md-3">
-        <select id="q_warehouse" class="form-select">
-          <option value="">仓库</option>
-          <option value="1">一号仓库</option>
-          <option value="2">二号仓库</option>
+        <select id="q_warehouse_id" class="form-select">
+          <option value="">仓库ID</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
         </select>
       </div>
       <div class="col-md-3 d-flex gap-2">
@@ -96,18 +96,17 @@
           <thead class="table-light">
             <tr>
               <th>库存ID</th>
-              <th>药品名称</th>
+              <th>药品ID</th>
+              <th>仓库ID</th>
               <th>批号</th>
-              <th>仓库</th>
               <th>数量</th>
               <th>有效期</th>
-              <th>状态</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="inventoryTableBody">
             <tr>
-              <td colspan="8" class="text-center">
+              <td colspan="7" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">加载中...</span>
                 </div>
@@ -173,11 +172,11 @@ async function loadInventory(page = 1, searchParams = {}) {
 // 过滤库存数据
 function filterInventory(inventory, searchParams) {
   return inventory.filter(item => {
-    const drugMatch = !searchParams.drug_name || 
-      (item.drug_name && item.drug_name.toLowerCase().includes(searchParams.drug_name.toLowerCase()));
+    const drugMatch = !searchParams.drug_id || 
+      (item.drug_id && item.drug_id.toLowerCase().includes(searchParams.drug_id.toLowerCase()));
     const batchMatch = !searchParams.batch_no || 
       (item.batch_no && item.batch_no.includes(searchParams.batch_no));
-    const warehouseMatch = !searchParams.warehouse || item.warehouse_id == searchParams.warehouse;
+    const warehouseMatch = !searchParams.warehouse_id || item.warehouse_id == searchParams.warehouse_id;
     
     return drugMatch && batchMatch && warehouseMatch;
   });
@@ -188,7 +187,7 @@ function displayInventory(inventory) {
   const tbody = document.getElementById('inventoryTableBody');
   
   if (!inventory || inventory.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">暂无库存数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无库存数据</td></tr>';
     return;
   }
   
@@ -197,27 +196,21 @@ function displayInventory(inventory) {
   const pageInventory = inventory.slice(startIndex, endIndex);
   
   tbody.innerHTML = pageInventory.map(item => {
-    const stockStatus = getStockStatus(item.quantity);
-    const isLowStock = stockStatus === '缺货' || stockStatus === '预警';
+    const isLowStock = item.quantity <= 10;
     const rowClass = isLowStock ? 'low-stock' : '';
     
     return `
       <tr class="inventory-card ${rowClass}">
         <td><strong>${item.inventory_id || '-'}</strong></td>
-        <td>${item.drug_name || '-'}</td>
+        <td>${item.drug_id || '-'}</td>
+        <td>${item.warehouse_id || '-'}</td>
         <td>${item.batch_no || '-'}</td>
-        <td>${getWarehouseName(item.warehouse_id)}</td>
         <td>
           <span class="${isLowStock ? 'text-danger fw-bold' : ''}">
             ${item.quantity || '0'}
           </span>
         </td>
         <td>${item.validity_date ? formatDate(item.validity_date) : '-'}</td>
-        <td>
-          <span class="badge bg-${getStockBadgeClass(stockStatus)}">
-            ${stockStatus}
-          </span>
-        </td>
         <td class="action-buttons">
           <button class="btn btn-sm btn-outline-primary" onclick="viewInventory('${item.inventory_id}')">
             <i class="bi bi-eye"></i> 查看
@@ -322,9 +315,9 @@ function changePage(page) {
 // 获取搜索参数
 function getSearchParams() {
   return {
-    drug_name: document.getElementById('q_drug_name').value.trim(),
+    drug_id: document.getElementById('q_drug_id').value.trim(),
     batch_no: document.getElementById('q_batch_no').value.trim(),
-    warehouse: document.getElementById('q_warehouse').value
+    warehouse_id: document.getElementById('q_warehouse_id').value
   };
 }
 
@@ -344,9 +337,9 @@ function filterByStockLevel() {
 
 // 清空搜索
 function clearSearch() {
-  document.getElementById('q_drug_name').value = '';
+  document.getElementById('q_drug_id').value = '';
   document.getElementById('q_batch_no').value = '';
-  document.getElementById('q_warehouse').value = '';
+  document.getElementById('q_warehouse_id').value = '';
   document.getElementById('stockFilter').value = '';
   currentPage = 1;
   displayInventory(currentInventory);
@@ -429,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadInventory();
   
   // 回车键搜索
-  document.getElementById('q_drug_name').addEventListener('keypress', function(e) {
+  document.getElementById('q_drug_id').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') searchInventory();
   });
   

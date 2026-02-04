@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +59,6 @@ public class PurchaseOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> addPurchaseOrderItem(@RequestBody PurchaseOrderItem purchaseOrderItem) {
         try {
-            // 计算采购订单项小计
-            BigDecimal subtotal = purchaseOrderItem.getPrice().multiply(new BigDecimal(purchaseOrderItem.getQuantity()));
-            purchaseOrderItem.setSubtotal(subtotal);
-            
             int result = purchaseOrderItemMapper.insertPurchaseOrderItem(purchaseOrderItem);
             if (result > 0) {
                 Map<String, String> response = new HashMap<>();
@@ -86,12 +81,6 @@ public class PurchaseOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> batchAddPurchaseOrderItems(@RequestBody List<PurchaseOrderItem> items) {
         try {
-            // 计算每个订单项的小计
-            for (PurchaseOrderItem item : items) {
-                BigDecimal subtotal = item.getPrice().multiply(new BigDecimal(item.getQuantity()));
-                item.setSubtotal(subtotal);
-            }
-            
             int result = purchaseOrderItemMapper.batchInsertPurchaseOrderItems(items);
             if (result > 0) {
                 Map<String, String> response = new HashMap<>();
@@ -114,10 +103,6 @@ public class PurchaseOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> updatePurchaseOrderItem(@PathVariable String id, @RequestBody PurchaseOrderItem purchaseOrderItem) {
         try {
-            // 计算采购订单项小计
-            BigDecimal subtotal = purchaseOrderItem.getPrice().multiply(new BigDecimal(purchaseOrderItem.getQuantity()));
-            purchaseOrderItem.setSubtotal(subtotal);
-            
             purchaseOrderItem.setPoi_id(id);
             purchaseOrderItemMapper.updatePurchaseOrderItem(purchaseOrderItem);
             

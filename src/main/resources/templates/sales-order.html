@@ -68,21 +68,13 @@
   <!-- 搜索区域 -->
   <div class="card p-3 mb-4">
     <div class="row search-row g-2">
-      <div class="col-md-3">
-        <input id="q_customer" class="form-control" placeholder="客户名称">
+      <div class="col-md-4">
+        <input id="q_customer_id" class="form-control" placeholder="客户编号">
       </div>
-      <div class="col-md-3">
-        <input id="q_date" class="form-control" placeholder="销售日期" type="date">
+      <div class="col-md-4">
+        <input id="q_so_date" class="form-control" placeholder="销售日期" type="date">
       </div>
-      <div class="col-md-3">
-        <select id="q_status" class="form-select">
-          <option value="">订单状态</option>
-          <option value="待付款">待付款</option>
-          <option value="已付款">已付款</option>
-          <option value="已完成">已完成</option>
-        </select>
-      </div>
-      <div class="col-md-3 d-flex gap-2">
+      <div class="col-md-4 d-flex gap-2">
         <button type="button" class="btn btn-outline-primary" onclick="searchOrders()">
           <i class="bi bi-search"></i> 搜索
         </button>
@@ -100,18 +92,16 @@
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>订单ID</th>
-              <th>客户</th>
+              <th>订单编号</th>
+              <th>客户编号</th>
               <th>销售日期</th>
-              <th>销售员</th>
-              <th>总金额</th>
-              <th>状态</th>
+              <th>经办人编号</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="orderTableBody">
             <tr>
-              <td colspan="7" class="text-center">
+              <td colspan="5" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">加载中...</span>
                 </div>
@@ -177,13 +167,12 @@ async function loadOrders(page = 1, searchParams = {}) {
 // 过滤订单数据
 function filterOrders(orders, searchParams) {
   return orders.filter(order => {
-    const customerMatch = !searchParams.customer || 
-      (order.customer_name && order.customer_name.toLowerCase().includes(searchParams.customer.toLowerCase()));
-    const dateMatch = !searchParams.date || 
-      (order.so_date && order.so_date.includes(searchParams.date));
-    const statusMatch = !searchParams.status || order.payment_status === searchParams.status;
+    const customerIdMatch = !searchParams.customer_id || 
+      (order.customer_id && order.customer_id.toLowerCase().includes(searchParams.customer_id.toLowerCase()));
+    const dateMatch = !searchParams.so_date || 
+      (order.so_date && order.so_date.includes(searchParams.so_date));
     
-    return customerMatch && dateMatch && statusMatch;
+    return customerIdMatch && dateMatch;
   });
 }
 
@@ -192,7 +181,7 @@ function displayOrders(orders) {
   const tbody = document.getElementById('orderTableBody');
   
   if (!orders || orders.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无订单数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">暂无订单数据</td></tr>';
     return;
   }
   
@@ -203,24 +192,15 @@ function displayOrders(orders) {
   tbody.innerHTML = pageOrders.map(order => `
     <tr class="sales-card">
       <td><strong>${order.so_id || '-'}</strong></td>
-      <td>${order.customer_name || order.customer_id || '-'}</td>
-      <td>${order.so_date ? formatDate(order.so_date) : '-'}</td>
-      <td>${order.employee_name || order.employee_id || '-'}</td>
-      <td>¥${(order.total_amount || 0).toFixed(2)}</td>
-      <td>
-        <span class="badge bg-${getStatusBadgeClass(order.payment_status)}">
-          ${getStatusText(order.payment_status)}
-        </span>
-      </td>
+      <td>${order.customer_id || '-'}</td>
+      <td>${order.so_date || '-'}</td>
+      <td>${order.employee_id || '-'}</td>
       <td class="action-buttons">
         <button class="btn btn-sm btn-outline-primary" onclick="viewOrder('${order.so_id}')">
           <i class="bi bi-eye"></i> 查看
         </button>
         <button class="btn btn-sm btn-outline-secondary" onclick="editOrder('${order.so_id}')">
           <i class="bi bi-pencil"></i> 编辑
-        </button>
-        <button class="btn btn-sm btn-outline-info" onclick="viewOrderItems('${order.so_id}')">
-          <i class="bi bi-list"></i> 明细
         </button>
         <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${order.so_id}')">
           <i class="bi bi-trash"></i> 删除
@@ -318,9 +298,8 @@ function changePage(page) {
 // 获取搜索参数
 function getSearchParams() {
   return {
-    customer: document.getElementById('q_customer').value.trim(),
-    date: document.getElementById('q_date').value,
-    status: document.getElementById('q_status').value
+    customer_id: document.getElementById('q_customer_id').value.trim(),
+    so_date: document.getElementById('q_so_date').value
   };
 }
 
@@ -332,19 +311,10 @@ function searchOrders() {
   displayOrders(filteredOrders);
 }
 
-// 状态筛选
-function filterByStatus() {
-  const status = document.getElementById('statusFilter').value;
-  document.getElementById('q_status').value = status;
-  searchOrders();
-}
-
 // 清空搜索
 function clearSearch() {
-  document.getElementById('q_customer').value = '';
-  document.getElementById('q_date').value = '';
-  document.getElementById('q_status').value = '';
-  document.getElementById('statusFilter').value = '';
+  document.getElementById('q_customer_id').value = '';
+  document.getElementById('q_so_date').value = '';
   currentPage = 1;
   displayOrders(currentOrders);
 }
@@ -358,7 +328,7 @@ function refreshData() {
 function showLoading() {
   document.getElementById('orderTableBody').innerHTML = `
     <tr>
-      <td colspan="7" class="text-center">
+      <td colspan="5" class="text-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">加载中...</span>
         </div>
@@ -371,7 +341,7 @@ function showLoading() {
 function showError(message) {
   document.getElementById('orderTableBody').innerHTML = `
     <tr>
-      <td colspan="7" class="text-center text-danger">
+      <td colspan="5" class="text-center text-danger">
         <i class="bi bi-exclamation-triangle"></i> ${message}
       </td>
     </tr>
@@ -430,7 +400,11 @@ document.addEventListener('DOMContentLoaded', function() {
   loadOrders();
   
   // 回车键搜索
-  document.getElementById('q_customer').addEventListener('keypress', function(e) {
+  document.getElementById('q_customer_id').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchOrders();
+  });
+  
+  document.getElementById('q_so_date').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') searchOrders();
   });
 });

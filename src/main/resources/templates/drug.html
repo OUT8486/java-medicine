@@ -28,7 +28,7 @@
   <div class="row mb-4">
     <div class="col-md-8">
       <h2><i class="bi bi-capsule"></i> 药品管理</h2>
-      <p class="text-muted">管理药店的药品信息，包括药品基本信息和库存情况</p>
+      <p class="text-muted">管理药店的药品信息，包括药品基本信息和价格管理</p>
     </div>
     <div class="col-md-4">
       <div class="card stats-card h-100">
@@ -50,31 +50,25 @@
         <i class="bi bi-arrow-clockwise"></i> 刷新
       </button>
     </div>
-    <div class="d-flex gap-2">
-      <select id="categoryFilter" class="form-select" style="width: auto;" onchange="filterByCategory()">
-        <option value="">全部分类</option>
-        <option value="处方药">处方药</option>
-        <option value="非处方药">非处方药</option>
-        <option value="保健品">保健品</option>
-      </select>
-    </div>
   </div>
 
   <!-- 搜索区域 -->
   <div class="card p-3 mb-4">
     <div class="row search-row g-2">
       <div class="col-md-3">
-        <input id="q_name" class="form-control" placeholder="药品通用名">
+        <input id="q_generic_name" class="form-control" placeholder="药品通用名">
       </div>
       <div class="col-md-3">
-        <input id="q_brand" class="form-control" placeholder="品牌名称">
+        <input id="q_approval_no" class="form-control" placeholder="批准文号">
       </div>
       <div class="col-md-3">
-        <select id="q_category" class="form-select">
-          <option value="">药品分类</option>
-          <option value="处方药">处方药</option>
-          <option value="非处方药">非处方药</option>
-          <option value="保健品">保健品</option>
+        <select id="q_dosage_form" class="form-select">
+          <option value="">剂型</option>
+          <option value="片剂">片剂</option>
+          <option value="胶囊">胶囊</option>
+          <option value="注射液">注射液</option>
+          <option value="颗粒剂">颗粒剂</option>
+          <option value="口服液">口服液</option>
         </select>
       </div>
       <div class="col-md-3 d-flex gap-2">
@@ -95,17 +89,20 @@
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>药品ID</th>
+              <th>药品编号</th>
               <th>通用名</th>
-              <th>品牌名</th>
-              <th>分类</th>
+              <th>批准文号</th>
+              <th>剂型</th>
               <th>规格</th>
+              <th>单位</th>
+              <th>采购价</th>
+              <th>零售价</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="drugTableBody">
             <tr>
-              <td colspan="6" class="text-center">
+              <td colspan="9" class="text-center">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">加载中...</span>
                 </div>
@@ -171,14 +168,13 @@ async function loadDrugs(page = 1, searchParams = {}) {
 // 过滤药品数据
 function filterDrugs(drugs, searchParams) {
   return drugs.filter(drug => {
-    const nameMatch = !searchParams.name || 
-      (drug.generic_name && drug.generic_name.toLowerCase().includes(searchParams.name.toLowerCase())) ||
-      (drug.brand_name && drug.brand_name.toLowerCase().includes(searchParams.name.toLowerCase()));
-    const brandMatch = !searchParams.brand || 
-      (drug.brand_name && drug.brand_name.toLowerCase().includes(searchParams.brand.toLowerCase()));
-    const categoryMatch = !searchParams.category || drug.category === searchParams.category;
+    const genericNameMatch = !searchParams.generic_name || 
+      (drug.generic_name && drug.generic_name.toLowerCase().includes(searchParams.generic_name.toLowerCase()));
+    const approvalNoMatch = !searchParams.approval_no || 
+      (drug.approval_no && drug.approval_no.toLowerCase().includes(searchParams.approval_no.toLowerCase()));
+    const dosageFormMatch = !searchParams.dosage_form || drug.dosage_form === searchParams.dosage_form;
     
-    return nameMatch && brandMatch && categoryMatch;
+    return genericNameMatch && approvalNoMatch && dosageFormMatch;
   });
 }
 
@@ -187,7 +183,7 @@ function displayDrugs(drugs) {
   const tbody = document.getElementById('drugTableBody');
   
   if (!drugs || drugs.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无药品数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">暂无药品数据</td></tr>';
     return;
   }
   
@@ -199,13 +195,12 @@ function displayDrugs(drugs) {
     <tr class="drug-card">
       <td><strong>${drug.drug_id || '-'}</strong></td>
       <td>${drug.generic_name || '-'}</td>
-      <td>${drug.brand_name || '-'}</td>
-      <td>
-        <span class="badge bg-${drug.category === '处方药' ? 'danger' : drug.category === '保健品' ? 'info' : 'success'}">
-          ${drug.category || '-'}
-        </span>
-      </td>
+      <td>${drug.approval_no || '-'}</td>
+      <td>${drug.dosage_form || '-'}</td>
       <td>${drug.specification || '-'}</td>
+      <td>${drug.unit || '-'}</td>
+      <td>¥${drug.purchase_price ? drug.purchase_price.toFixed(2) : '-'}</td>
+      <td>¥${drug.retail_price ? drug.retail_price.toFixed(2) : '-'}</td>
       <td class="action-buttons">
         <button class="btn btn-sm btn-outline-primary" onclick="viewDrug('${drug.drug_id}')">
           <i class="bi bi-eye"></i> 查看
@@ -276,9 +271,9 @@ function changePage(page) {
 // 获取搜索参数
 function getSearchParams() {
   return {
-    name: document.getElementById('q_name').value.trim(),
-    brand: document.getElementById('q_brand').value.trim(),
-    category: document.getElementById('q_category').value
+    generic_name: document.getElementById('q_generic_name').value.trim(),
+    approval_no: document.getElementById('q_approval_no').value.trim(),
+    dosage_form: document.getElementById('q_dosage_form').value
   };
 }
 
@@ -290,19 +285,11 @@ function searchDrugs() {
   displayDrugs(filteredDrugs);
 }
 
-// 分类筛选
-function filterByCategory() {
-  const category = document.getElementById('categoryFilter').value;
-  document.getElementById('q_category').value = category;
-  searchDrugs();
-}
-
 // 清空搜索
 function clearSearch() {
-  document.getElementById('q_name').value = '';
-  document.getElementById('q_brand').value = '';
-  document.getElementById('q_category').value = '';
-  document.getElementById('categoryFilter').value = '';
+  document.getElementById('q_generic_name').value = '';
+  document.getElementById('q_approval_no').value = '';
+  document.getElementById('q_dosage_form').value = '';
   currentPage = 1;
   displayDrugs(currentDrugs);
 }
@@ -316,7 +303,7 @@ function refreshData() {
 function showLoading() {
   document.getElementById('drugTableBody').innerHTML = `
     <tr>
-      <td colspan="6" class="text-center">
+      <td colspan="9" class="text-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">加载中...</span>
         </div>
@@ -329,7 +316,7 @@ function showLoading() {
 function showError(message) {
   document.getElementById('drugTableBody').innerHTML = `
     <tr>
-      <td colspan="6" class="text-center text-danger">
+      <td colspan="9" class="text-center text-danger">
         <i class="bi bi-exclamation-triangle"></i> ${message}
       </td>
     </tr>
@@ -383,11 +370,11 @@ document.addEventListener('DOMContentLoaded', function() {
   loadDrugs();
   
   // 回车键搜索
-  document.getElementById('q_name').addEventListener('keypress', function(e) {
+  document.getElementById('q_generic_name').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') searchDrugs();
   });
   
-  document.getElementById('q_brand').addEventListener('keypress', function(e) {
+  document.getElementById('q_approval_no').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') searchDrugs();
   });
 });

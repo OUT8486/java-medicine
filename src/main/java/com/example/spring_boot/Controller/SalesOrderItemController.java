@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +67,6 @@ public class SalesOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> addSalesOrderItem(@RequestBody SalesOrderItem salesOrderItem) {
         try {
-            // 计算销售订单项小计
-            BigDecimal subtotal = salesOrderItem.getPrice().multiply(new BigDecimal(salesOrderItem.getQuantity()));
-            salesOrderItem.setSubtotal(subtotal);
-            
             int result = salesOrderItemMapper.insertSalesOrderItem(salesOrderItem);
             if (result > 0) {
                 Map<String, String> response = new HashMap<>();
@@ -94,12 +89,6 @@ public class SalesOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> batchAddSalesOrderItems(@RequestBody List<SalesOrderItem> items) {
         try {
-            // 计算每个订单项的小计
-            for (SalesOrderItem item : items) {
-                BigDecimal subtotal = item.getPrice().multiply(new BigDecimal(item.getQuantity()));
-                item.setSubtotal(subtotal);
-            }
-            
             int result = salesOrderItemMapper.batchInsertSalesOrderItems(items);
             if (result > 0) {
                 Map<String, String> response = new HashMap<>();
@@ -122,11 +111,9 @@ public class SalesOrderItemController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> updateSalesOrderItem(@PathVariable String id, @RequestBody SalesOrderItem salesOrderItem) {
         try {
-            // 计算销售订单项小计
-            BigDecimal subtotal = salesOrderItem.getPrice().multiply(new BigDecimal(salesOrderItem.getQuantity()));
-            salesOrderItem.setSubtotal(subtotal);
-            
+            // 设置ID并确保subtotal是基于单价和数量计算的，而不是直接设置
             salesOrderItem.setSoi_id(id);
+            // 如果实体中有subtotal字段，应该在数据库层面或mapper中通过unit_price * quantity计算
             salesOrderItemMapper.updateSalesOrderItem(salesOrderItem);
             
             Map<String, String> response = new HashMap<>();

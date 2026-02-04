@@ -11,7 +11,6 @@
         <result property="drug_id" column="drug_id"/>
         <result property="quantity" column="quantity"/>
         <result property="price" column="price"/>
-        <result property="subtotal" column="subtotal"/>
     </resultMap>
 
     <!-- 新增采购订单明细 -->
@@ -21,15 +20,13 @@
             po_id,
             drug_id,
             quantity,
-            price,
-            subtotal
+            price
         ) VALUES (
             #{poi_id},
             #{po_id},
             #{drug_id},
             #{quantity},
-            #{price},
-            #{subtotal}
+            #{price}
         )
     </insert>
 
@@ -40,8 +37,7 @@
             po_id = #{po_id},
             drug_id = #{drug_id},
             quantity = #{quantity},
-            price = #{price},
-            subtotal = #{subtotal}
+            price = #{price}
         WHERE poi_id = #{poi_id}
     </update>
 
@@ -77,26 +73,13 @@
         order by poi_id
     </select>
 
-    <!-- 更新采购订单项小计 -->
-    <update id="updateSubtotal">
-        UPDATE purchaseorderitem
-        SET subtotal = #{subtotal}
-        WHERE poi_id = #{poi_id}
-    </update>
-
     <!-- 批量添加采购订单项 -->
     <insert id="batchInsertPurchaseOrderItems" parameterType="java.util.List">
-        INSERT INTO purchaseorderitem (poi_id, po_id, drug_id, quantity, price, subtotal)
+        INSERT INTO purchaseorderitem (poi_id, po_id, drug_id, quantity, price)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.poi_id}, #{item.po_id}, #{item.drug_id}, #{item.quantity}, #{item.price}, #{item.subtotal})
+            (#{item.poi_id}, #{item.po_id}, #{item.drug_id}, #{item.quantity}, #{item.price})
         </foreach>
     </insert>
-
-    <!-- 根据采购订单ID删除所有订单项 -->
-    <delete id="deletePurchaseOrderItemsByPoId">
-        DELETE FROM purchaseorderitem
-        WHERE po_id = #{po_id}
-    </delete>
 
 </mapper>

@@ -6,62 +6,73 @@
 
     <!-- 销售订单明细结果映射 -->
     <resultMap id="SalesOrderItemResultMap" type="com.example.spring_boot.entity.SalesOrderItem">
-        <id property="item_id" column="item_id"/>
-        <result property="order_id" column="order_id"/>
+        <id property="soi_id" column="soi_id"/>
+        <result property="so_id" column="so_id"/>
         <result property="drug_id" column="drug_id"/>
         <result property="quantity" column="quantity"/>
-        <result property="unit_price" column="unit_price"/>
-        <result property="total_price" column="total_price"/>
+        <result property="price" column="price"/>
+        <result property="batch_no" column="batch_no"/>
     </resultMap>
 
     <!-- 新增销售订单明细 -->
     <insert id="insertSalesOrderItem" parameterType="com.example.spring_boot.entity.SalesOrderItem">
-        INSERT INTO sales_order_item (
-            item_id,
-            order_id,
+        INSERT INTO salesorderitem (
+            soi_id,
+            so_id,
             drug_id,
             quantity,
-            unit_price,
-            total_price
+            price,
+            batch_no
         ) VALUES (
-            #{item_id},
-            #{order_id},
+            #{soi_id},
+            #{so_id},
             #{drug_id},
             #{quantity},
-            #{unit_price},
-            #{total_price}
+            #{price},
+            #{batch_no}
         )
     </insert>
 
     <!-- 修改销售订单明细 -->
     <update id="updateSalesOrderItem" parameterType="com.example.spring_boot.entity.SalesOrderItem">
-        UPDATE sales_order_item
+        UPDATE salesorderitem
         SET
-            order_id = #{order_id},
+            so_id = #{so_id},
             drug_id = #{drug_id},
             quantity = #{quantity},
-            unit_price = #{unit_price},
-            total_price = #{total_price}
-        WHERE item_id = #{item_id}
+            price = #{price},
+            batch_no = #{batch_no}
+        WHERE soi_id = #{soi_id}
     </update>
 
     <!-- 删除销售订单明细 -->
     <delete id="deleteSalesOrderItem">
-        DELETE FROM sales_order_item
-        WHERE item_id = #{item_id}
+        DELETE FROM salesorderitem
+        WHERE soi_id = #{soi_id}
     </delete>
 
     <!-- 根据ID查询销售订单明细 -->
     <select id="selectSalesOrderItemById" resultMap="SalesOrderItemResultMap">
-        select * from sales_order_item
-        where item_id = #{item_id}
+        select * from salesorderitem
+        where soi_id = #{soi_id}
     </select>
 
-    <!-- 根据订单ID查询所有明细 -->
-    <select id="selectSalesOrderItemsByOrderId" resultMap="SalesOrderItemResultMap">
-        select * from sales_order_item
-        where order_id = #{order_id}
-        order by item_id
+    <!-- 查询所有销售订单明细 -->
+    <select id="selectAllSalesOrderItems" resultMap="SalesOrderItemResultMap">
+        select * from salesorderitem
+        order by soi_id
+    </select>
+
+    <!-- 根据销售订单ID查询明细 -->
+    <select id="selectSalesOrderItemsBySoId" resultMap="SalesOrderItemResultMap">
+        select * from salesorderitem
+        where so_id = #{so_id}
+    </select>
+
+    <!-- 根据药品ID查询销售明细 -->
+    <select id="selectSalesOrderItemsByDrugId" resultMap="SalesOrderItemResultMap">
+        select * from salesorderitem
+        where drug_id = #{drug_id}
     </select>
 
 </mapper>

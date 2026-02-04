@@ -133,9 +133,9 @@ public class EmployeeController {
             r.put("message", "name 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
-        if (employee.getPosition() == null || employee.getPosition().trim().isEmpty()) {
+        if (employee.getPost() == null || employee.getPost().trim().isEmpty()) {
             Map<String, String> r = new HashMap<>(); 
-            r.put("message", "position 不能为空");
+            r.put("message", "post 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
 
@@ -172,9 +172,9 @@ public class EmployeeController {
             r.put("message", "name 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
-        if (employee.getPosition() == null || employee.getPosition().trim().isEmpty()) {
+        if (employee.getPost() == null || employee.getPost().trim().isEmpty()) {
             Map<String, String> r = new HashMap<>(); 
-            r.put("message", "position 不能为空");
+            r.put("message", "post 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
 

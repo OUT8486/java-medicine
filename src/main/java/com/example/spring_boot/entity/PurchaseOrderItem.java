@@ -9,11 +9,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchaseOrderItem {
-    private String poi_id;           // 采购明细ID
-    private String po_id;            // 采购订单ID
-    private String drug_id;          // 药品ID
+    private String poi_id;           // 采购订单项编号
+    private String po_id;            // 采购订单编号
+    private String drug_id;          // 药品编号
     private Integer quantity;        // 采购数量
-    private BigDecimal price;        // 单价
-    private BigDecimal subtotal;     // 小计
-    
+    private BigDecimal price;        // 采购单价
 }

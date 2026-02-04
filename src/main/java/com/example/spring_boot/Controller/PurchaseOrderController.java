@@ -30,6 +30,18 @@ public class PurchaseOrderController {
         return "purchase-order";
     }
 
+    // 简化版采购订单页面
+    @GetMapping("/purchase-simple")
+    public String purchaseSimplePage() {
+        return "purchase-simple";
+    }
+
+    // 调试页面路由
+    @GetMapping("/debug-purchase")
+    public String debugPurchasePage() {
+        return "debug-purchase";
+    }
+
     // 2. 接口：获取所有采购订单数据
     @GetMapping("/purchase-order/list")
     @ResponseBody
