@@ -1,133 +1,396 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>药品管理</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .navbar-brand { font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>药品管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .search-row .col {padding-right:8px;}
+    .drug-card { border-left: 4px solid #198754; }
+    .stats-card { background: linear-gradient(135deg, #20c997 0%, #0f5132 100%); color: white; }
+    .action-buttons .btn { margin: 0 2px; }
+  </style>
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/index"><i class="bi bi-hospital"></i> 药店管理系统</a>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/index"><i class="bi bi-hospital"></i> 药店管理系统</a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/index"><i class="bi bi-house"></i> 返回首页</a>
     </div>
+  </div>
 </nav>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>药品管理</h2>
-        <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus"></i> 新增药品</button>
+  <!-- 页面标题和统计 -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2><i class="bi bi-capsule"></i> 药品管理</h2>
+      <p class="text-muted">管理药店的药品信息，包括药品基本信息和库存情况</p>
     </div>
-
-    <div class="card p-3 mb-4">
-        <div class="row g-2">
-            <div class="col-md-4"><input id="q_name" class="form-control" placeholder="通用名"></div>
-            <div class="col-md-4"><input id="q_manufacturer" class="form-control" placeholder="厂家ID"></div>
-            <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-outline-primary" onclick="loadList()">搜索</button><button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">重置</button></div>
+    <div class="col-md-4">
+      <div class="card stats-card h-100">
+        <div class="card-body text-center">
+          <h5>药品总数</h5>
+          <h2 id="totalDrugs">0</h2>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div id="tableWrap"></div>
+  <!-- 操作按钮 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="bi bi-plus-circle"></i> 新增药品
+      </button>
+      <button class="btn btn-outline-secondary" onclick="refreshData()">
+        <i class="bi bi-arrow-clockwise"></i> 刷新
+      </button>
+    </div>
+    <div class="d-flex gap-2">
+      <select id="categoryFilter" class="form-select" style="width: auto;" onchange="filterByCategory()">
+        <option value="">全部分类</option>
+        <option value="处方药">处方药</option>
+        <option value="非处方药">非处方药</option>
+        <option value="保健品">保健品</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 搜索区域 -->
+  <div class="card p-3 mb-4">
+    <div class="row search-row g-2">
+      <div class="col-md-3">
+        <input id="q_name" class="form-control" placeholder="药品通用名">
+      </div>
+      <div class="col-md-3">
+        <input id="q_brand" class="form-control" placeholder="品牌名称">
+      </div>
+      <div class="col-md-3">
+        <select id="q_category" class="form-select">
+          <option value="">药品分类</option>
+          <option value="处方药">处方药</option>
+          <option value="非处方药">非处方药</option>
+          <option value="保健品">保健品</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary" onclick="searchDrugs()">
+          <i class="bi bi-search"></i> 搜索
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">
+          <i class="bi bi-x-circle"></i> 重置
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 药品列表 -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>药品ID</th>
+              <th>通用名</th>
+              <th>品牌名</th>
+              <th>分类</th>
+              <th>规格</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="drugTableBody">
+            <tr>
+              <td colspan="6" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">加载中...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 分页 -->
+      <nav aria-label="药品列表分页">
+        <ul class="pagination justify-content-center" id="pagination">
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const apiBase = '/drug';
-let currentEditId = null;
+let currentDrugs = [];
+let currentPage = 1;
+const pageSize = 10;
 
-async function loadList(){
-    const wrap = document.getElementById('tableWrap'); wrap.innerHTML = '<div class="text-center">加载中...</div>';
-    const nameTerm = (document.getElementById('q_name').value||'').toString().trim().toLowerCase();
-    const manuTerm = (document.getElementById('q_manufacturer').value||'').toString().trim().toLowerCase();
-    try{
-        const res = await fetch(apiBase + '/list');
-        const d = await res.json();
-        const items = Array.isArray(d)?d:(d.items||d.list||[]);
-        const filtered = items.filter(it=>{
-            if(nameTerm){
-                const s = (it.generic_name||'').toString().toLowerCase();
-                if(!s.includes(nameTerm)) return false;
-            }
-            if(manuTerm){
-                const mid = (it.manufacturer_id||'').toString().toLowerCase();
-                if(mid !== manuTerm) return false;
-            }
-            return true;
-        });
-        displayItems(filtered);
-    }catch(e){ console.error(e); wrap.innerHTML = '<div class="text-danger">加载失败</div>'; }
-}
-
-function displayItems(items){
-    const wrap = document.getElementById('tableWrap');
-    let html = `<table class="table table-striped"><thead><tr><th>ID</th><th>通用名</th><th>批准文号</th><th>剂型</th><th>规格</th><th>单位</th><th>采购价</th><th>零售价</th><th>厂家ID</th><th>操作</th></tr></thead><tbody>`;
-    for(const it of items){
-        html += `<tr><td>${it.drug_id||''}</td><td>${it.generic_name||''}</td><td>${it.approval_no||''}</td><td>${it.dosage_form||''}</td><td>${it.specification||''}</td><td>${it.unit||''}</td><td>${it.purchase_price||''}</td><td>${it.retail_price||''}</td><td>${it.manufacturer_id||''}</td><td><button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.drug_id}')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${it.drug_id}')">删除</button></td></tr>`;
+// 加载药品列表
+async function loadDrugs(page = 1, searchParams = {}) {
+  try {
+    showLoading();
+    
+    let url = `${apiBase}/list`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // 处理不同的响应格式
+    let drugs = [];
+    if (Array.isArray(data)) {
+      drugs = data;
+    } else if (data && data.drugs) {
+      drugs = data.drugs;
+    } else if (data && Array.isArray(data.list)) {
+      drugs = data.list;
     }
-    html += `</tbody></table>`;
-    wrap.innerHTML = html;
+    
+    currentDrugs = drugs;
+    currentPage = page;
+    
+    // 应用搜索过滤
+    const filteredDrugs = filterDrugs(drugs, searchParams);
+    
+    // 更新统计数据
+    document.getElementById('totalDrugs').textContent = drugs.length;
+    
+    // 显示数据
+    displayDrugs(filteredDrugs);
+    
+  } catch (error) {
+    console.error('加载药品列表失败:', error);
+    showError('加载药品列表失败，请刷新重试');
+  }
 }
 
-function clearSearch(){ document.getElementById('q_name').value=''; document.getElementById('q_manufacturer').value=''; loadList(); }
+// 过滤药品数据
+function filterDrugs(drugs, searchParams) {
+  return drugs.filter(drug => {
+    const nameMatch = !searchParams.name || 
+      (drug.generic_name && drug.generic_name.toLowerCase().includes(searchParams.name.toLowerCase())) ||
+      (drug.brand_name && drug.brand_name.toLowerCase().includes(searchParams.name.toLowerCase()));
+    const brandMatch = !searchParams.brand || 
+      (drug.brand_name && drug.brand_name.toLowerCase().includes(searchParams.brand.toLowerCase()));
+    const categoryMatch = !searchParams.category || drug.category === searchParams.category;
+    
+    return nameMatch && brandMatch && categoryMatch;
+  });
+}
 
-function openAddModal(){ currentEditId = null; showModal('新增药品', {}); }
+// 显示药品列表
+function displayDrugs(drugs) {
+  const tbody = document.getElementById('drugTableBody');
+  
+  if (!drugs || drugs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无药品数据</td></tr>';
+    return;
+  }
+  
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, drugs.length);
+  const pageDrugs = drugs.slice(startIndex, endIndex);
+  
+  tbody.innerHTML = pageDrugs.map(drug => `
+    <tr class="drug-card">
+      <td><strong>${drug.drug_id || '-'}</strong></td>
+      <td>${drug.generic_name || '-'}</td>
+      <td>${drug.brand_name || '-'}</td>
+      <td>
+        <span class="badge bg-${drug.category === '处方药' ? 'danger' : drug.category === '保健品' ? 'info' : 'success'}">
+          ${drug.category || '-'}
+        </span>
+      </td>
+      <td>${drug.specification || '-'}</td>
+      <td class="action-buttons">
+        <button class="btn btn-sm btn-outline-primary" onclick="viewDrug('${drug.drug_id}')">
+          <i class="bi bi-eye"></i> 查看
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="editDrug('${drug.drug_id}')">
+          <i class="bi bi-pencil"></i> 编辑
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteDrug('${drug.drug_id}')">
+          <i class="bi bi-trash"></i> 删除
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  
+  // 更新分页
+  updatePagination(drugs.length);
+}
 
-function showModal(title, data){
-    const modalId = 'entityModal';
-    const inputs = `
-        <div class="mb-2"><input id="f_drug_id" class="form-control" placeholder="药品ID" value="${data.drug_id||''}"></div>
-        <div class="mb-2"><input id="f_generic_name" class="form-control" placeholder="通用名" value="${data.generic_name||''}"></div>
-        <div class="mb-2"><input id="f_approval_no" class="form-control" placeholder="批准文号" value="${data.approval_no||''}"></div>
-        <div class="mb-2"><input id="f_dosage_form" class="form-control" placeholder="剂型" value="${data.dosage_form||''}"></div>
-        <div class="mb-2"><input id="f_specification" class="form-control" placeholder="规格" value="${data.specification||''}"></div>
-        <div class="mb-2"><input id="f_unit" class="form-control" placeholder="单位" value="${data.unit||''}"></div>
-        <div class="mb-2"><input id="f_purchase_price" class="form-control" placeholder="采购价" value="${data.purchase_price||''}"></div>
-        <div class="mb-2"><input id="f_retail_price" class="form-control" placeholder="零售价" value="${data.retail_price||''}"></div>
-        <div class="mb-2"><input id="f_manufacturer_id" class="form-control" placeholder="厂家ID" value="${data.manufacturer_id||''}"></div>
+// 更新分页控件
+function updatePagination(totalCount) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const pagination = document.getElementById('pagination');
+  
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+  
+  let paginationHtml = '';
+  
+  // 上一页
+  if (currentPage > 1) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">上一页</a>
+      </li>
     `;
-    const html = `
-    <div class="modal" tabindex="-1" id="${modalId}">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">${inputs}</div>
-                <div class="modal-footer"><button class="btn btn-primary" onclick="saveItem()">保存</button></div>
-            </div>
+  }
+  
+  // 页码
+  for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+    paginationHtml += `
+      <li class="page-item ${i === currentPage ? 'active' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+      </li>
+    `;
+  }
+  
+  // 下一页
+  if (currentPage < totalPages) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">下一页</a>
+      </li>
+    `;
+  }
+  
+  pagination.innerHTML = paginationHtml;
+}
+
+// 分页切换
+function changePage(page) {
+  currentPage = page;
+  const searchParams = getSearchParams();
+  displayDrugs(filterDrugs(currentDrugs, searchParams));
+}
+
+// 获取搜索参数
+function getSearchParams() {
+  return {
+    name: document.getElementById('q_name').value.trim(),
+    brand: document.getElementById('q_brand').value.trim(),
+    category: document.getElementById('q_category').value
+  };
+}
+
+// 搜索功能
+function searchDrugs() {
+  const searchParams = getSearchParams();
+  const filteredDrugs = filterDrugs(currentDrugs, searchParams);
+  currentPage = 1;
+  displayDrugs(filteredDrugs);
+}
+
+// 分类筛选
+function filterByCategory() {
+  const category = document.getElementById('categoryFilter').value;
+  document.getElementById('q_category').value = category;
+  searchDrugs();
+}
+
+// 清空搜索
+function clearSearch() {
+  document.getElementById('q_name').value = '';
+  document.getElementById('q_brand').value = '';
+  document.getElementById('q_category').value = '';
+  document.getElementById('categoryFilter').value = '';
+  currentPage = 1;
+  displayDrugs(currentDrugs);
+}
+
+// 刷新数据
+function refreshData() {
+  loadDrugs();
+}
+
+// 显示加载状态
+function showLoading() {
+  document.getElementById('drugTableBody').innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">加载中...</span>
         </div>
-    </div>`;
-    document.body.insertAdjacentHTML('beforeend', html);
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
-    modal.show();
-    document.getElementById(modalId).addEventListener('hidden.bs.modal', ()=> document.getElementById(modalId).remove());
+      </td>
+    </tr>
+  `;
 }
 
-async function saveItem(){
-    const payload = {
-        drug_id: document.getElementById('f_drug_id').value,
-        generic_name: document.getElementById('f_generic_name').value,
-        approval_no: document.getElementById('f_approval_no').value,
-        dosage_form: document.getElementById('f_dosage_form').value,
-        specification: document.getElementById('f_specification').value,
-        unit: document.getElementById('f_unit').value,
-        purchase_price: document.getElementById('f_purchase_price').value,
-        retail_price: document.getElementById('f_retail_price').value,
-        manufacturer_id: document.getElementById('f_manufacturer_id').value
-    };
-    const method = currentEditId ? 'PUT' : 'POST';
-    const url = currentEditId ? `${apiBase}/${currentEditId}` : apiBase;
-    await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-    location.reload();
+// 显示错误信息
+function showError(message) {
+  document.getElementById('drugTableBody').innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center text-danger">
+        <i class="bi bi-exclamation-triangle"></i> ${message}
+      </td>
+    </tr>
+  `;
 }
 
-async function editItem(id){ currentEditId = id; const res = await fetch(`${apiBase}/${id}`); const data = await res.json(); showModal('编辑药品', data); }
+// 查看药品详情
+function viewDrug(id) {
+  window.location.href = `/drug/form?id=${id}`;
+}
 
-async function deleteItem(id){ if(!confirm('确认删除?')) return; await fetch(`${apiBase}/${id}`, {method:'DELETE'}); loadList(); }
+// 编辑药品
+function editDrug(id) {
+  window.location.href = `/drug/form?id=${id}`;
+}
 
-window.onload = loadList;
+// 新增药品
+function openAddModal() {
+  window.location.href = '/drug/form';
+}
+
+// 删除药品
+async function deleteDrug(id) {
+  if (!confirm('确定要删除这个药品吗？此操作不可恢复！')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${apiBase}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      alert('药品删除成功！');
+      loadDrugs();
+    } else {
+      const result = await response.json();
+      alert(`删除失败：${result.message || '未知错误'}`);
+    }
+  } catch (error) {
+    console.error('删除药品失败:', error);
+    alert('删除失败，请稍后重试');
+  }
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  loadDrugs();
+  
+  // 回车键搜索
+  document.getElementById('q_name').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchDrugs();
+  });
+  
+  document.getElementById('q_brand').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchDrugs();
+  });
+});
 </script>
 </body>
 </html>

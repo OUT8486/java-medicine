@@ -5,75 +5,430 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>采购订单</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .search-row .col {padding-right:8px;}
+    .purchase-card { border-left: 4px solid #6610f2; }
+    .stats-card { background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%); color: white; }
+    .action-buttons .btn { margin: 0 2px; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark"><div class="container-fluid"><a class="navbar-brand" href="/index">药店管理系统</a></div></nav>
-  <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3"><h3>采购订单</h3><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus"></i> 新增订单</button></div>
-    <div class="card p-3 mb-3">
-      <div class="row g-2">
-        <div class="col-md-4"><input id="q_supplier_id" class="form-control" placeholder="供应商ID"></div>
-        <div class="col-md-4"><input id="q_po_date" class="form-control" placeholder="采购日期"></div>
-        <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-outline-primary" onclick="loadList()">搜索</button><button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">重置</button></div>
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/index"><i class="bi bi-hospital"></i> 药店管理系统</a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/index"><i class="bi bi-house"></i> 返回首页</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <!-- 页面标题和统计 -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2><i class="bi bi-cart-check"></i> 采购订单</h2>
+      <p class="text-muted">管理药品采购订单，跟踪采购进度和审核状态</p>
+    </div>
+    <div class="col-md-4">
+      <div class="card stats-card h-100">
+        <div class="card-body text-center">
+          <h5>订单总数</h5>
+          <h2 id="totalOrders">0</h2>
+        </div>
       </div>
     </div>
-    <div id="tableWrap"></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const apiBase = '/purchase-order'; let currentEditId = null;
-      async function loadList(){
-        const wrap = document.getElementById('tableWrap'); wrap.innerHTML = '<div class="text-center">加载中...</div>';
-        const terms = Array.from(document.querySelectorAll('[id^="q_"] , [id^="search"]')).map(i=> (i.value||'').toString().trim().toLowerCase()).filter(Boolean);
-        try{
-          const res = await fetch(apiBase + '/list');
-          const d = await res.json();
-          const items = Array.isArray(d)?d:(d.items||d.list||[]);
-          const filtered = items.filter(it=>{ const s = JSON.stringify(it).toLowerCase(); return terms.every(t=> s.includes(t)); });
-          displayItems(filtered);
-        }catch(e){ console.error(e); wrap.innerHTML = '<div class="text-danger">加载失败</div>'; }
-      }
-    function displayItems(items){ const wrap=document.getElementById('tableWrap'); let html = `<table class="table table-striped"><thead><tr><th>订单ID</th><th>供应商ID</th><th>采购日期</th><th>经办人</th><th>审核状态</th><th>操作</th></tr></thead><tbody>`; for(const it of items){ html += `<tr><td>${it.po_id||''}</td><td>${it.supplier_id||''}</td><td>${it.po_date||''}</td><td>${it.employee_id||''}</td><td>${it.audit_status||''}</td><td><button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.po_id}')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${it.po_id}')">删除</button></td></tr>`;} html += `</tbody></table>`; wrap.innerHTML = html; }
-    function clearSearch(){ document.getElementById('q_supplier_id').value=''; document.getElementById('q_po_date').value=''; loadList(); }
-    function openAddModal(){ currentEditId=null; showModal('新增采购订单', {}); }
-    function showModal(title, data){ const modalId='entityModal'; const inputs = `<div class="mb-2"><input id="f_po_id" class="form-control" placeholder="采购订单ID" value="${data.po_id||''}"></div><div class="mb-2"><input id="f_supplier_id" class="form-control" placeholder="供应商ID" value="${data.supplier_id||''}"></div><div class="mb-2"><input id="f_po_date" class="form-control" placeholder="采购日期" value="${data.po_date||''}"></div><div class="mb-2"><input id="f_employee_id" class="form-control" placeholder="经办人ID" value="${data.employee_id||''}"></div><div class="mb-2"><input id="f_audit_status" class="form-control" placeholder="审核状态（0/1）" value="${data.audit_status||''}"></div>`; const html = `<div class="modal" tabindex="-1" id="${modalId}"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">${inputs}</div><div class="modal-footer"><button class="btn btn-primary" onclick="saveItem()">保存</button></div></div></div></div>`; document.body.insertAdjacentHTML('beforeend', html); const modal=new bootstrap.Modal(document.getElementById(modalId)); modal.show(); document.getElementById(modalId).addEventListener('hidden.bs.modal', ()=> document.getElementById(modalId).remove()); }
-    async function saveItem(){ const payload={ po_id: document.getElementById('f_po_id').value, supplier_id: document.getElementById('f_supplier_id').value, po_date: document.getElementById('f_po_date').value, employee_id: document.getElementById('f_employee_id').value, audit_status: parseInt(document.getElementById('f_audit_status').value||0) }; const method=currentEditId?'PUT':'POST'; const url=currentEditId?`${apiBase}/${currentEditId}`:apiBase; await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); location.reload(); }
-    async function editItem(id){ currentEditId=id; const res=await fetch(`${apiBase}/${id}`); const data=await res.json(); showModal('编辑采购订单', data); }
-    async function deleteItem(id){ if(!confirm('确认删除?')) return; await fetch(`${apiBase}/${id}`,{method:'DELETE'}); loadList(); }
-    window.onload=loadList;
-  </script>
-</body>
-</html>
+
+  <!-- 操作按钮 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="bi bi-plus-circle"></i> 新增订单
+      </button>
+      <button class="btn btn-outline-secondary" onclick="refreshData()">
+        <i class="bi bi-arrow-clockwise"></i> 刷新
+      </button>
+    </div>
+    <div class="d-flex gap-2">
+      <select id="statusFilter" class="form-select" style="width: auto;" onchange="filterByStatus()">
+        <option value="">全部状态</option>
+        <option value="待审核">待审核</option>
+        <option value="已审核">已审核</option>
+        <option value="已完成">已完成</option>
+      </select>
+    </div>
   </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      fetch('/purchase-order/list')
-        .then(r => r.json())
-        .then(data => {
-          const items = Array.isArray(data) ? data : (data.purchaseOrders || []);
-          const tb = document.getElementById('purchaseOrderTableBody');
 
-          if (!items || items.length === 0) {
-            tb.innerHTML = '<tr><td colspan="6" class="text-center">暂无数据</td></tr>';
-            return;
-          }
+  <!-- 搜索区域 -->
+  <div class="card p-3 mb-4">
+    <div class="row search-row g-2">
+      <div class="col-md-3">
+        <input id="q_supplier" class="form-control" placeholder="供应商名称">
+      </div>
+      <div class="col-md-3">
+        <input id="q_date" class="form-control" placeholder="采购日期" type="date">
+      </div>
+      <div class="col-md-3">
+        <select id="q_status" class="form-select">
+          <option value="">订单状态</option>
+          <option value="待审核">待审核</option>
+          <option value="已审核">已审核</option>
+          <option value="已完成">已完成</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary" onclick="searchOrders()">
+          <i class="bi bi-search"></i> 搜索
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">
+          <i class="bi bi-x-circle"></i> 重置
+        </button>
+      </div>
+    </div>
+  </div>
 
-          tb.innerHTML = items.map(o => `
+  <!-- 订单列表 -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
             <tr>
-              <td>${o.po_id || ''}</td>
-              <td>${o.supplier_id || ''}</td>
-              <td>${o.po_date || ''}</td>
-              <td>${o.audit_status != null ? (o.audit_status==1? '已审核':'未审核') : ''}</td>
-              <td>${o.employee_id || ''}</td>
-              <td><button class="btn btn-sm btn-outline-primary">查看</button></td>
+              <th>订单ID</th>
+              <th>供应商</th>
+              <th>采购日期</th>
+              <th>经办人</th>
+              <th>总金额</th>
+              <th>状态</th>
+              <th>操作</th>
             </tr>
-          `).join('');
-        })
-        .catch(e => {
-          console.error(e);
-          document.getElementById('purchaseOrderTableBody').innerHTML = '<tr><td colspan="6" class="text-center text-danger">加载失败</td></tr>';
-        });
+          </thead>
+          <tbody id="orderTableBody">
+            <tr>
+              <td colspan="7" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">加载中...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 分页 -->
+      <nav aria-label="订单列表分页">
+        <ul class="pagination justify-content-center" id="pagination">
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const apiBase = '/purchase-order';
+let currentOrders = [];
+let currentPage = 1;
+const pageSize = 10;
+
+// 加载订单列表
+async function loadOrders(page = 1, searchParams = {}) {
+  try {
+    showLoading();
+    
+    let url = `${apiBase}/list`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // 处理不同的响应格式
+    let orders = [];
+    if (Array.isArray(data)) {
+      orders = data;
+    } else if (data && data.orders) {
+      orders = data.orders;
+    } else if (data && Array.isArray(data.list)) {
+      orders = data.list;
+    }
+    
+    currentOrders = orders;
+    currentPage = page;
+    
+    // 应用搜索过滤
+    const filteredOrders = filterOrders(orders, searchParams);
+    
+    // 更新统计数据
+    document.getElementById('totalOrders').textContent = orders.length;
+    
+    // 显示数据
+    displayOrders(filteredOrders);
+    
+  } catch (error) {
+    console.error('加载订单列表失败:', error);
+    showError('加载订单列表失败，请刷新重试');
+  }
+}
+
+// 过滤订单数据
+function filterOrders(orders, searchParams) {
+  return orders.filter(order => {
+    const supplierMatch = !searchParams.supplier || 
+      (order.supplier_name && order.supplier_name.toLowerCase().includes(searchParams.supplier.toLowerCase()));
+    const dateMatch = !searchParams.date || 
+      (order.po_date && order.po_date.includes(searchParams.date));
+    const statusMatch = !searchParams.status || order.audit_status === searchParams.status;
+    
+    return supplierMatch && dateMatch && statusMatch;
+  });
+}
+
+// 显示订单列表
+function displayOrders(orders) {
+  const tbody = document.getElementById('orderTableBody');
+  
+  if (!orders || orders.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无订单数据</td></tr>';
+    return;
+  }
+  
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, orders.length);
+  const pageOrders = orders.slice(startIndex, endIndex);
+  
+  tbody.innerHTML = pageOrders.map(order => `
+    <tr class="purchase-card">
+      <td><strong>${order.po_id || '-'}</strong></td>
+      <td>${order.supplier_name || order.supplier_id || '-'}</td>
+      <td>${order.po_date ? formatDate(order.po_date) : '-'}</td>
+      <td>${order.employee_name || order.employee_id || '-'}</td>
+      <td>¥${(order.total_amount || 0).toFixed(2)}</td>
+      <td>
+        <span class="badge bg-${getStatusBadgeClass(order.audit_status)}">
+          ${getStatusText(order.audit_status)}
+        </span>
+      </td>
+      <td class="action-buttons">
+        <button class="btn btn-sm btn-outline-primary" onclick="viewOrder('${order.po_id}')">
+          <i class="bi bi-eye"></i> 查看
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="editOrder('${order.po_id}')">
+          <i class="bi bi-pencil"></i> 编辑
+        </button>
+        <button class="btn btn-sm btn-outline-info" onclick="viewOrderItems('${order.po_id}')">
+          <i class="bi bi-list"></i> 明细
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${order.po_id}')">
+          <i class="bi bi-trash"></i> 删除
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  
+  // 更新分页
+  updatePagination(orders.length);
+}
+
+// 获取状态文本
+function getStatusText(status) {
+  const statusMap = {
+    '0': '待审核',
+    '1': '已审核',
+    '2': '已完成',
+    '待审核': '待审核',
+    '已审核': '已审核',
+    '已完成': '已完成'
+  };
+  return statusMap[status] || status;
+}
+
+// 获取状态对应的徽章样式
+function getStatusBadgeClass(status) {
+  const statusClasses = {
+    '待审核': 'warning',
+    '已审核': 'primary',
+    '已完成': 'success',
+    '0': 'warning',
+    '1': 'primary',
+    '2': 'success'
+  };
+  return statusClasses[status] || 'secondary';
+}
+
+// 格式化日期
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('zh-CN');
+}
+
+// 更新分页控件
+function updatePagination(totalCount) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const pagination = document.getElementById('pagination');
+  
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+  
+  let paginationHtml = '';
+  
+  // 上一页
+  if (currentPage > 1) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">上一页</a>
+      </li>
+    `;
+  }
+  
+  // 页码
+  for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+    paginationHtml += `
+      <li class="page-item ${i === currentPage ? 'active' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+      </li>
+    `;
+  }
+  
+  // 下一页
+  if (currentPage < totalPages) {
+    paginationHtml += `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">下一页</a>
+      </li>
+    `;
+  }
+  
+  pagination.innerHTML = paginationHtml;
+}
+
+// 分页切换
+function changePage(page) {
+  currentPage = page;
+  const searchParams = getSearchParams();
+  displayOrders(filterOrders(currentOrders, searchParams));
+}
+
+// 获取搜索参数
+function getSearchParams() {
+  return {
+    supplier: document.getElementById('q_supplier').value.trim(),
+    date: document.getElementById('q_date').value,
+    status: document.getElementById('q_status').value
+  };
+}
+
+// 搜索功能
+function searchOrders() {
+  const searchParams = getSearchParams();
+  const filteredOrders = filterOrders(currentOrders, searchParams);
+  currentPage = 1;
+  displayOrders(filteredOrders);
+}
+
+// 状态筛选
+function filterByStatus() {
+  const status = document.getElementById('statusFilter').value;
+  document.getElementById('q_status').value = status;
+  searchOrders();
+}
+
+// 清空搜索
+function clearSearch() {
+  document.getElementById('q_supplier').value = '';
+  document.getElementById('q_date').value = '';
+  document.getElementById('q_status').value = '';
+  document.getElementById('statusFilter').value = '';
+  currentPage = 1;
+  displayOrders(currentOrders);
+}
+
+// 刷新数据
+function refreshData() {
+  loadOrders();
+}
+
+// 显示加载状态
+function showLoading() {
+  document.getElementById('orderTableBody').innerHTML = `
+    <tr>
+      <td colspan="7" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">加载中...</span>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// 显示错误信息
+function showError(message) {
+  document.getElementById('orderTableBody').innerHTML = `
+    <tr>
+      <td colspan="7" class="text-center text-danger">
+        <i class="bi bi-exclamation-triangle"></i> ${message}
+      </td>
+    </tr>
+  `;
+}
+
+// 查看订单详情
+function viewOrder(id) {
+  window.location.href = `/purchase-order/form?id=${id}`;
+}
+
+// 编辑订单
+function editOrder(id) {
+  window.location.href = `/purchase-order/form?id=${id}`;
+}
+
+// 查看订单明细
+function viewOrderItems(id) {
+  window.location.href = `/purchase-order-item?po_id=${id}`;
+}
+
+// 新增订单
+function openAddModal() {
+  window.location.href = '/purchase-order/form';
+}
+
+// 删除订单
+async function deleteOrder(id) {
+  if (!confirm('确定要删除这个采购订单吗？此操作不可恢复！')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${apiBase}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-  </script>
+    
+    if (response.ok) {
+      alert('采购订单删除成功！');
+      loadOrders();
+    } else {
+      const result = await response.json();
+      alert(`删除失败：${result.message || '未知错误'}`);
+    }
+  } catch (error) {
+    console.error('删除采购订单失败:', error);
+    alert('删除失败，请稍后重试');
+  }
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  loadOrders();
+  
+  // 回车键搜索
+  document.getElementById('q_supplier').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchOrders();
+  });
+});
+</script>
 </body>
 </html>
