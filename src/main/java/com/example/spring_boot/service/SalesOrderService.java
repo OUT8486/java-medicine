@@ -5,8 +5,6 @@ import com.example.spring_boot.entity.SalesOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -44,18 +42,18 @@ public class SalesOrderService {
         return salesOrderMapper.selectSalesOrdersByCustomerId(customerId);
     }
 
-    // 根据创建人查询销售订单
-    public List<SalesOrder> getSalesOrdersByCreateBy(String createBy) {
-        return salesOrderMapper.selectSalesOrdersByCreateBy(createBy);
+    // 根据经办人查询销售订单
+    public List<SalesOrder> getSalesOrdersByEmployeeId(String employeeId) {
+        return salesOrderMapper.selectSalesOrdersByEmployeeId(employeeId);
+    }
+
+    // 根据状态查询销售订单
+    public List<SalesOrder> getSalesOrdersByStatus(Integer auditStatus) {
+        return salesOrderMapper.selectSalesOrdersByStatus(auditStatus);
     }
 
     // 根据日期范围查询销售订单
-    public List<SalesOrder> getSalesOrdersByDateRange(Date startDate, Date endDate) {
+    public List<SalesOrder> getSalesOrdersByDateRange(String startDate, String endDate) {
         return salesOrderMapper.selectSalesOrdersByDateRange(startDate, endDate);
-    }
-
-    // 计算订单总金额
-    public BigDecimal calculateOrderTotal(String soId) {
-        return salesOrderMapper.calculateOrderTotal(soId);
     }
 }

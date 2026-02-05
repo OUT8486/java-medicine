@@ -5,8 +5,6 @@ import com.example.spring_boot.entity.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -44,28 +42,23 @@ public class PurchaseOrderService {
         return purchaseOrderMapper.selectPurchaseOrdersBySupplierId(supplierId);
     }
 
-    // 根据订单状态查询采购订单
-    public List<PurchaseOrder> getPurchaseOrdersByStatus(String status) {
-        return purchaseOrderMapper.selectPurchaseOrdersByStatus(status);
+    // 根据审核状态查询采购订单
+    public List<PurchaseOrder> getPurchaseOrdersByAuditStatus(Integer auditStatus) {
+        return purchaseOrderMapper.selectPurchaseOrdersByAuditStatus(auditStatus);
     }
 
-    // 根据创建人查询采购订单
-    public List<PurchaseOrder> getPurchaseOrdersByCreateBy(String createBy) {
-        return purchaseOrderMapper.selectPurchaseOrdersByCreateBy(createBy);
+    // 根据经办人查询采购订单
+    public List<PurchaseOrder> getPurchaseOrdersByEmployeeId(String employeeId) {
+        return purchaseOrderMapper.selectPurchaseOrdersByEmployeeId(employeeId);
     }
 
     // 根据日期范围查询采购订单
-    public List<PurchaseOrder> getPurchaseOrdersByDateRange(Date startDate, Date endDate) {
+    public List<PurchaseOrder> getPurchaseOrdersByDateRange(String startDate, String endDate) {
         return purchaseOrderMapper.selectPurchaseOrdersByDateRange(startDate, endDate);
     }
 
-    // 更新订单状态
-    public void updatePurchaseOrderStatus(String poId, String status) {
-        purchaseOrderMapper.updatePurchaseOrderAuditStatus(poId, status);
-    }
-
-    // 计算订单总金额
-    public BigDecimal calculateOrderTotal(String poId) {
-        return purchaseOrderMapper.calculateOrderTotal(poId);
+    // 更新审核状态
+    public void updatePurchaseOrderAuditStatus(String poId, String auditStatus) {
+        purchaseOrderMapper.updatePurchaseOrderAuditStatus(poId, auditStatus);
     }
 }

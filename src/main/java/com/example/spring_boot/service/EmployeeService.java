@@ -47,8 +47,4 @@ public class EmployeeService {
         return employeeMapper.selectEmployeesByPost(post);
     }
 
-    // 根据用户名和密码查询员工
-    public Employee getEmployeeByUsernameAndPassword(String username, String password) {
-        return employeeMapper.selectByUsernameAndPassword(username, password);
-    }
 }

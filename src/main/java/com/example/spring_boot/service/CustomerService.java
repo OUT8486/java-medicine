@@ -42,8 +42,4 @@ public class CustomerService {
         return customerMapper.selectCustomersByName(name);
     }
 
-    // 根据电话查询客户
-    public Customer getCustomerByPhone(String phone) {
-        return customerMapper.selectCustomerByPhone(phone);
-    }
 }

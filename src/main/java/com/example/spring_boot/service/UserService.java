@@ -18,13 +18,4 @@ public class UserService {
     public int RegisterUser(Users user) {
         return userMapper.RegisterUser(user);
     }
-    // 用户登出
-    public String OutUser() {
-        return userMapper.OutUser();
-    }
-
-    // 插入用户
-    public int insertUser(Users user) {
-        return userMapper.insertUser(user);
-    }
 }

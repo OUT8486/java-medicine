@@ -5,7 +5,6 @@ import com.example.spring_boot.entity.Inventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -53,18 +52,4 @@ public class InventoryService {
         return inventoryMapper.selectInventoriesByBatchNo(batchNo);
     }
 
-    // 查询即将过期的库存
-    public List<Inventory> getInventoriesNearExpiry(Date daysBeforeExpiry) {
-        return inventoryMapper.selectInventoriesNearExpiry(daysBeforeExpiry);
-    }
-
-    // 查询库存不足的药品
-    public List<Inventory> getLowStockInventories(int threshold) {
-        return inventoryMapper.selectLowStockInventories(threshold);
-    }
-
-    // 更新库存数量
-    public void updateInventoryQuantity(String inventoryId, Integer quantity) {
-        inventoryMapper.updateInventoryQuantity(inventoryId, quantity);
-    }
 }
