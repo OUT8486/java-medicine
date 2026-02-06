@@ -121,7 +121,7 @@ public class UserController {
         return response;
     }
     
-    // 用户登出接口
+    // 用户登出接口 - 返回JSON响应
     @GetMapping("/logout")
     @ResponseBody
     public Map<String, Object> logout(HttpSession session) {

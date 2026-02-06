@@ -31,33 +31,6 @@ public class EmployeeController {
         return employeeMapper.selectAllEmployees();
     }
 
-    // 3. 接口：分页查询员工数据
-    @GetMapping("/employee/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getEmployeesByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String post) {
-
-        // 获取员工列表
-        List<Employee> employees;
-        if (post != null && !post.isEmpty()) {
-            employees = employeeMapper.selectEmployeesByPost(post);
-        } else {
-            employees = employeeMapper.selectAllEmployees();
-        }
-        
-        // 构造返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("employees", employees);
-        result.put("total", employees.size());
-        result.put("page", page);
-        result.put("size", size);
-        
-        return ResponseEntity.ok(result);
-    }
-
     // 4. 接口：根据ID获取员工
     @GetMapping("/employee/{id}")
     @ResponseBody
@@ -67,54 +40,6 @@ public class EmployeeController {
             return ResponseEntity.ok(employee);
         } else {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    // 5. 接口：根据姓名查询员工
-    @GetMapping("/employee/name/{name}")
-    @ResponseBody
-    public ResponseEntity<List<Employee>> getEmployeesByName(@PathVariable String name) {
-        List<Employee> employees = employeeMapper.selectEmployeesByName(name);
-        return ResponseEntity.ok(employees);
-    }
-
-    // 6. 接口：根据部门查询员工
-    @GetMapping("/employee/department/{department}")
-    @ResponseBody
-    public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable String department) {
-        // 数据库只存储'post'列，使用'post'作为岗位过滤
-        List<Employee> employees = employeeMapper.selectEmployeesByPost(department);
-        return ResponseEntity.ok(employees);
-    }
-
-    // 7. 接口：根据职位查询员工
-    @GetMapping("/employee/position/{position}")
-    @ResponseBody
-    public ResponseEntity<List<Employee>> getEmployeesByPosition(@PathVariable String position) {
-        // 与岗位等价，delegates to select by post
-        List<Employee> employees = employeeMapper.selectEmployeesByPost(position);
-        return ResponseEntity.ok(employees);
-    }
-
-    // 8. 接口：员工登录验证
-    @PostMapping("/employee/login")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> employeeLogin(@RequestBody Map<String, String> loginData) {
-        String username = loginData.get("username");
-        String password = loginData.get("password");
-        
-        Employee employee = employeeMapper.selectByUsernameAndPassword(username, password);
-        
-        Map<String, Object> result = new HashMap<>();
-        if (employee != null) {
-            result.put("success", true);
-            result.put("message", "登录成功");
-            result.put("employee", employee);
-            return ResponseEntity.ok(result);
-        } else {
-            result.put("success", false);
-            result.put("message", "用户名或密码错误");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
         }
     }
 

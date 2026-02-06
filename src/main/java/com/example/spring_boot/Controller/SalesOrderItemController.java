@@ -18,13 +18,6 @@ public class SalesOrderItemController {
     @Autowired
     private SalesOrderItemMapper salesOrderItemMapper;
 
-    // 1. 接口：获取所有销售订单项数据
-    @GetMapping("/sales-order-item/all")
-    @ResponseBody
-    public List<SalesOrderItem> getAllSalesOrderItems() {
-        return salesOrderItemMapper.selectAllSalesOrderItems();
-    }
-
     // 2. 接口：根据销售订单ID获取订单项
     @GetMapping("/sales-order-item/list")
     @ResponseBody
@@ -46,22 +39,6 @@ public class SalesOrderItemController {
         }
     }
 
-    // 4. 接口：根据药品ID获取销售订单项
-    @GetMapping("/sales-order-item/drug/{drugId}")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrderItem>> getSalesOrderItemsByDrugId(@PathVariable String drugId) {
-        List<SalesOrderItem> items = salesOrderItemMapper.selectSalesOrderItemsByDrugId(drugId);
-        return ResponseEntity.ok(items);
-    }
-
-    // 5. 接口：根据批号获取销售订单项
-    @GetMapping("/sales-order-item/batch/{batchNo}")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrderItem>> getSalesOrderItemsByBatchNo(@PathVariable String batchNo) {
-        List<SalesOrderItem> items = salesOrderItemMapper.selectSalesOrderItemsByBatchNo(batchNo);
-        return ResponseEntity.ok(items);
-    }
-
     // 6. 接口：新增销售订单项
     @PostMapping("/sales-order-item")
     @ResponseBody
@@ -80,28 +57,6 @@ public class SalesOrderItemController {
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "销售订单项添加失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 7. 接口：批量新增销售订单项
-    @PostMapping("/sales-order-item/batch")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> batchAddSalesOrderItems(@RequestBody List<SalesOrderItem> items) {
-        try {
-            int result = salesOrderItemMapper.batchInsertSalesOrderItems(items);
-            if (result > 0) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "批量添加销售订单项成功");
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "批量添加销售订单项失败");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "批量添加销售订单项失败：" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

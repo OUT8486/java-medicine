@@ -18,13 +18,6 @@ public class PurchaseOrderItemController {
     @Autowired
     private PurchaseOrderItemMapper purchaseOrderItemMapper;
 
-    // 1. 接口：获取所有采购订单项数据
-    @GetMapping("/purchase-order-item/all")
-    @ResponseBody
-    public List<PurchaseOrderItem> getAllPurchaseOrderItems() {
-        return purchaseOrderItemMapper.selectAllPurchaseOrderItems();
-    }
-
     // 2. 接口：根据采购订单ID获取订单项
     @GetMapping("/purchase-order-item/list")
     @ResponseBody
@@ -46,14 +39,6 @@ public class PurchaseOrderItemController {
         }
     }
 
-    // 4. 接口：根据药品ID获取采购订单项
-    @GetMapping("/purchase-order-item/drug/{drugId}")
-    @ResponseBody
-    public ResponseEntity<List<PurchaseOrderItem>> getPurchaseOrderItemsByDrugId(@PathVariable String drugId) {
-        List<PurchaseOrderItem> items = purchaseOrderItemMapper.selectPurchaseOrderItemsByDrugId(drugId);
-        return ResponseEntity.ok(items);
-    }
-
     // 5. 接口：新增采购订单项
     @PostMapping("/purchase-order-item")
     @ResponseBody
@@ -72,28 +57,6 @@ public class PurchaseOrderItemController {
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "采购订单项添加失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 6. 接口：批量新增采购订单项
-    @PostMapping("/purchase-order-item/batch")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> batchAddPurchaseOrderItems(@RequestBody List<PurchaseOrderItem> items) {
-        try {
-            int result = purchaseOrderItemMapper.batchInsertPurchaseOrderItems(items);
-            if (result > 0) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "批量添加采购订单项成功");
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "批量添加采购订单项失败");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "批量添加采购订单项失败：" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

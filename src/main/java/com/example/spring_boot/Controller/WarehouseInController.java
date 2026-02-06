@@ -33,43 +33,6 @@ public class WarehouseInController {
         return warehouseInMapper.selectAllWarehouseIns();
     }
 
-    // 3. 接口：分页查询入库单数据
-    @GetMapping("/warehouse-in/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getWarehouseInsByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String poId,
-            @RequestParam(required = false) String warehouseId,
-            @RequestParam(required = false) String batchNo) {
-        
-        // 获取入库单列表
-        List<WarehouseIn> warehouseIns = warehouseInMapper.selectAllWarehouseIns();
-        
-        // 应用过滤条件
-        if (search != null && !search.trim().isEmpty()) {
-            // 这里可以根据需要添加搜索逻辑
-        }
-        if (poId != null && !poId.trim().isEmpty()) {
-            warehouseIns = warehouseInMapper.selectWarehouseInsByPoId(poId);
-        }
-        if (warehouseId != null && !warehouseId.trim().isEmpty()) {
-            warehouseIns = warehouseInMapper.selectWarehouseInsByWarehouseId(warehouseId);
-        }
-        if (batchNo != null && !batchNo.trim().isEmpty()) {
-            warehouseIns = warehouseInMapper.selectWarehouseInsByBatchNo(batchNo);
-        }
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("warehouseIns", warehouseIns);
-        response.put("total", warehouseIns.size());
-        response.put("page", page);
-        response.put("size", size);
-        
-        return ResponseEntity.ok(response);
-    }
-
     // 4. 接口：根据ID获取入库单
     @GetMapping("/warehouse-in/{id}")
     @ResponseBody
@@ -80,30 +43,6 @@ public class WarehouseInController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // 5. 接口：根据采购订单ID查询入库单
-    @GetMapping("/warehouse-in/po/{poId}")
-    @ResponseBody
-    public ResponseEntity<List<WarehouseIn>> getWarehouseInsByPoId(@PathVariable String poId) {
-        List<WarehouseIn> warehouseIns = warehouseInMapper.selectWarehouseInsByPoId(poId);
-        return ResponseEntity.ok(warehouseIns);
-    }
-
-    // 6. 接口：根据仓库ID查询入库单
-    @GetMapping("/warehouse-in/warehouse/{warehouseId}")
-    @ResponseBody
-    public ResponseEntity<List<WarehouseIn>> getWarehouseInsByWarehouseId(@PathVariable String warehouseId) {
-        List<WarehouseIn> warehouseIns = warehouseInMapper.selectWarehouseInsByWarehouseId(warehouseId);
-        return ResponseEntity.ok(warehouseIns);
-    }
-
-    // 9. 接口：根据批号查询入库单
-    @GetMapping("/warehouse-in/batch/{batchNo}")
-    @ResponseBody
-    public ResponseEntity<List<WarehouseIn>> getWarehouseInsByBatchNo(@PathVariable String batchNo) {
-        List<WarehouseIn> warehouseIns = warehouseInMapper.selectWarehouseInsByBatchNo(batchNo);
-        return ResponseEntity.ok(warehouseIns);
     }
 
     // 10. 接口：新增入库单

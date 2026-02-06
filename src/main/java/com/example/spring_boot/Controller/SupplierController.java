@@ -37,28 +37,6 @@ public class SupplierController {
         return supplierMapper.selectAllSuppliers();
     }
 
-    // 3. 接口：分页查询供应商数据
-    @GetMapping("/supplier/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getSuppliersByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String contactPerson) {
-        
-        // 获取供应商列表
-        List<Supplier> suppliers = supplierMapper.selectAllSuppliers();
-        
-        // 构造返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("suppliers", suppliers);
-        result.put("total", suppliers.size());
-        result.put("page", page);
-        result.put("size", size);
-        
-        return ResponseEntity.ok(result);
-    }
-
     // 4. 接口：根据ID获取供应商
     @GetMapping("/supplier/{id}")
     @ResponseBody
@@ -69,14 +47,6 @@ public class SupplierController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // 5. 接口：根据名称查询供应商
-    @GetMapping("/supplier/name/{name}")
-    @ResponseBody
-    public ResponseEntity<List<Supplier>> getSuppliersByName(@PathVariable String name) {
-        List<Supplier> suppliers = supplierMapper.selectSuppliersByName(name);
-        return ResponseEntity.ok(suppliers);
     }
 
     // 8. 接口：新增供应商
@@ -170,7 +140,7 @@ public class SupplierController {
     // 10. 接口：删除供应商
     @DeleteMapping("/supplier/{id}")
     @ResponseBody
-public ResponseEntity<Map<String, String>> deleteSupplier(@PathVariable String id) {
+    public ResponseEntity<Map<String, String>> deleteSupplier(@PathVariable String id) {
         try {
             supplierMapper.deleteSupplier(id);
             

@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,56 +34,11 @@ public class PurchaseOrderController {
         return "purchase-order-form";
     }
 
-    // 简化版采购订单页面
-    @GetMapping("/purchase-simple")
-    public String purchaseSimplePage() {
-        return "purchase-simple";
-    }
-
-    // 调试页面路由
-    @GetMapping("/debug-purchase")
-    public String debugPurchasePage() {
-        return "debug-purchase";
-    }
-
     // 2. 接口：获取所有采购订单数据
     @GetMapping("/purchase-order/list")
     @ResponseBody
     public List<PurchaseOrder> getAllPurchaseOrders() {
         return purchaseOrderMapper.selectAllPurchaseOrders();
-    }
-
-    // 3. 接口：分页查询采购订单数据
-    @GetMapping("/purchase-order/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getPurchaseOrdersByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String supplierId,
-            @RequestParam(required = false) Integer auditStatus) {
-        
-        // 获取采购订单列表
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectAllPurchaseOrders();
-        
-        // 应用过滤条件
-        if (search != null && !search.trim().isEmpty()) {
-            // 这里可以根据需要添加搜索逻辑
-        }
-        if (supplierId != null && !supplierId.trim().isEmpty()) {
-            orders = purchaseOrderMapper.selectPurchaseOrdersBySupplierId(supplierId);
-        }
-        if (auditStatus != null) {
-            orders = purchaseOrderMapper.selectPurchaseOrdersByAuditStatus(auditStatus);
-        }
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("orders", orders);
-        response.put("total", orders.size());
-        response.put("page", page);
-        response.put("size", size);
-        
-        return ResponseEntity.ok(response);
     }
 
     // 4. 接口：根据ID获取采购订单
@@ -98,40 +51,6 @@ public class PurchaseOrderController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // 5. 接口：根据供应商ID查询采购订单
-    @GetMapping("/purchase-order/supplier/{supplierId}")
-    @ResponseBody
-    public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersBySupplierId(@PathVariable String supplierId) {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersBySupplierId(supplierId);
-        return ResponseEntity.ok(orders);
-    }
-
-    // 6. 接口：根据状态查询采购订单
-    @GetMapping("/purchase-order/status/{status}")
-    @ResponseBody
-    public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersByStatus(@PathVariable String status) {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersByStatus(status);
-        return ResponseEntity.ok(orders);
-    }
-
-    // 7. 接口：根据创建人查询采购订单
-    @GetMapping("/purchase-order/creator/{createBy}")
-    @ResponseBody
-    public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersByCreateBy(@PathVariable String createBy) {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersByCreateBy(createBy);
-        return ResponseEntity.ok(orders);
-    }
-
-    // 8. 接口：根据日期范围查询采购订单
-    @GetMapping("/purchase-order/date-range")
-    @ResponseBody
-    public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersByDateRange(
-            @RequestParam Date startDate,
-            @RequestParam Date endDate) {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersByDateRangeDate(startDate, endDate);
-        return ResponseEntity.ok(orders);
     }
 
     // 9. 接口：新增采购订单
@@ -174,55 +93,6 @@ public class PurchaseOrderController {
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "采购订单更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 11. 接口：更新采购订单状态
-    @PutMapping("/purchase-order/{id}/status")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> updatePurchaseOrderStatus(
-            @PathVariable String id, 
-            @RequestBody Map<String, Object> statusData) {
-        try {
-            Object statusObj = statusData.get("status");
-            if (statusObj == null) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "状态不能为空");
-                return ResponseEntity.badRequest().body(response);
-            }
-            String status;
-            if (statusObj instanceof Integer) {
-                status = ((Integer) statusObj).toString();
-            } else {
-                status = statusObj.toString();
-            }
-            purchaseOrderMapper.updatePurchaseOrderAuditStatus(id, status);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单状态更新成功");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单状态更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 12. 接口：计算订单总金额
-    @GetMapping("/purchase-order/{id}/total")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> calculateOrderTotal(@PathVariable String id) {
-        try {
-            BigDecimal total = purchaseOrderMapper.calculateOrderTotal(id);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("total", total);
-            response.put("message", "订单总金额计算成功");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "订单总金额计算失败：" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

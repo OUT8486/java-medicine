@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,32 +97,6 @@ public class SalesOrderController {
         }
     }
 
-    // 5. 接口：根据客户ID查询销售订单
-    @GetMapping("/sales-order/customer/{customerId}")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrder>> getSalesOrdersByCustomerId(@PathVariable String customerId) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByCustomerId(customerId);
-        return ResponseEntity.ok(orders);
-    }
-
-    // 7. 接口：根据创建人查询销售订单
-    @GetMapping("/sales-order/creator/{createBy}")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrder>> getSalesOrdersByCreateBy(@PathVariable String createBy) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByCreateBy(createBy);
-        return ResponseEntity.ok(orders);
-    }
-
-    // 8. 接口：根据日期范围查询销售订单
-    @GetMapping("/sales-order/date-range")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrder>> getSalesOrdersByDateRange(
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByDateRangeString(startDate, endDate);
-        return ResponseEntity.ok(orders);
-    }
-
     // 9. 接口：新增销售订单
     @PostMapping("/sales-order")
     @ResponseBody
@@ -160,24 +133,6 @@ public class SalesOrderController {
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "销售订单更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    // 12. 接口：计算订单总金额
-    @GetMapping("/sales-order/{id}/total")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> calculateOrderTotal(@PathVariable String id) {
-        try {
-            BigDecimal total = salesOrderMapper.calculateOrderTotal(id);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("total", total);
-            response.put("message", "订单总金额计算成功");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "订单总金额计算失败：" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

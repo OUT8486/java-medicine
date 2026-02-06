@@ -31,28 +31,6 @@ public class ManufacturerController {
         return manufacturerMapper.selectAllManufacturers();
     }
 
-    // 3. 接口：分页查询生产厂家数据
-    @GetMapping("/manufacturer/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getManufacturersByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String contactPerson) {
-        
-        // 获取生产厂家列表
-        List<Manufacturer> manufacturers = manufacturerMapper.selectAllManufacturers();
-        
-        // 构造返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("manufacturers", manufacturers);
-        result.put("total", manufacturers.size());
-        result.put("page", page);
-        result.put("size", size);
-        
-        return ResponseEntity.ok(result);
-    }
-
     // 4. 接口：根据ID获取生产厂家
     @GetMapping("/manufacturer/{id}")
     @ResponseBody
@@ -63,22 +41,6 @@ public class ManufacturerController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // 5. 接口：根据名称查询生产厂家
-    @GetMapping("/manufacturer/name/{name}")
-    @ResponseBody
-    public ResponseEntity<List<Manufacturer>> getManufacturersByName(@PathVariable String name) {
-        List<Manufacturer> manufacturers = manufacturerMapper.selectManufacturersByName(name);
-        return ResponseEntity.ok(manufacturers);
-    }
-
-    // 6. 接口：根据联系人查询生产厂家
-    @GetMapping("/manufacturer/contact/{contactPerson}")
-    @ResponseBody
-    public ResponseEntity<List<Manufacturer>> getManufacturersByContactPerson(@PathVariable String contactPerson) {
-        // 数据库表没有 contact_person 字段，返回空列表以避免错误
-        return ResponseEntity.ok(java.util.Collections.emptyList());
     }
 
     // 7. 接口：新增生产厂家

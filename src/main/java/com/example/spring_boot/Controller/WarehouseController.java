@@ -100,11 +100,6 @@ public class WarehouseController {
             r.put("message", "name 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
-        if (warehouse.getLocation() == null || warehouse.getLocation().trim().isEmpty()) {
-            Map<String, String> r = new HashMap<>(); 
-            r.put("message", "location 不能为空");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
-        }
 
         try {
             int result = warehouseMapper.insertWarehouse(warehouse);
@@ -137,11 +132,6 @@ public class WarehouseController {
         if (warehouse.getName() == null || warehouse.getName().trim().isEmpty()) {
             Map<String, String> r = new HashMap<>(); 
             r.put("message", "name 不能为空");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
-        }
-        if (warehouse.getLocation() == null || warehouse.getLocation().trim().isEmpty()) {
-            Map<String, String> r = new HashMap<>(); 
-            r.put("message", "location 不能为空");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(r);
         }
 

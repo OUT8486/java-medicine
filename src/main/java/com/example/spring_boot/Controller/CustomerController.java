@@ -37,54 +37,11 @@ public class CustomerController {
         return customerMapper.selectAllCustomers();
     }
 
-    // 3. 接口：分页查询客户数据
-    @GetMapping("/customer/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getCustomersByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String contactPhone,
-            @RequestParam(required = false) String type) {
-        
-        // 获取客户列表
-        List<Customer> customers = customerMapper.selectAllCustomers();
-        
-        // 构造返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("customers", customers);
-        result.put("total", customers.size());
-        result.put("page", page);
-        result.put("size", size);
-        
-        return ResponseEntity.ok(result);
-    }
-
     // 4. 接口：根据ID获取客户
     @GetMapping("/customer/{id}")
     @ResponseBody
     public ResponseEntity<Customer> getCustomerById(@PathVariable String id) {
         Customer customer = customerMapper.selectCustomerById(id);
-        if (customer != null) {
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // 5. 接口：根据姓名查询客户
-    @GetMapping("/customer/name/{name}")
-    @ResponseBody
-    public ResponseEntity<List<Customer>> getCustomersByName(@PathVariable String name) {
-        List<Customer> customers = customerMapper.selectCustomersByName(name);
-        return ResponseEntity.ok(customers);
-    }
-
-    // 6. 接口：根据电话查询客户
-    @GetMapping("/customer/phone/{phone}")
-    @ResponseBody
-    public ResponseEntity<Customer> getCustomerByPhone(@PathVariable String phone) {
-        Customer customer = customerMapper.selectCustomerByPhone(phone);
         if (customer != null) {
             return ResponseEntity.ok(customer);
         } else {

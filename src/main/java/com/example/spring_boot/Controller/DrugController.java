@@ -64,29 +64,6 @@ public class DrugController {
         }
     }
 
-    // 5. 接口：分页查询药品数据
-    @GetMapping("/drug/page")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getDrugsByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String dosageForm,
-            @RequestParam(required = false) String manufacturerId) {
-                
-        // 获取药品列表（这里需要在Mapper中添加相应方法）
-        List<Drug> drugs = drugMapper.selectAllDrugs(); // 暂时使用现有方法
-        
-        // 构造返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("drugs", drugs);
-        result.put("total", drugs.size());
-        result.put("page", page);
-        result.put("size", size);
-        
-        return ResponseEntity.ok(result);
-    }
-
     // 6. 接口：新增药品
     @PostMapping("/drug")
     @ResponseBody
