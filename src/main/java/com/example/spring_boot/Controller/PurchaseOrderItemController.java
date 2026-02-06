@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.entity.PurchaseOrderItem;

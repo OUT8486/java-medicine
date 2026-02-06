@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.InventoryMapper;
 import com.example.spring_boot.entity.Inventory;
@@ -23,6 +23,12 @@ public class InventoryController {
     @GetMapping("/inventory")
     public String inventoryPage() {
         return "inventory";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/inventory/form 跳转到库存表单页面
+    @GetMapping("/inventory/form")
+    public String inventoryFormPage() {
+        return "inventory-form";
     }
 
     // 2. 接口：获取所有库存数据

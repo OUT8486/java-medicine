@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.SalesOrderMapper;
 import com.example.spring_boot.dao.SalesOrderItemMapper;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,12 @@ public class SalesOrderController {
     @GetMapping("/sales-order")
     public String salesOrderPage() {
         return "sales-order";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/sales-order/form 跳转到销售订单表单页面
+    @GetMapping("/sales-order/form")
+    public String salesOrderFormPage() {
+        return "sales-order-form";
     }
 
     // 2. 接口：获取所有销售订单数据
@@ -113,9 +118,9 @@ public class SalesOrderController {
     @GetMapping("/sales-order/date-range")
     @ResponseBody
     public ResponseEntity<List<SalesOrder>> getSalesOrdersByDateRange(
-            @RequestParam Date startDate,
-            @RequestParam Date endDate) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByDateRange(startDate, endDate);
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByDateRangeString(startDate, endDate);
         return ResponseEntity.ok(orders);
     }
 

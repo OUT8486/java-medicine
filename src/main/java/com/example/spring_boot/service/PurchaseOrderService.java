@@ -54,7 +54,7 @@ public class PurchaseOrderService {
 
     // 根据日期范围查询采购订单
     public List<PurchaseOrder> getPurchaseOrdersByDateRange(String startDate, String endDate) {
-        return purchaseOrderMapper.selectPurchaseOrdersByDateRange(startDate, endDate);
+        return purchaseOrderMapper.selectPurchaseOrdersByDateRangeString(startDate, endDate);
     }
 
     // 更新审核状态

@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.WarehouseMapper;
 import com.example.spring_boot.entity.Warehouse;
@@ -22,6 +22,12 @@ public class WarehouseController {
     @GetMapping("/warehouse")
     public String warehousePage() {
         return "warehouse";
+    }
+    
+    // 1.5 页面跳转：访问http://localhost:8080/warehouse/form 跳转到仓库表单页面
+    @GetMapping("/warehouse/form")
+    public String warehouseFormPage() {
+        return "warehouse-form";
     }
 
     // 2. 接口：获取所有仓库数据

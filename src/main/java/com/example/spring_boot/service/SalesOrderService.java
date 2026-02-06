@@ -47,13 +47,8 @@ public class SalesOrderService {
         return salesOrderMapper.selectSalesOrdersByEmployeeId(employeeId);
     }
 
-    // 根据状态查询销售订单
-    public List<SalesOrder> getSalesOrdersByStatus(Integer auditStatus) {
-        return salesOrderMapper.selectSalesOrdersByStatus(auditStatus);
-    }
-
     // 根据日期范围查询销售订单
     public List<SalesOrder> getSalesOrdersByDateRange(String startDate, String endDate) {
-        return salesOrderMapper.selectSalesOrdersByDateRange(startDate, endDate);
+        return salesOrderMapper.selectSalesOrdersByDateRangeString(startDate, endDate);
     }
 }

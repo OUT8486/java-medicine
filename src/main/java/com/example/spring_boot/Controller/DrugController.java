@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.DrugMapper;
 import com.example.spring_boot.entity.Drug;
@@ -25,6 +25,12 @@ public class DrugController {
     public String drugPage() {
         // 返回 templates 目录下的 drug.html 页面
         return "drug";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/drug/form 跳转到药品表单页面
+    @GetMapping("/drug/form")
+    public String drugFormPage() {
+        return "drug-form";
     }
 
     // 2. 接口：获取所有药品数据（返回JSON）

@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.CustomerMapper;
 import com.example.spring_boot.entity.Customer;
@@ -22,6 +22,12 @@ public class CustomerController {
     @GetMapping("/customer")
     public String customerPage() {
         return "customer";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/customer/form 跳转到客户表单页面
+    @GetMapping("/customer/form")
+    public String customerFormPage() {
+        return "customer-form";
     }
 
     // 2. 接口：获取所有客户数据

@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.SupplierMapper;
 import com.example.spring_boot.entity.Supplier;
@@ -22,6 +22,12 @@ public class SupplierController {
     @GetMapping("/supplier")
     public String supplierPage() {
         return "supplier";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/supplier/form 跳转到供应商表单页面
+    @GetMapping("/supplier/form")
+    public String supplierFormPage() {
+        return "supplier-form";
     }
 
     // 2. 接口：获取所有供应商数据
@@ -164,7 +170,7 @@ public class SupplierController {
     // 10. 接口：删除供应商
     @DeleteMapping("/supplier/{id}")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteSupplier(@PathVariable String id) {
+public ResponseEntity<Map<String, String>> deleteSupplier(@PathVariable String id) {
         try {
             supplierMapper.deleteSupplier(id);
             

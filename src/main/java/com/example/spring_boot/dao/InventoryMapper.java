@@ -1,6 +1,14 @@
 package com.example.spring_boot.dao;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.spring_boot.entity.Inventory;
 
@@ -9,39 +17,110 @@ import java.util.List;
 
 @Mapper
 public interface InventoryMapper {
-    // 新增库存记录
+    
+    @Insert("INSERT INTO inventory (" +
+            "inventory_id, drug_id, warehouse_id, batch_no, quantity, validity_date) " +
+            "VALUES (#{inventory_id}, #{drug_id}, #{warehouse_id}, #{batch_no}, #{quantity}, #{validity_date})")
+    @Options(useGeneratedKeys = true, keyProperty = "inventory_id")
     int insertInventory(Inventory inventory);
     
-    // 修改库存记录
-    void updateInventory(Inventory inventory);
+    @Update("UPDATE inventory SET " +
+            "drug_id = #{drug_id}, warehouse_id = #{warehouse_id}, batch_no = #{batch_no}, " +
+            "quantity = #{quantity}, validity_date = #{validity_date} " +
+            "WHERE inventory_id = #{inventory_id}")
+    int updateInventory(Inventory inventory);
     
-    // 删除库存记录
-    void deleteInventory(String inventory_id);
+    @Delete("DELETE FROM inventory WHERE inventory_id = #{inventory_id}")
+    int deleteInventory(String inventory_id);
     
-    // 根据ID查询库存记录
+    @Select("SELECT * FROM inventory WHERE inventory_id = #{inventory_id}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     Inventory selectInventoryById(String inventory_id);
     
-    // 查询所有库存记录
+    @Select("SELECT * FROM inventory ORDER BY inventory_id")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectAllInventories();
     
-    // 根据药品ID查询库存记录
+    @Select("SELECT * FROM inventory WHERE drug_id = #{drug_id}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectInventoriesByDrugId(String drug_id);
     
-    // 根据仓库ID查询库存记录
+    @Select("SELECT * FROM inventory WHERE warehouse_id = #{warehouse_id}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectInventoriesByWarehouseId(String warehouse_id);
     
-    // 根据批号查询库存记录
+    @Select("SELECT * FROM inventory WHERE batch_no = #{batch_no}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectInventoriesByBatchNo(String batch_no);
     
-    // 根据药品ID和仓库ID查询库存
-    Inventory selectInventoryByDrugAndWarehouse(String drug_id, String warehouse_id);
+    @Select("SELECT * FROM inventory WHERE drug_id = #{drug_id} AND warehouse_id = #{warehouse_id}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
+    Inventory selectInventoryByDrugAndWarehouse(@Param("drug_id") String drug_id, @Param("warehouse_id") String warehouse_id);
     
-    // 更新库存数量
-    void updateInventoryQuantity(String inventory_id, int quantity);
+    @Update("UPDATE inventory SET quantity = #{quantity} WHERE inventory_id = #{inventory_id}")
+    int updateInventoryQuantity(@Param("inventory_id") String inventory_id, @Param("quantity") int quantity);
 
-    // 查询即将过期的库存
+    @Select("SELECT * FROM inventory WHERE validity_date <= #{daysBeforeExpiry}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectInventoriesNearExpiry(Date daysBeforeExpiry);
 
-    // 查询库存不足的药品
+    @Select("SELECT * FROM inventory WHERE quantity <= #{threshold}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
     List<Inventory> selectLowStockInventories(int threshold);
 }

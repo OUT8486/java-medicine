@@ -1,6 +1,14 @@
 package com.example.spring_boot.dao;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.spring_boot.entity.PurchaseOrderItem;
 
@@ -9,33 +17,72 @@ import java.util.List;
 
 @Mapper
 public interface PurchaseOrderItemMapper {
-    // 新增采购订单项
+    
+    @Insert("INSERT INTO purchaseorderitem (" +
+            "poi_id, po_id, drug_id, quantity, price) " +
+            "VALUES (#{poi_id}, #{po_id}, #{drug_id}, #{quantity}, #{price})")
+    @Options(useGeneratedKeys = true, keyProperty = "poi_id")
     int insertPurchaseOrderItem(PurchaseOrderItem purchaseOrderItem);
     
-    // 修改采购订单项
-    void updatePurchaseOrderItem(PurchaseOrderItem purchaseOrderItem);
+    @Update("UPDATE purchaseorderitem SET " +
+            "po_id = #{po_id}, drug_id = #{drug_id}, quantity = #{quantity}, price = #{price} " +
+            "WHERE poi_id = #{poi_id}")
+    int updatePurchaseOrderItem(PurchaseOrderItem purchaseOrderItem);
     
-    // 删除采购订单项
-    void deletePurchaseOrderItem(String poi_id);
+    @Delete("DELETE FROM purchaseorderitem WHERE poi_id = #{poi_id}")
+    int deletePurchaseOrderItem(String poi_id);
     
-    // 根据ID查询采购订单项
+    @Select("SELECT * FROM purchaseorderitem WHERE poi_id = #{poi_id}")
+    @Results({
+        @Result(property = "poi_id", column = "poi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
     PurchaseOrderItem selectPurchaseOrderItemById(String poi_id);
     
-    // 查询所有采购订单项
+    @Select("SELECT * FROM purchaseorderitem ORDER BY poi_id")
+    @Results({
+        @Result(property = "poi_id", column = "poi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
     List<PurchaseOrderItem> selectAllPurchaseOrderItems();
     
-    // 根据采购订单ID查询所有订单项
+    @Select("SELECT * FROM purchaseorderitem WHERE po_id = #{po_id} ORDER BY poi_id")
+    @Results({
+        @Result(property = "poi_id", column = "poi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
     List<PurchaseOrderItem> selectPurchaseOrderItemsByPoId(String po_id);
     
-    // 根据药品ID查询采购订单项
+    @Select("SELECT * FROM purchaseorderitem WHERE drug_id = #{drug_id} ORDER BY poi_id")
+    @Results({
+        @Result(property = "poi_id", column = "poi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
     List<PurchaseOrderItem> selectPurchaseOrderItemsByDrugId(String drug_id);
     
-    // 更新采购订单项小计
-    void updateSubtotal(String poi_id, BigDecimal subtotal);
+    @Update("UPDATE purchaseorderitem SET price = #{subtotal} WHERE poi_id = #{poi_id}")
+    int updateSubtotal(@Param("poi_id") String poi_id, @Param("subtotal") BigDecimal subtotal);
     
-    // 批量添加采购订单项
-    int batchInsertPurchaseOrderItems(List<PurchaseOrderItem> items);
+    @Insert({"<script>",
+            "INSERT INTO purchaseorderitem (poi_id, po_id, drug_id, quantity, price) VALUES ",
+            "<foreach collection='items' item='item' separator=','>",
+            "(#{item.poi_id}, #{item.po_id}, #{item.drug_id}, #{item.quantity}, #{item.price})",
+            "</foreach>",
+            "</script>"})
+    int batchInsertPurchaseOrderItems(@Param("items") List<PurchaseOrderItem> items);
     
-    // 根据采购订单ID删除所有订单项
-    void deletePurchaseOrderItemsByPoId(String po_id);
+    @Delete("DELETE FROM purchaseorderitem WHERE po_id = #{po_id}")
+    int deletePurchaseOrderItemsByPoId(String po_id);
 }

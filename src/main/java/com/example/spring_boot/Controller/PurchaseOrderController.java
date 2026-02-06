@@ -1,4 +1,4 @@
-package com.example.spring_boot.Controller;
+package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.PurchaseOrderMapper;
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
@@ -28,6 +28,12 @@ public class PurchaseOrderController {
     @GetMapping("/purchase-order")
     public String purchaseOrderPage() {
         return "purchase-order";
+    }
+    
+    // 1.5 页面跳转：访问 http://localhost:8080/purchase-order/form 跳转到采购订单表单页面
+    @GetMapping("/purchase-order/form")
+    public String purchaseOrderFormPage() {
+        return "purchase-order-form";
     }
 
     // 简化版采购订单页面
@@ -124,7 +130,7 @@ public class PurchaseOrderController {
     public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersByDateRange(
             @RequestParam Date startDate,
             @RequestParam Date endDate) {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersByDateRange(startDate, endDate);
+        List<PurchaseOrder> orders = purchaseOrderMapper.selectPurchaseOrdersByDateRangeDate(startDate, endDate);
         return ResponseEntity.ok(orders);
     }
 
