@@ -34,7 +34,44 @@
         displayItems(filtered);
       }catch(e){ console.error(e); wrap.innerHTML = '<div class="text-danger">加载失败</div>'; }
     }
-    function displayItems(items){ const wrap=document.getElementById('tableWrap'); let html=`<table class="table table-striped"><thead><tr><th>项ID</th><th>采购订单ID</th><th>药品ID</th><th>数量</th><th>单价</th><th>小计</th><th>操作</th></tr></thead><tbody>`; for(const it of items){ html+=`<tr><td>${it.poi_id||''}</td><td>${it.po_id||''}</td><td>${it.drug_id||''}</td><td>${it.quantity||''}</td><td>${it.price||''}</td><td>${it.subtotal||''}</td><td><button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.poi_id}')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${it.poi_id}')">删除</button></td></tr>`;} html+=`</tbody></table>`; wrap.innerHTML=html; }
+    // 显示采购订单项列表
+    function displayItems(items) {
+      const wrap = document.getElementById('tableWrap');
+      let html = `<table class="table table-striped">
+        <thead>
+          <tr>
+            <th>项ID</th>
+            <th>采购订单ID</th>
+            <th>药品ID</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>小计</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      
+      for (const it of items) {
+        // 计算小计字段
+        const subtotal = (it.quantity && it.price) ? (it.quantity * it.price).toFixed(2) : '-';
+        
+        html += `<tr>
+          <td>${it.poi_id || ''}</td>
+          <td>${it.po_id || ''}</td>
+          <td>${it.drug_id || ''}</td>
+          <td>${it.quantity || ''}</td>
+          <td>${it.price || ''}</td>
+          <td>${subtotal}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary me-1" onclick="editItem('${it.poi_id}')">编辑</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteItem('${it.poi_id}')">删除</button>
+          </td>
+        </tr>`;
+      }
+      
+      html += `</tbody></table>`;
+      wrap.innerHTML = html;
+    }
     function clearSearch(){ document.getElementById('q_po_id').value=''; document.getElementById('q_drug_id').value=''; loadList(); }
     function openAddModal(){ currentEditId=null; showModal('新增采购订单项', {}); }
     function showModal(title,data){ const modalId='entityModal'; const inputs=`<div class="mb-2"><input id="f_poi_id" class="form-control" placeholder="项ID" value="${data.poi_id||''}"></div><div class="mb-2"><input id="f_po_id" class="form-control" placeholder="采购订单ID" value="${data.po_id||''}"></div><div class="mb-2"><input id="f_drug_id" class="form-control" placeholder="药品ID" value="${data.drug_id||''}"></div><div class="mb-2"><input id="f_quantity" class="form-control" placeholder="数量" value="${data.quantity||''}"></div><div class="mb-2"><input id="f_price" class="form-control" placeholder="单价" value="${data.price||''}"></div><div class="mb-2"><input id="f_subtotal" class="form-control" placeholder="小计" value="${data.subtotal||''}"></div>`; const html=`<div class="modal" tabindex="-1" id="${modalId}"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">${inputs}</div><div class="modal-footer"><button class="btn btn-primary" onclick="saveItem()">保存</button></div></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); const modal=new bootstrap.Modal(document.getElementById(modalId)); modal.show(); document.getElementById(modalId).addEventListener('hidden.bs.modal',()=>document.getElementById(modalId).remove()); }
