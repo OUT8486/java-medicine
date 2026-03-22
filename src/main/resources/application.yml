@@ -1,4 +1,4 @@
-# 服务器端口（可选，默认8080）
+# 服务器端口
 server:
   port: 8080
   servlet:
@@ -7,35 +7,25 @@ server:
       charset: UTF-8
       force: true
 
-# 数据库连接配置
+# Spring 配置
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # 关键修改：补充 utf8mb4 + characterSetResults + allowPublicKeyRetrieval
+    # MySQL 连接配置
     url: jdbc:mysql://localhost:3306/medicine?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8mb4&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root  # 你的MySQL用户名
-    password: 123456  # 你的MySQL密码
-  # Thymeleaf模板引擎配置
-  thymeleaf:
-    cache: false  # 开发环境关闭缓存，便于调试
-    prefix: classpath:/templates/  # 模板文件路径
-    suffix: .html  # 模板文件后缀
-    mode: HTML  # 模板模式
-    encoding: UTF-8  # 编码格式
-    servlet:
-      content-type: text/html  # 内容类型
+    username: root  # 你的 MySQL 用户名
+    password: 123456  # 你的 MySQL密码
   
-  # Jackson配置：驼峰属性转下划线JSON字段（适配前端下划线命名）
+  # Jackson JSON 序列化配置
   jackson:
-    property-naming-strategy: SNAKE_CASE
     default-property-inclusion: non_null  # 忽略空值字段
+    serialization:
+      write-dates-as-timestamps: false  # 日期不以时间戳形式返回
 
-# MyBatis配置
+# MyBatis 配置
 mybatis:
-  # 如果你用注解写SQL，可注释掉这行；如果用XML，保留
-  mapper-locations: classpath:mapper/*.xml
-  # 关键修改：包名改为你的实际包名 com.example.spring_boot.entity
-  type-aliases-package: com.example.spring_boot.entity
+  mapper-locations: classpath:mapper/*.xml  # XML 映射文件位置
+  type-aliases-package: com.example.spring_boot.entity  # 实体类别名包
   configuration:
-    map-underscore-to-camel-case: true  # 数据库下划线→实体类驼峰
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印SQL日志
+    map-underscore-to-camel-case: true  # 数据库下划线转实体类驼峰
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL 日志

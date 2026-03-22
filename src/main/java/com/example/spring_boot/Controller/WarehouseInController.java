@@ -1,111 +1,108 @@
 package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.WarehouseInMapper;
+import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.WarehouseIn;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Controller
+/**
+ * 入库单管理控制器
+ */
+@RestController
+@RequestMapping("/api/warehouse-in")
+@CrossOrigin(origins = "*")
 public class WarehouseInController {
 
     @Autowired
     private WarehouseInMapper warehouseInMapper;
 
-    // 1. 页面跳转：访问 http://localhost:8080/warehouse-in 跳转到入库单管理页面
-    @GetMapping("/warehouse-in")
-    public String warehouseInPage() {
-        return "warehouse-in";
+    /**
+     * 获取所有入库单列表
+     * GET /api/warehouse-in
+     */
+    @GetMapping
+    public Result<List<WarehouseIn>> list() {
+        List<WarehouseIn> warehouseIns = warehouseInMapper.selectAllWarehouseIns();
+        return Result.success(warehouseIns);
     }
 
-    // 2. 接口：获取所有入库单数据
-    @GetMapping("/warehouse-in/list")
-    @ResponseBody
-    public List<WarehouseIn> getAllWarehouseIns() {
-        return warehouseInMapper.selectAllWarehouseIns();
-    }
-
-    // 4. 接口：根据ID获取入库单
-    @GetMapping("/warehouse-in/{id}")
-    @ResponseBody
-    public ResponseEntity<WarehouseIn> getWarehouseInById(@PathVariable String id) {
+    /**
+     * 根据 ID 获取入库单详情
+     * GET /api/warehouse-in/{id}
+     */
+    @GetMapping("/{id}")
+    public Result<WarehouseIn> getById(@PathVariable String id) {
         WarehouseIn warehouseIn = warehouseInMapper.selectWarehouseInById(id);
         if (warehouseIn != null) {
-            return ResponseEntity.ok(warehouseIn);
+            return Result.success(warehouseIn);
         } else {
-            return ResponseEntity.notFound().build();
+            return Result.error(404, "入库单不存在");
         }
     }
 
-    // 10. 接口：新增入库单
-    @PostMapping("/warehouse-in")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> addWarehouseIn(@RequestBody WarehouseIn warehouseIn) {
+    /**
+     * 新增入库单
+     * POST /api/warehouse-in
+     */
+    @PostMapping
+    public Result<String> add(@RequestBody WarehouseIn warehouseIn) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // 设置入库日期为当前日期
             if (warehouseIn.getIn_date() == null) {
-                String dateStr = sdf.format(new Date());
-                warehouseIn.setIn_date(dateStr);
+                warehouseIn.setIn_date(sdf.format(new Date()));
             }
             
             int result = warehouseInMapper.insertWarehouseIn(warehouseIn);
             if (result > 0) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "入库单添加成功");
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                return Result.success("入库单添加成功");
             } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "入库单添加失败");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return Result.error("入库单添加失败");
             }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "入库单添加失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "入库单添加失败：" + e.getMessage());
         }
     }
 
-    // 11. 接口：更新入库单
-    @PutMapping("/warehouse-in/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> updateWarehouseIn(@PathVariable String id, @RequestBody WarehouseIn warehouseIn) {
+    /**
+     * 修改入库单信息
+     * PUT /api/warehouse-in/{id}
+     */
+    @PutMapping("/{id}")
+    public Result<String> update(@PathVariable String id, @RequestBody WarehouseIn warehouseIn) {
         try {
             warehouseIn.setWi_id(id);
-            warehouseInMapper.updateWarehouseIn(warehouseIn);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "入库单更新成功");
-            return ResponseEntity.ok(response);
+            int result = warehouseInMapper.updateWarehouseIn(warehouseIn);
+            if (result > 0) {
+                return Result.success("入库单更新成功");
+            } else {
+                return Result.error("入库单更新失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "入库单更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "入库单更新失败：" + e.getMessage());
         }
     }
 
-    // 12. 接口：删除入库单
-    @DeleteMapping("/warehouse-in/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteWarehouseIn(@PathVariable String id) {
+    /**
+     * 删除入库单
+     * DELETE /api/warehouse-in/{id}
+     */
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable String id) {
         try {
-            warehouseInMapper.deleteWarehouseIn(id);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "入库单删除成功");
-            return ResponseEntity.ok(response);
+            int result = warehouseInMapper.deleteWarehouseIn(id);
+            if (result > 0) {
+                return Result.success("入库单删除成功");
+            } else {
+                return Result.error("入库单删除失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "入库单删除失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "入库单删除失败：" + e.getMessage());
         }
     }
 }

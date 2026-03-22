@@ -1,117 +1,114 @@
 package com.example.spring_boot.controller;
 
 import com.example.spring_boot.dao.SalesOrderItemMapper;
+import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.SalesOrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Controller
+/**
+ * 销售订单项管理控制器
+ */
+@RestController
+@RequestMapping("/api/sales-order-items")
+@CrossOrigin(origins = "*")
 public class SalesOrderItemController {
 
     @Autowired
     private SalesOrderItemMapper salesOrderItemMapper;
 
-    // 2. 接口：根据销售订单ID获取订单项
-    @GetMapping("/sales-order-item/list")
-    @ResponseBody
-    public ResponseEntity<List<SalesOrderItem>> getSalesOrderItemsBySoId(
-            @RequestParam String soId) {
+    /**
+     * 根据销售订单 ID 获取订单项列表
+     * GET /api/sales-order-items?soId={soId}
+     */
+    @GetMapping
+    public Result<List<SalesOrderItem>> list(@RequestParam String soId) {
         List<SalesOrderItem> items = salesOrderItemMapper.selectSalesOrderItemsBySoId(soId);
-        return ResponseEntity.ok(items);
+        return Result.success(items);
     }
 
-    // 3. 接口：根据ID获取销售订单项
-    @GetMapping("/sales-order-item/{id}")
-    @ResponseBody
-    public ResponseEntity<SalesOrderItem> getSalesOrderItemById(@PathVariable String id) {
+    /**
+     * 根据 ID 获取销售订单项详情
+     * GET /api/sales-order-items/{id}
+     */
+    @GetMapping("/{id}")
+    public Result<SalesOrderItem> getById(@PathVariable String id) {
         SalesOrderItem item = salesOrderItemMapper.selectSalesOrderItemById(id);
         if (item != null) {
-            return ResponseEntity.ok(item);
+            return Result.success(item);
         } else {
-            return ResponseEntity.notFound().build();
+            return Result.error(404, "销售订单项不存在");
         }
     }
 
-    // 6. 接口：新增销售订单项
-    @PostMapping("/sales-order-item")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> addSalesOrderItem(@RequestBody SalesOrderItem salesOrderItem) {
+    /**
+     * 新增销售订单项
+     * POST /api/sales-order-items
+     */
+    @PostMapping
+    public Result<String> add(@RequestBody SalesOrderItem salesOrderItem) {
         try {
             int result = salesOrderItemMapper.insertSalesOrderItem(salesOrderItem);
             if (result > 0) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "销售订单项添加成功");
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                return Result.success("销售订单项添加成功");
             } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "销售订单项添加失败");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return Result.error("销售订单项添加失败");
             }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项添加失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "销售订单项添加失败：" + e.getMessage());
         }
     }
 
-    // 8. 接口：更新销售订单项
-    @PutMapping("/sales-order-item/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> updateSalesOrderItem(@PathVariable String id, @RequestBody SalesOrderItem salesOrderItem) {
+    /**
+     * 修改销售订单项信息
+     * PUT /api/sales-order-items/{id}
+     */
+    @PutMapping("/{id}")
+    public Result<String> update(@PathVariable String id, @RequestBody SalesOrderItem salesOrderItem) {
         try {
-            // 设置ID并确保subtotal是基于单价和数量计算的，而不是直接设置
             salesOrderItem.setSoi_id(id);
-            // 如果实体中有subtotal字段，应该在数据库层面或mapper中通过unit_price * quantity计算
-            salesOrderItemMapper.updateSalesOrderItem(salesOrderItem);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项更新成功");
-            return ResponseEntity.ok(response);
+            int result = salesOrderItemMapper.updateSalesOrderItem(salesOrderItem);
+            if (result > 0) {
+                return Result.success("销售订单项更新成功");
+            } else {
+                return Result.error("销售订单项更新失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "销售订单项更新失败：" + e.getMessage());
         }
     }
 
-    // 10. 接口：删除销售订单项
-    @DeleteMapping("/sales-order-item/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteSalesOrderItem(@PathVariable String id) {
+    /**
+     * 删除销售订单项
+     * DELETE /api/sales-order-items/{id}
+     */
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable String id) {
         try {
-            salesOrderItemMapper.deleteSalesOrderItem(id);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项删除成功");
-            return ResponseEntity.ok(response);
+            int result = salesOrderItemMapper.deleteSalesOrderItem(id);
+            if (result > 0) {
+                return Result.success("销售订单项删除成功");
+            } else {
+                return Result.error("销售订单项删除失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项删除失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "销售订单项删除失败：" + e.getMessage());
         }
     }
 
-    // 11. 接口：根据销售订单ID删除所有订单项
-    @DeleteMapping("/sales-order-item/so/{soId}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteSalesOrderItemsBySoId(@PathVariable String soId) {
+    /**
+     * 根据销售订单 ID 删除所有订单项
+     * DELETE /api/sales-order-items/batch?soId={soId}
+     */
+    @DeleteMapping("/batch")
+    public Result<String> deleteBySoId(@RequestParam String soId) {
         try {
             salesOrderItemMapper.deleteSalesOrderItemsBySoId(soId);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项删除成功");
-            return ResponseEntity.ok(response);
+            return Result.success("销售订单项批量删除成功");
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "销售订单项删除失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "销售订单项批量删除失败：" + e.getMessage());
         }
     }
 }

@@ -13,12 +13,13 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\SupplierService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\SalesOrderService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\SupplierController.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\config\CorsConfig.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\SalesOrderItemMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\UserMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Manufacturer.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\exception\GlobalExceptionHandler.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\EmployeeMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\InventoryService.java
-C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\ManufacturerController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\PurchaseOrder.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\InventoryController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\PurchaseOrderItemMapper.java
@@ -40,6 +41,7 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\SalesOrderController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\InventoryMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\DrugService.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Result.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\HealthController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\WarehouseMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Drug.java
@@ -47,6 +49,7 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\UserService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\PurchaseOrderService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\FormPageController.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\AuthController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\SalesOrderMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\SalesOrderItem.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\CustomerController.java

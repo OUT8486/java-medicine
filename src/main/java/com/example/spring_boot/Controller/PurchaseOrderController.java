@@ -3,17 +3,18 @@ package com.example.spring_boot.controller;
 import com.example.spring_boot.dao.PurchaseOrderMapper;
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.entity.PurchaseOrder;
+import com.example.spring_boot.entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Controller
+/**
+ * 采购订单管理控制器
+ */
+@RestController
+@RequestMapping("/api/purchase-orders")
+@CrossOrigin(origins = "*")
 public class PurchaseOrderController {
 
     @Autowired
@@ -22,98 +23,96 @@ public class PurchaseOrderController {
     @Autowired
     private PurchaseOrderItemMapper purchaseOrderItemMapper;
 
-    // 1. 页面跳转：访问 http://localhost:8080/purchase-order 跳转到采购订单管理页面
-    @GetMapping("/purchase-order")
-    public String purchaseOrderPage() {
-        return "purchase-order";
-    }
-    
-    // 1.5 页面跳转：访问 http://localhost:8080/purchase-order/form 跳转到采购订单表单页面
-    @GetMapping("/purchase-order/form")
-    public String purchaseOrderFormPage() {
-        return "purchase-order-form";
+    /**
+     * 获取所有采购订单列表
+     * GET /api/purchase-orders
+     */
+    @GetMapping
+    public Result<List<PurchaseOrder>> list() {
+        List<PurchaseOrder> orders = purchaseOrderMapper.selectAllPurchaseOrders();
+        return Result.success(orders);
     }
 
-    // 2. 接口：获取所有采购订单数据
-    @GetMapping("/purchase-order/list")
-    @ResponseBody
-    public List<PurchaseOrder> getAllPurchaseOrders() {
-        return purchaseOrderMapper.selectAllPurchaseOrders();
-    }
-
-    // 4. 接口：根据ID获取采购订单
-    @GetMapping("/purchase-order/{id}")
-    @ResponseBody
-    public ResponseEntity<PurchaseOrder> getPurchaseOrderById(@PathVariable String id) {
+    /**
+     * 根据 ID 获取采购订单详情
+     * GET /api/purchase-orders/{id}
+     */
+    @GetMapping("/{id}")
+    public Result<PurchaseOrder> getById(@PathVariable String id) {
+        System.out.println("========================================");
+        System.out.println("=== 接收到查询请求，ID: " + id + " ===");
+        System.out.println("=== ID 长度：" + (id != null ? id.length() : "null") + " ===");
         PurchaseOrder order = purchaseOrderMapper.selectPurchaseOrderById(id);
         if (order != null) {
-            return ResponseEntity.ok(order);
+            System.out.println("=== 查询结果：找到订单，PO_ID: " + order.getPo_id() + " ===");
         } else {
-            return ResponseEntity.notFound().build();
+            System.out.println("=== 查询结果：未找到订单 ===");
+        }
+        System.out.println("========================================");
+        if (order != null) {
+            return Result.success(order);
+        } else {
+            return Result.error(404, "采购订单不存在，ID: " + id);
         }
     }
 
-    // 9. 接口：新增采购订单
-    @PostMapping("/purchase-order")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> addPurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
+    /**
+     * 新增采购订单
+     * POST /api/purchase-orders
+     */
+    @PostMapping
+    public Result<String> add(@RequestBody PurchaseOrder purchaseOrder) {
         try {
             // 设置订单状态为待收货
-            purchaseOrder.setAudit_status(0);  // 修复：使用Integer类型而不是String
+            purchaseOrder.setAudit_status(0);
             
             int result = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
             if (result > 0) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "采购订单添加成功");
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                return Result.success("采购订单添加成功");
             } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "采购订单添加失败");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return Result.error("采购订单添加失败");
             }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单添加失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "采购订单添加失败：" + e.getMessage());
         }
     }
 
-    // 10. 接口：更新采购订单
-    @PutMapping("/purchase-order/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> updatePurchaseOrder(@PathVariable String id, @RequestBody PurchaseOrder purchaseOrder) {
+    /**
+     * 修改采购订单信息
+     * PUT /api/purchase-orders/{id}
+     */
+    @PutMapping("/{id}")
+    public Result<String> update(@PathVariable String id, @RequestBody PurchaseOrder purchaseOrder) {
         try {
-            // 不要覆盖ID，保持原有的ID
-            // purchaseOrder.setPo_id(id);  // 注释掉这行，避免覆盖传入的ID
-            purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单更新成功");
-            return ResponseEntity.ok(response);
+            purchaseOrder.setPo_id(id);
+            int result = purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
+            if (result > 0) {
+                return Result.success("采购订单更新成功");
+            } else {
+                return Result.error("采购订单更新失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单更新失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "采购订单更新失败：" + e.getMessage());
         }
     }
 
-    // 13. 接口：删除采购订单
-    @DeleteMapping("/purchase-order/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> deletePurchaseOrder(@PathVariable String id) {
+    /**
+     * 删除采购订单
+     * DELETE /api/purchase-orders/{id}
+     */
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable String id) {
         try {
-            // 先删除订单项
+            // 先删除订单项，再删除订单
             purchaseOrderItemMapper.deletePurchaseOrderItemsByPoId(id);
-            // 再删除订单
-            purchaseOrderMapper.deletePurchaseOrder(id);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单删除成功");
-            return ResponseEntity.ok(response);
+            int result = purchaseOrderMapper.deletePurchaseOrder(id);
+            if (result > 0) {
+                return Result.success("采购订单删除成功");
+            } else {
+                return Result.error("采购订单删除失败");
+            }
         } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "采购订单删除失败：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return Result.error(500, "采购订单删除失败：" + e.getMessage());
         }
     }
 }
