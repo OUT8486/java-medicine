@@ -200,17 +200,6 @@
         </el-col>
       </el-row>
 
-      <!-- 系统信息 -->
-      <el-card class="mt-4" shadow="hover">
-        <template #header>
-          <span>系统信息</span>
-        </template>
-        <div class="system-info">
-          <p>当前版本：1.0</p>
-          <p>运行环境：Spring Boot + Vue 3</p>
-          <p>数据库：MySQL</p>
-        </div>
-      </el-card>
     </div>
   </div>
 </template>
@@ -398,11 +387,6 @@ const handleLogout = async () => {
 .card-desc {
   font-size: 13px;
   color: #909399;
-}
-
-.system-info p {
-  margin: 8px 0;
-  color: #606266;
 }
 
 .mt-4 {
