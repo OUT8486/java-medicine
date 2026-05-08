@@ -1,9 +1,9 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.SalesOrderMapper;
 import com.example.spring_boot.dao.SalesOrderItemMapper;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.SalesOrder;
+import com.example.spring_boot.service.SalesOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class SalesOrderController {
 
     @Autowired
-    private SalesOrderMapper salesOrderMapper;
+    private SalesOrderService salesOrderService;
     
     @Autowired
     private SalesOrderItemMapper salesOrderItemMapper;
@@ -29,7 +29,7 @@ public class SalesOrderController {
      */
     @GetMapping
     public Result<List<SalesOrder>> list() {
-        List<SalesOrder> orders = salesOrderMapper.selectAllSalesOrders();
+        List<SalesOrder> orders = salesOrderService.getAllSalesOrders();
         return Result.success(orders);
     }
 
@@ -39,7 +39,7 @@ public class SalesOrderController {
      */
     @GetMapping("/customer/{customerId}")
     public Result<List<SalesOrder>> getByCustomerId(@PathVariable String customerId) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByCustomerId(customerId);
+        List<SalesOrder> orders = salesOrderService.getSalesOrdersByCustomerId(customerId);
         return Result.success(orders);
     }
 
@@ -49,7 +49,7 @@ public class SalesOrderController {
      */
     @GetMapping("/employee/{employeeId}")
     public Result<List<SalesOrder>> getByEmployeeId(@PathVariable String employeeId) {
-        List<SalesOrder> orders = salesOrderMapper.selectSalesOrdersByCreateBy(employeeId);
+        List<SalesOrder> orders = salesOrderService.getSalesOrdersByEmployeeId(employeeId);
         return Result.success(orders);
     }
 
@@ -62,7 +62,7 @@ public class SalesOrderController {
         System.out.println("========================================");
         System.out.println("=== 接收到查询请求，ID: " + id + " ===");
         System.out.println("=== ID 长度：" + (id != null ? id.length() : "null") + " ===");
-        SalesOrder order = salesOrderMapper.selectSalesOrderById(id);
+        SalesOrder order = salesOrderService.getSalesOrderById(id);
         if (order != null) {
             System.out.println("=== 查询结果：找到订单，SO_ID: " + order.getSo_id() + " ===");
         } else {
@@ -83,7 +83,7 @@ public class SalesOrderController {
     @PostMapping
     public Result<String> add(@RequestBody SalesOrder salesOrder) {
         try {
-            int result = salesOrderMapper.insertSalesOrder(salesOrder);
+            int result = salesOrderService.addSalesOrder(salesOrder);
             if (result > 0) {
                 return Result.success("销售订单添加成功");
             } else {
@@ -102,12 +102,8 @@ public class SalesOrderController {
     public Result<String> update(@PathVariable String id, @RequestBody SalesOrder salesOrder) {
         try {
             salesOrder.setSo_id(id);
-            int result = salesOrderMapper.updateSalesOrder(salesOrder);
-            if (result > 0) {
-                return Result.success("销售订单更新成功");
-            } else {
-                return Result.error("销售订单更新失败");
-            }
+            salesOrderService.updateSalesOrder(salesOrder);
+            return Result.success("销售订单更新成功");
         } catch (Exception e) {
             return Result.error(500, "销售订单更新失败：" + e.getMessage());
         }
@@ -122,12 +118,8 @@ public class SalesOrderController {
         try {
             // 先删除订单项，再删除订单
             salesOrderItemMapper.deleteSalesOrderItemsBySoId(id);
-            int result = salesOrderMapper.deleteSalesOrder(id);
-            if (result > 0) {
-                return Result.success("销售订单删除成功");
-            } else {
-                return Result.error("销售订单删除失败");
-            }
+            salesOrderService.deleteSalesOrder(id);
+            return Result.success("销售订单删除成功");
         } catch (Exception e) {
             return Result.error(500, "销售订单删除失败：" + e.getMessage());
         }

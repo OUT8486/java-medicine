@@ -16,6 +16,22 @@ spring:
     username: root  # 你的 MySQL 用户名
     password: 123456  # 你的 MySQL密码
   
+  # Redis 配置
+  data:
+    redis:
+      host: 172.29.150.141
+      port: 6379
+      password: 123456
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+        shutdown-timeout: 100ms
+  
   # Jackson JSON 序列化配置
   jackson:
     default-property-inclusion: non_null  # 忽略空值字段

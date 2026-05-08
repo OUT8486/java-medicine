@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.CustomerMapper;
 import com.example.spring_boot.entity.Customer;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class CustomerController {
 
     @Autowired
-    private CustomerMapper customerMapper;
+    private CustomerService customerService;
 
     /**
      * 获取所有客户列表
@@ -25,7 +25,7 @@ public class CustomerController {
      */
     @GetMapping
     public Result<List<Customer>> list() {
-        List<Customer> customers = customerMapper.selectAllCustomers();
+        List<Customer> customers = customerService.getAllCustomers();
         return Result.success(customers);
     }
 
@@ -35,7 +35,7 @@ public class CustomerController {
      */
     @GetMapping("/{id}")
     public Result<Customer> getById(@PathVariable String id) {
-        Customer customer = customerMapper.selectCustomerById(id);
+        Customer customer = customerService.getCustomerById(id);
         if (customer != null) {
             return Result.success(customer);
         } else {
@@ -65,7 +65,7 @@ public class CustomerController {
         }
 
         try {
-            int result = customerMapper.insertCustomer(customer);
+            int result = customerService.addCustomer(customer);
             if (result > 0) {
                 return Result.success("客户添加成功");
             } else {
@@ -98,12 +98,8 @@ public class CustomerController {
 
         try {
             customer.setCustomer_id(id);
-            int result = customerMapper.updateCustomer(customer);
-            if (result > 0) {
-                return Result.success("客户更新成功");
-            } else {
-                return Result.error("客户更新失败");
-            }
+            customerService.updateCustomer(customer);
+            return Result.success("客户更新成功");
         } catch (Exception e) {
             return Result.error(500, "客户更新失败：" + e.getMessage());
         }
@@ -116,12 +112,8 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = customerMapper.deleteCustomer(id);
-            if (result > 0) {
-                return Result.success("客户删除成功");
-            } else {
-                return Result.error("客户删除失败");
-            }
+            customerService.deleteCustomer(id);
+            return Result.success("客户删除成功");
         } catch (Exception e) {
             return Result.error(500, "客户删除失败：" + e.getMessage());
         }

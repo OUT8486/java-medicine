@@ -1,9 +1,9 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.DrugMapper;
 import com.example.spring_boot.entity.Drug;
 import com.example.spring_boot.entity.DrugWithManufacturer;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.DrugService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class DrugController {
 
     @Autowired
-    private DrugMapper drugMapper;
+    private DrugService drugService;
 
     /**
      * 获取所有药品列表
@@ -28,7 +28,7 @@ public class DrugController {
      */
     @GetMapping
     public Result<List<Drug>> list() {
-        List<Drug> drugs = drugMapper.selectAllDrugs();
+        List<Drug> drugs = drugService.getAllDrugs();
         return Result.success(drugs);
     }
 
@@ -38,7 +38,7 @@ public class DrugController {
      */
     @GetMapping("/{id}")
     public Result<Drug> getById(@PathVariable String id) {
-        Drug drug = drugMapper.selectDrugById(id);
+        Drug drug = drugService.getDrugById(id);
         if (drug != null) {
             return Result.success(drug);
         } else {
@@ -52,7 +52,7 @@ public class DrugController {
      */
     @GetMapping("/{id}/manufacturer")
     public Result<DrugWithManufacturer> getWithManufacturer(@PathVariable String id) {
-        DrugWithManufacturer drug = drugMapper.selectDrugWithManufacturer(id);
+        DrugWithManufacturer drug = drugService.getDrugWithManufacturer(id);
         if (drug != null) {
             return Result.success(drug);
         } else {
@@ -84,7 +84,7 @@ public class DrugController {
         }
 
         try {
-            int result = drugMapper.insertDrug(drug);
+            int result = drugService.addDrug(drug);
             if (result > 0) {
                 return Result.success("药品添加成功");
             } else {
@@ -117,12 +117,8 @@ public class DrugController {
 
         try {
             drug.setDrug_id(id);
-            int result = drugMapper.updateDrug(drug);
-            if (result > 0) {
-                return Result.success("药品更新成功");
-            } else {
-                return Result.error("药品更新失败");
-            }
+            drugService.updateDrug(drug);
+            return Result.success("药品更新成功");
         } catch (Exception e) {
             return Result.error(500, "药品更新失败：" + e.getMessage());
         }
@@ -135,12 +131,8 @@ public class DrugController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = drugMapper.deleteDrug(id);
-            if (result > 0) {
-                return Result.success("药品删除成功");
-            } else {
-                return Result.error("药品删除失败");
-            }
+            drugService.deleteDrug(id);
+            return Result.success("药品删除成功");
         } catch (Exception e) {
             return Result.error(500, "药品删除失败：" + e.getMessage());
         }

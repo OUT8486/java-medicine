@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.InventoryMapper;
 import com.example.spring_boot.entity.Inventory;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class InventoryController {
 
     @Autowired
-    private InventoryMapper inventoryMapper;
+    private InventoryService inventoryService;
 
     /**
      * 获取所有库存列表
@@ -25,7 +25,7 @@ public class InventoryController {
      */
     @GetMapping
     public Result<List<Inventory>> list() {
-        List<Inventory> inventories = inventoryMapper.selectAllInventories();
+        List<Inventory> inventories = inventoryService.getAllInventories();
         return Result.success(inventories);
     }
 
@@ -35,7 +35,7 @@ public class InventoryController {
      */
     @GetMapping("/{id}")
     public Result<Inventory> getById(@PathVariable String id) {
-        Inventory inventory = inventoryMapper.selectInventoryById(id);
+        Inventory inventory = inventoryService.getInventoryById(id);
         if (inventory != null) {
             return Result.success(inventory);
         } else {
@@ -50,7 +50,7 @@ public class InventoryController {
     @PostMapping
     public Result<String> add(@RequestBody Inventory inventory) {
         try {
-            int result = inventoryMapper.insertInventory(inventory);
+            int result = inventoryService.addInventory(inventory);
             if (result > 0) {
                 return Result.success("库存添加成功");
             } else {
@@ -69,12 +69,8 @@ public class InventoryController {
     public Result<String> update(@PathVariable String id, @RequestBody Inventory inventory) {
         try {
             inventory.setInventory_id(id);
-            int result = inventoryMapper.updateInventory(inventory);
-            if (result > 0) {
-                return Result.success("库存更新成功");
-            } else {
-                return Result.error("库存更新失败");
-            }
+            inventoryService.updateInventory(inventory);
+            return Result.success("库存更新成功");
         } catch (Exception e) {
             return Result.error(500, "库存更新失败：" + e.getMessage());
         }
@@ -87,12 +83,8 @@ public class InventoryController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = inventoryMapper.deleteInventory(id);
-            if (result > 0) {
-                return Result.success("库存删除成功");
-            } else {
-                return Result.error("库存删除失败");
-            }
+            inventoryService.deleteInventory(id);
+            return Result.success("库存删除成功");
         } catch (Exception e) {
             return Result.error(500, "库存删除失败：" + e.getMessage());
         }

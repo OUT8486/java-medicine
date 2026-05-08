@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.EmployeeMapper;
 import com.example.spring_boot.entity.Employee;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class EmployeeController {
 
     @Autowired
-    private EmployeeMapper employeeMapper;
+    private EmployeeService employeeService;
 
     /**
      * 获取所有员工列表
@@ -25,7 +25,7 @@ public class EmployeeController {
      */
     @GetMapping
     public Result<List<Employee>> list() {
-        List<Employee> employees = employeeMapper.selectAllEmployees();
+        List<Employee> employees = employeeService.getAllEmployees();
         return Result.success(employees);
     }
 
@@ -35,7 +35,7 @@ public class EmployeeController {
      */
     @GetMapping("/{id}")
     public Result<Employee> getById(@PathVariable String id) {
-        Employee employee = employeeMapper.selectEmployeeById(id);
+        Employee employee = employeeService.getEmployeeById(id);
         if (employee != null) {
             return Result.success(employee);
         } else {
@@ -60,7 +60,7 @@ public class EmployeeController {
         }
 
         try {
-            int result = employeeMapper.insertEmployee(employee);
+            int result = employeeService.addEmployee(employee);
             if (result > 0) {
                 return Result.success("员工添加成功");
             } else {
@@ -89,12 +89,8 @@ public class EmployeeController {
 
         try {
             employee.setEmployee_id(id);
-            int result = employeeMapper.updateEmployee(employee);
-            if (result > 0) {
-                return Result.success("员工更新成功");
-            } else {
-                return Result.error("员工更新失败");
-            }
+            employeeService.updateEmployee(employee);
+            return Result.success("员工更新成功");
         } catch (Exception e) {
             return Result.error(500, "员工更新失败：" + e.getMessage());
         }
@@ -107,12 +103,8 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = employeeMapper.deleteEmployee(id);
-            if (result > 0) {
-                return Result.success("员工删除成功");
-            } else {
-                return Result.error("员工删除失败");
-            }
+            employeeService.deleteEmployee(id);
+            return Result.success("员工删除成功");
         } catch (Exception e) {
             return Result.error(500, "员工删除失败：" + e.getMessage());
         }

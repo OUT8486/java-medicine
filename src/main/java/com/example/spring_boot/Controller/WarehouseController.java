@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.WarehouseMapper;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Warehouse;
+import com.example.spring_boot.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class WarehouseController {
 
     @Autowired
-    private WarehouseMapper warehouseMapper;
+    private WarehouseService warehouseService;
 
     /**
      * 获取所有仓库列表
@@ -25,7 +25,7 @@ public class WarehouseController {
      */
     @GetMapping
     public Result<List<Warehouse>> list() {
-        List<Warehouse> warehouses = warehouseMapper.selectAllWarehouses();
+        List<Warehouse> warehouses = warehouseService.getAllWarehouses();
         return Result.success(warehouses);
     }
 
@@ -35,7 +35,7 @@ public class WarehouseController {
      */
     @GetMapping("/{id}")
     public Result<Warehouse> getById(@PathVariable String id) {
-        Warehouse warehouse = warehouseMapper.selectWarehouseById(id);
+        Warehouse warehouse = warehouseService.getWarehouseById(id);
         if (warehouse != null) {
             return Result.success(warehouse);
         } else {
@@ -49,7 +49,7 @@ public class WarehouseController {
      */
     @GetMapping("/name/{name}")
     public Result<List<Warehouse>> getByName(@PathVariable String name) {
-        List<Warehouse> warehouses = warehouseMapper.selectWarehousesByName(name);
+        List<Warehouse> warehouses = warehouseService.getWarehousesByName(name);
         return Result.success(warehouses);
     }
 
@@ -59,7 +59,7 @@ public class WarehouseController {
      */
     @GetMapping("/location/{location}")
     public Result<List<Warehouse>> getByLocation(@PathVariable String location) {
-        List<Warehouse> warehouses = warehouseMapper.selectWarehousesByLocation(location);
+        List<Warehouse> warehouses = warehouseService.getWarehousesByLocation(location);
         return Result.success(warehouses);
     }
 
@@ -77,7 +77,7 @@ public class WarehouseController {
         }
 
         try {
-            int result = warehouseMapper.insertWarehouse(warehouse);
+            int result = warehouseService.addWarehouse(warehouse);
             if (result > 0) {
                 return Result.success("仓库添加成功");
             } else {
@@ -103,12 +103,8 @@ public class WarehouseController {
 
         try {
             warehouse.setWarehouse_id(id);
-            int result = warehouseMapper.updateWarehouse(warehouse);
-            if (result > 0) {
-                return Result.success("仓库更新成功");
-            } else {
-                return Result.error("仓库更新失败");
-            }
+            warehouseService.updateWarehouse(warehouse);
+            return Result.success("仓库更新成功");
         } catch (Exception e) {
             return Result.error(500, "仓库更新失败：" + e.getMessage());
         }
@@ -121,12 +117,8 @@ public class WarehouseController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = warehouseMapper.deleteWarehouse(id);
-            if (result > 0) {
-                return Result.success("仓库删除成功");
-            } else {
-                return Result.error("仓库删除失败");
-            }
+            warehouseService.deleteWarehouse(id);
+            return Result.success("仓库删除成功");
         } catch (Exception e) {
             return Result.error(500, "仓库删除失败：" + e.getMessage());
         }

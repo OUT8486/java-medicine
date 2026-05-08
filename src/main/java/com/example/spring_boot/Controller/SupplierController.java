@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.SupplierMapper;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Supplier;
+import com.example.spring_boot.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class SupplierController {
 
     @Autowired
-    private SupplierMapper supplierMapper;
+    private SupplierService supplierService;
 
     /**
      * 获取所有供应商列表
@@ -25,7 +25,7 @@ public class SupplierController {
      */
     @GetMapping
     public Result<List<Supplier>> list() {
-        List<Supplier> suppliers = supplierMapper.selectAllSuppliers();
+        List<Supplier> suppliers = supplierService.getAllSuppliers();
         return Result.success(suppliers);
     }
 
@@ -35,7 +35,7 @@ public class SupplierController {
      */
     @GetMapping("/{id}")
     public Result<Supplier> getById(@PathVariable String id) {
-        Supplier supplier = supplierMapper.selectSupplierById(id);
+        Supplier supplier = supplierService.getSupplierById(id);
         if (supplier != null) {
             return Result.success(supplier);
         } else {
@@ -65,7 +65,7 @@ public class SupplierController {
         }
 
         try {
-            int result = supplierMapper.insertSupplier(supplier);
+            int result = supplierService.addSupplier(supplier);
             if (result > 0) {
                 return Result.success("供应商添加成功");
             } else {
@@ -99,12 +99,8 @@ public class SupplierController {
 
         try {
             supplier.setSupplier_id(id);
-            int result = supplierMapper.updateSupplier(supplier);
-            if (result > 0) {
-                return Result.success("供应商更新成功");
-            } else {
-                return Result.error("供应商更新失败");
-            }
+            supplierService.updateSupplier(supplier);
+            return Result.success("供应商更新成功");
         } catch (Exception e) {
             return Result.error(500, "供应商更新失败：" + e.getMessage());
         }
@@ -117,12 +113,8 @@ public class SupplierController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = supplierMapper.deleteSupplier(id);
-            if (result > 0) {
-                return Result.success("供应商删除成功");
-            } else {
-                return Result.error("供应商删除失败");
-            }
+            supplierService.deleteSupplier(id);
+            return Result.success("供应商删除成功");
         } catch (Exception e) {
             return Result.error(500, "供应商删除失败：" + e.getMessage());
         }

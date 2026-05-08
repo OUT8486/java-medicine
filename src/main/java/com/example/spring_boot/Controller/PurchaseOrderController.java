@@ -1,9 +1,9 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.PurchaseOrderMapper;
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.entity.PurchaseOrder;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class PurchaseOrderController {
 
     @Autowired
-    private PurchaseOrderMapper purchaseOrderMapper;
+    private PurchaseOrderService purchaseOrderService;
     
     @Autowired
     private PurchaseOrderItemMapper purchaseOrderItemMapper;
@@ -29,7 +29,7 @@ public class PurchaseOrderController {
      */
     @GetMapping
     public Result<List<PurchaseOrder>> list() {
-        List<PurchaseOrder> orders = purchaseOrderMapper.selectAllPurchaseOrders();
+        List<PurchaseOrder> orders = purchaseOrderService.getAllPurchaseOrders();
         return Result.success(orders);
     }
 
@@ -42,7 +42,7 @@ public class PurchaseOrderController {
         System.out.println("========================================");
         System.out.println("=== 接收到查询请求，ID: " + id + " ===");
         System.out.println("=== ID 长度：" + (id != null ? id.length() : "null") + " ===");
-        PurchaseOrder order = purchaseOrderMapper.selectPurchaseOrderById(id);
+        PurchaseOrder order = purchaseOrderService.getPurchaseOrderById(id);
         if (order != null) {
             System.out.println("=== 查询结果：找到订单，PO_ID: " + order.getPo_id() + " ===");
         } else {
@@ -66,7 +66,7 @@ public class PurchaseOrderController {
             // 设置订单状态为待收货
             purchaseOrder.setAudit_status(0);
             
-            int result = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
+            int result = purchaseOrderService.addPurchaseOrder(purchaseOrder);
             if (result > 0) {
                 return Result.success("采购订单添加成功");
             } else {
@@ -85,12 +85,8 @@ public class PurchaseOrderController {
     public Result<String> update(@PathVariable String id, @RequestBody PurchaseOrder purchaseOrder) {
         try {
             purchaseOrder.setPo_id(id);
-            int result = purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
-            if (result > 0) {
-                return Result.success("采购订单更新成功");
-            } else {
-                return Result.error("采购订单更新失败");
-            }
+            purchaseOrderService.updatePurchaseOrder(purchaseOrder);
+            return Result.success("采购订单更新成功");
         } catch (Exception e) {
             return Result.error(500, "采购订单更新失败：" + e.getMessage());
         }
@@ -105,12 +101,8 @@ public class PurchaseOrderController {
         try {
             // 先删除订单项，再删除订单
             purchaseOrderItemMapper.deletePurchaseOrderItemsByPoId(id);
-            int result = purchaseOrderMapper.deletePurchaseOrder(id);
-            if (result > 0) {
-                return Result.success("采购订单删除成功");
-            } else {
-                return Result.error("采购订单删除失败");
-            }
+            purchaseOrderService.deletePurchaseOrder(id);
+            return Result.success("采购订单删除成功");
         } catch (Exception e) {
             return Result.error(500, "采购订单删除失败：" + e.getMessage());
         }

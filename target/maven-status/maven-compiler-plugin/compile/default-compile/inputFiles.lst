@@ -34,6 +34,7 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Inventory.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\EmployeeController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\PurchaseOrderItemController.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\config\RedisConfig.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\DrugMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\PurchaseOrderItemService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\SupplierMapper.java
@@ -42,6 +43,7 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\InventoryMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\DrugService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Result.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\utils\RedisUtils.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\HealthController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\WarehouseMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\Drug.java
@@ -52,6 +54,7 @@ C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\AuthController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\SalesOrderMapper.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\entity\SalesOrderItem.java
+C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\RedisTestController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\controller\CustomerController.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\service\ManufacturerService.java
 C:\Users\Lenovo\Desktop\药店管理系统\src\main\java\com\example\spring_boot\dao\CustomerMapper.java

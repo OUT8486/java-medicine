@@ -10,6 +10,7 @@ com\example\spring_boot\service\PurchaseOrderService.class
 com\example\spring_boot\entity\Inventory.class
 com\example\spring_boot\service\DrugService.class
 com\example\spring_boot\entity\SalesOrderItem.class
+com\example\spring_boot\controller\RedisTestController.class
 com\example\spring_boot\controller\DrugController.class
 com\example\spring_boot\controller\SalesOrderItemController.class
 com\example\spring_boot\controller\UserController.class
@@ -24,8 +25,10 @@ com\example\spring_boot\service\ManufacturerService.class
 com\example\spring_boot\controller\WarehouseController.class
 com\example\spring_boot\dao\SalesOrderMapper.class
 com\example\spring_boot\entity\PurchaseOrderItem.class
+com\example\spring_boot\utils\RedisUtils.class
 com\example\spring_boot\controller\PurchaseOrderController.class
 com\example\spring_boot\service\SalesOrderService.class
+com\example\spring_boot\config\RedisConfig.class
 com\example\spring_boot\controller\AuthController.class
 com\example\spring_boot\entity\Drug.class
 com\example\spring_boot\config\CorsConfig.class
