@@ -37,6 +37,8 @@ com\example\spring_boot\service\InventoryService.class
 com\example\spring_boot\Application.class
 com\example\spring_boot\dao\PurchaseOrderItemMapper.class
 com\example\spring_boot\controller\HealthController.class
+com\example\spring_boot\controller\PerformanceTestController$DataFetcher.class
+com\example\spring_boot\controller\PerformanceTestController.class
 com\example\spring_boot\entity\Users.class
 com\example\spring_boot\service\SupplierService.class
 com\example\spring_boot\dao\WarehouseInMapper.class

@@ -1,8 +1,8 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.WarehouseInMapper;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.WarehouseIn;
+import com.example.spring_boot.service.WarehouseInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class WarehouseInController {
 
     @Autowired
-    private WarehouseInMapper warehouseInMapper;
+    private WarehouseInService warehouseInService;
 
     /**
      * 获取所有入库单列表
@@ -27,7 +27,7 @@ public class WarehouseInController {
      */
     @GetMapping
     public Result<List<WarehouseIn>> list() {
-        List<WarehouseIn> warehouseIns = warehouseInMapper.selectAllWarehouseIns();
+        List<WarehouseIn> warehouseIns = warehouseInService.getAllWarehouseIns();
         return Result.success(warehouseIns);
     }
 
@@ -37,7 +37,7 @@ public class WarehouseInController {
      */
     @GetMapping("/{id}")
     public Result<WarehouseIn> getById(@PathVariable String id) {
-        WarehouseIn warehouseIn = warehouseInMapper.selectWarehouseInById(id);
+        WarehouseIn warehouseIn = warehouseInService.getWarehouseInById(id);
         if (warehouseIn != null) {
             return Result.success(warehouseIn);
         } else {
@@ -58,7 +58,7 @@ public class WarehouseInController {
                 warehouseIn.setIn_date(sdf.format(new Date()));
             }
             
-            int result = warehouseInMapper.insertWarehouseIn(warehouseIn);
+            int result = warehouseInService.addWarehouseIn(warehouseIn);
             if (result > 0) {
                 return Result.success("入库单添加成功");
             } else {
@@ -77,12 +77,8 @@ public class WarehouseInController {
     public Result<String> update(@PathVariable String id, @RequestBody WarehouseIn warehouseIn) {
         try {
             warehouseIn.setWi_id(id);
-            int result = warehouseInMapper.updateWarehouseIn(warehouseIn);
-            if (result > 0) {
-                return Result.success("入库单更新成功");
-            } else {
-                return Result.error("入库单更新失败");
-            }
+            warehouseInService.updateWarehouseIn(warehouseIn);
+            return Result.success("入库单更新成功");
         } catch (Exception e) {
             return Result.error(500, "入库单更新失败：" + e.getMessage());
         }
@@ -95,12 +91,8 @@ public class WarehouseInController {
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
-            int result = warehouseInMapper.deleteWarehouseIn(id);
-            if (result > 0) {
-                return Result.success("入库单删除成功");
-            } else {
-                return Result.error("入库单删除失败");
-            }
+            warehouseInService.deleteWarehouseIn(id);
+            return Result.success("入库单删除成功");
         } catch (Exception e) {
             return Result.error(500, "入库单删除失败：" + e.getMessage());
         }
