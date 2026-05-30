@@ -5,36 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>药店管理系统</title>
+    
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
-    
-    <!-- Coze AI 客服 -->
-    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
-    <script>
-      // 等待页面加载完成后初始化 Coze AI 客服
-      window.addEventListener('load', function() {
-        if (typeof CozeWebSDK !== 'undefined') {
-          new CozeWebSDK.WebChatClient({
-            config: {
-              bot_id: '7627758232167170082',
-            },
-            componentProps: {
-              title: 'AI客服',
-            },
-            auth: {
-              type: 'token',
-              token: 'pat_JbBv6ksR44UWm5wk1qDv6yeYj9WS65s124mHGjVXhnU8nlIkh43uKbVLzTG0sgAe',
-              onRefreshToken: function () {
-                return 'pat_JbBv6ksR44UWm5wk1qDv6yeYj9WS65s124mHGjVXhnU8nlIkh43uKbVLzTG0sgAe'
-              }
-            }
-          });
-        } else {
-          console.error('Coze SDK 加载失败');
-        }
-      });
-    </script>
   </body>
 </html>
