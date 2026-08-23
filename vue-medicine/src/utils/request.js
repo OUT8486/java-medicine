@@ -1,58 +1,60 @@
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 
-// 创建 axios 实例
+// 创建 axios 实例，统一走 /api 前缀（开发由 Vite 代理，部署由 nginx 代理）
 const request = axios.create({
-  baseURL: '/api', // 使用相对路径，交由 nginx 代理到 backend
-  timeout: 10000, // 请求超时时间
+  baseURL: '/api',
+  timeout: 10000,
 });
 
-// 请求拦截器
+// 请求拦截器：携带 JWT（Bearer 格式），不打印请求参数，避免密码等敏感信息落日志
 request.interceptors.request.use(
   (config) => {
-    // 从 localStorage 获取 token
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
-    // 打印请求信息用于调试
-    console.log('[HTTP Request]', config.method.toUpperCase(), config.url);
-    console.log('[Request Params]', config.params || config.data);
-    
     return config;
   },
-  (error) => {
-    console.error('[Request Error]', error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// 响应拦截器
+// 响应拦截器：统一处理业务错误码与 401 跳转
 request.interceptors.response.use(
   (response) => {
     const res = response.data;
-    
-    // 如果响应状态码不是 200，说明有错误
+
     if (res.code !== 200) {
       ElMessage.error(res.message || '请求失败');
-      
-      // 如果是 401 错误，说明未登录或 token 过期，跳转到登录页
       if (res.code === 401) {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+        redirectToLogin();
       }
-      
       return Promise.reject(new Error(res.message || '请求失败'));
     }
-    
+
     return res;
   },
   (error) => {
-    console.error('请求错误:', error);
-    ElMessage.error(error.message || '网络错误');
+    const status = error.response && error.response.status;
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      '网络错误';
+
+    if (status === 401) {
+      redirectToLogin();
+    }
+    ElMessage.error(message);
     return Promise.reject(error);
   }
 );
+
+function redirectToLogin() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userInfo');
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
 
 export default request;

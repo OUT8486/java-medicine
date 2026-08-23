@@ -1,6 +1,6 @@
-# 服务器端口
+# 服务端口
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   servlet:
     encoding:
       enabled: true
@@ -11,17 +11,17 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # MySQL 连接配置
-    url: jdbc:mysql://localhost:3306/medicine?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8mb4&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root  # 你的 MySQL 用户名
-    password: 123456  # 你的 MySQL密码
-  
-  # Redis 配置
+    # MySQL 连接配置：生产环境务必通过环境变量覆盖默认值
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/medicine?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8mb4&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+
+  # Redis 配置：生产环境务必通过环境变量覆盖默认值
   data:
     redis:
-      host: 172.29.150.141
-      port: 6379
-      password: 123456
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:123456}
       database: 0
       timeout: 3000ms
       lettuce:
@@ -31,7 +31,7 @@ spring:
           max-idle: 8
           min-idle: 0
         shutdown-timeout: 100ms
-  
+
   # Jackson JSON 序列化配置
   jackson:
     default-property-inclusion: non_null  # 忽略空值字段
@@ -44,4 +44,8 @@ mybatis:
   type-aliases-package: com.example.spring_boot.entity  # 实体类别名包
   configuration:
     map-underscore-to-camel-case: true  # 数据库下划线转实体类驼峰
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL 日志
+
+# JWT 令牌配置：密钥长度需不少于 32 字节，生产环境务必通过环境变量覆盖
+jwt:
+  secret: ${JWT_SECRET:demo-secret-change-me-0123456789abcdef}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}

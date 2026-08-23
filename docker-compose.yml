@@ -37,6 +37,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: 123456
+      JWT_SECRET: change-me-in-production-0123456789abcdef
     depends_on:
       - mysql
       - redis

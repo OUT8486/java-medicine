@@ -5,6 +5,7 @@ import com.example.spring_boot.entity.WarehouseIn;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ public class WarehouseInService {
     private static final long CACHE_EXPIRE_TIME = 30;
 
     // 新增入库单
+    @Transactional
     public int addWarehouseIn(WarehouseIn warehouseIn) {
         int result = warehouseInMapper.insertWarehouseIn(warehouseIn);
         if (result > 0) {
@@ -31,6 +33,7 @@ public class WarehouseInService {
     }
 
     // 修改入库单
+    @Transactional
     public void updateWarehouseIn(WarehouseIn warehouseIn) {
         warehouseInMapper.updateWarehouseIn(warehouseIn);
         redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + warehouseIn.getWi_id());
@@ -38,6 +41,7 @@ public class WarehouseInService {
     }
 
     // 删除入库单
+    @Transactional
     public void deleteWarehouseIn(String wiId) {
         warehouseInMapper.deleteWarehouseIn(wiId);
         redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + wiId);

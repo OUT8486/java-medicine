@@ -1,21 +1,34 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.UserMapper;
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.UserService;
+import com.example.spring_boot.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 认证接口：登录签发 JWT，退出（无状态，客户端删除令牌即可）。
+ */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * 登录：校验用户名 + BCrypt 密码，成功后签发 JWT。
+     * POST /api/auth/login  Body: { "username": "...", "password": "..." }
+     */
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
         String username = loginData.get("username");
@@ -28,16 +41,16 @@ public class AuthController {
             return Result.error(400, "密码不能为空");
         }
 
-        String role = userMapper.LoginUser(username, password);
-        if (role != null && !role.isEmpty()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("user_name", username);
-            data.put("role", role);
-            data.put("token", "token-" + username + "-" + System.currentTimeMillis());
-            return Result.success(data);
-        } else {
+        String role = userService.login(username.trim(), password);
+        if (role == null || role.isEmpty()) {
             return Result.error(401, "用户名或密码错误");
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("user_name", username.trim());
+        data.put("role", role);
+        data.put("token", jwtUtil.generateToken(username.trim(), role));
+        return Result.success(data);
     }
 
     @PostMapping("/logout")

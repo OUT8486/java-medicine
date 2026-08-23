@@ -22,6 +22,17 @@ export function logout() {
 }
 
 /**
+ * 注册 API（角色由服务端固定为“用户”）
+ */
+export function register(data) {
+  return request({
+    url: '/users/register',
+    method: 'post',
+    data,
+  });
+}
+
+/**
  * 药品管理 API
  */
 export const drugApi = {

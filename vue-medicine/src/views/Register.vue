@@ -4,7 +4,7 @@
       <template #header>
         <div class="register-header">
           <h2>药店管理系统</h2>
-          <p>注册新账户</p>
+          <p>注册新账号</p>
         </div>
       </template>
 
@@ -51,7 +51,7 @@
         </el-form-item>
 
         <div class="login-link">
-          <span>已有账户？</span>
+          <span>已有账号？</span>
           <el-link type="primary" @click="goToLogin">立即登录</el-link>
         </div>
       </el-form>
@@ -63,6 +63,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { register } from '../api';
 
 const router = useRouter();
 const registerFormRef = ref(null);
@@ -99,17 +100,22 @@ const rules = {
 
 const handleRegister = async () => {
   if (!registerFormRef.value) return;
-  
-  await registerFormRef.value.validate((valid) => {
-    if (valid) {
-      loading.value = true;
-      
-      // TODO: 调用注册 API
-      setTimeout(() => {
-        ElMessage.success('注册成功！请登录');
-        loading.value = false;
-        router.push('/login');
-      }, 1000);
+
+  await registerFormRef.value.validate(async (valid) => {
+    if (!valid) return;
+
+    loading.value = true;
+    try {
+      await register({
+        user_name: registerForm.username,
+        password: registerForm.password,
+      });
+      ElMessage.success('注册成功！请登录');
+      router.push('/login');
+    } catch (error) {
+      ElMessage.error(error.message || '注册失败');
+    } finally {
+      loading.value = false;
     }
   });
 };

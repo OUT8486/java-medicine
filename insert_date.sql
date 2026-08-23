@@ -542,6 +542,7 @@ INSERT INTO salesorderitem (soi_id, so_id, drug_id, quantity, price, batch_no) V
 ('SI000049', 'SO000049', 'DR000049', 65, 9.80, 'WH20250220049'),
 ('SI000050', 'SO000050', 'DR000050', 55, 15.90, 'XA20250221050');
 
-INSERT INTO users (user_id, username, password, role) VALUES
-('US1', 'admin', '123456', '管理员'),
-('US2', 'out12', '123456', '用户');
+-- 密码为 123456 的 BCrypt 哈希（登录时由服务端做 BCrypt 比对）
+INSERT INTO users (user_id, user_name, password, role) VALUES
+('US1', 'admin', '$2b$10$19SpaxvSakYkkZoYxSUmLOJ.yEDaHp365eiK4MWRm3ah8JYsGFl3y', '管理员'),
+('US2', 'out12', '$2b$10$ouKzcCpbJeo3V4j3zkejPeKq6DIKAKXxjC0U/C5g.PDU07OVI..GK', '用户');

@@ -1,6 +1,5 @@
 package com.example.spring_boot.controller;
 
-import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.entity.PurchaseOrder;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.PurchaseOrderService;
@@ -19,9 +18,6 @@ public class PurchaseOrderController {
 
     @Autowired
     private PurchaseOrderService purchaseOrderService;
-    
-    @Autowired
-    private PurchaseOrderItemMapper purchaseOrderItemMapper;
 
     /**
      * 获取所有采购订单列表
@@ -100,8 +96,7 @@ public class PurchaseOrderController {
     public Result<String> delete(@PathVariable String id) {
         try {
             // 先删除订单项，再删除订单
-            purchaseOrderItemMapper.deletePurchaseOrderItemsByPoId(id);
-            purchaseOrderService.deletePurchaseOrder(id);
+            purchaseOrderService.deletePurchaseOrderWithItems(id);
             return Result.success("采购订单删除成功");
         } catch (Exception e) {
             return Result.error(500, "采购订单删除失败：" + e.getMessage());

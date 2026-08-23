@@ -4,7 +4,6 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -62,12 +61,4 @@ public interface EmployeeMapper {
         @Result(property = "post", column = "post")
     })
     List<Employee> selectEmployeesByPost(String post);
-
-    @Select("SELECT * FROM employee WHERE username = #{username} AND password = #{password}")
-    @Results({
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "name", column = "name"),
-        @Result(property = "post", column = "post")
-    })
-    Employee selectByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 }
