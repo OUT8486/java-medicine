@@ -40,7 +40,6 @@ spring:
 
 # MyBatis 配置
 mybatis:
-  mapper-locations: classpath:mapper/*.xml  # XML 映射文件位置
   type-aliases-package: com.example.spring_boot.entity  # 实体类别名包
   configuration:
     map-underscore-to-camel-case: true  # 数据库下划线转实体类驼峰

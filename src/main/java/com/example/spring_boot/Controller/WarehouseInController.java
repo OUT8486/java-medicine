@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.WarehouseIn;
@@ -15,8 +19,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/warehouse-in")
-@CrossOrigin(origins = "*")
 public class WarehouseInController {
+
+    private static final Logger log = LoggerFactory.getLogger(WarehouseInController.class);
 
     @Autowired
     private WarehouseInService warehouseInService;
@@ -49,6 +54,7 @@ public class WarehouseInController {
      * 新增入库单
      * POST /api/warehouse-in
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody WarehouseIn warehouseIn) {
         try {
@@ -65,7 +71,8 @@ public class WarehouseInController {
                 return Result.error("入库单添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "入库单添加失败：" + e.getMessage());
+            log.error("入库单添加失败", e);
+            return Result.error(500, "入库单添加失败，请稍后重试");
         }
     }
 
@@ -73,6 +80,7 @@ public class WarehouseInController {
      * 修改入库单信息
      * PUT /api/warehouse-in/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody WarehouseIn warehouseIn) {
         try {
@@ -80,7 +88,8 @@ public class WarehouseInController {
             warehouseInService.updateWarehouseIn(warehouseIn);
             return Result.success("入库单更新成功");
         } catch (Exception e) {
-            return Result.error(500, "入库单更新失败：" + e.getMessage());
+            log.error("入库单更新失败", e);
+            return Result.error(500, "入库单更新失败，请稍后重试");
         }
     }
 
@@ -88,13 +97,15 @@ public class WarehouseInController {
      * 删除入库单
      * DELETE /api/warehouse-in/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             warehouseInService.deleteWarehouseIn(id);
             return Result.success("入库单删除成功");
         } catch (Exception e) {
-            return Result.error(500, "入库单删除失败：" + e.getMessage());
+            log.error("入库单删除失败", e);
+            return Result.error(500, "入库单删除失败，请稍后重试");
         }
     }
 }

@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Warehouse;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/warehouses")
-@CrossOrigin(origins = "*")
 public class WarehouseController {
+
+    private static final Logger log = LoggerFactory.getLogger(WarehouseController.class);
 
     @Autowired
     private WarehouseService warehouseService;
@@ -67,6 +72,7 @@ public class WarehouseController {
      * 新增仓库
      * POST /api/warehouses
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Warehouse warehouse) {
         if (warehouse == null) {
@@ -84,7 +90,8 @@ public class WarehouseController {
                 return Result.error("仓库添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "仓库添加失败：" + e.getMessage());
+            log.error("仓库添加失败", e);
+            return Result.error(500, "仓库添加失败，请稍后重试");
         }
     }
 
@@ -92,6 +99,7 @@ public class WarehouseController {
      * 修改仓库信息
      * PUT /api/warehouses/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Warehouse warehouse) {
         if (warehouse == null) {
@@ -106,7 +114,8 @@ public class WarehouseController {
             warehouseService.updateWarehouse(warehouse);
             return Result.success("仓库更新成功");
         } catch (Exception e) {
-            return Result.error(500, "仓库更新失败：" + e.getMessage());
+            log.error("仓库更新失败", e);
+            return Result.error(500, "仓库更新失败，请稍后重试");
         }
     }
 
@@ -114,13 +123,15 @@ public class WarehouseController {
      * 删除仓库
      * DELETE /api/warehouses/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             warehouseService.deleteWarehouse(id);
             return Result.success("仓库删除成功");
         } catch (Exception e) {
-            return Result.error(500, "仓库删除失败：" + e.getMessage());
+            log.error("仓库删除失败", e);
+            return Result.error(500, "仓库删除失败，请稍后重试");
         }
     }
 }

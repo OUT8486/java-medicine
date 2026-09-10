@@ -1,11 +1,12 @@
 @echo off
+chcp 65001 >nul
 setlocal EnableExtensions EnableDelayedExpansion
 title Pharmacy Management System - Startup
 
 REM ============================================================
-REM  Ò©µê¹ÜÀíÏµÍ³ Ò»¼üÆô¶¯½Å±¾
-REM  Æô¶¯Ë³Ðò£ºRedis (WSL Ubuntu) -> MySQL -> ºó¶Ë(8080) -> Ç°¶Ë(5173)
-REM  ÒÀÀµ£ºJDK 21+ / Maven / Node.js(npm) / WSL Ubuntu(º¬ redis) / MySQL ·þÎñ
+REM  è¯åº—ç®¡ç†ç³»ç»Ÿ ä¸€é”®å¯åŠ¨è„šæœ¬
+REM  å¯åŠ¨é¡ºåºï¼šRedis (WSL Ubuntu) -> MySQL -> åŽç«¯(8080) -> å‰ç«¯(5173)
+REM  ä¾èµ–ï¼šJDK 21+ / Maven / Node.js(npm) / WSL Ubuntu(å« redis) / MySQL æœåŠ¡
 REM ============================================================
 
 set "ROOT=%~dp0"
@@ -14,72 +15,72 @@ set "REDIS_PASSWORD=123456"
 set "MYSQL_SERVICE=MySQL"
 set "BACKEND_PORT=8080"
 set "FRONTEND_PORT=5173"
-REM ---------- »·¾³¼ì²é ----------
+REM ---------- çŽ¯å¢ƒæ£€æŸ¥ ----------
 if not exist "%ROOT%pom.xml" (
-    echo [ERROR] Î´ÕÒµ½ pom.xml£¬Çë°Ñ±¾½Å±¾·Åµ½ÏîÄ¿¸ùÄ¿Â¼¡£
+    echo [ERROR] æœªæ‰¾åˆ° pom.xmlï¼Œè¯·æŠŠæœ¬è„šæœ¬æ”¾åˆ°é¡¹ç›®æ ¹ç›®å½•ã€‚
     pause
     exit /b 1
 )
 if not exist "%ROOT%vue-medicine\package.json" (
-    echo [ERROR] Î´ÕÒµ½ vue-medicine\package.json¡£
+    echo [ERROR] æœªæ‰¾åˆ° vue-medicine\package.jsonã€‚
     pause
     exit /b 1
 )
 where java >nul 2>&1
-if errorlevel 1 ( echo [ERROR] Î´ÕÒµ½ Java£¨Ðè JDK 21+£©¡£ & pause & exit /b 1 )
+if errorlevel 1 ( echo [ERROR] æœªæ‰¾åˆ° Javaï¼ˆéœ€ JDK 21+ï¼‰ã€‚ & pause & exit /b 1 )
 where mvn >nul 2>&1
-if errorlevel 1 ( echo [ERROR] Î´ÕÒµ½ Maven¡£ & pause & exit /b 1 )
+if errorlevel 1 ( echo [ERROR] æœªæ‰¾åˆ° Mavenã€‚ & pause & exit /b 1 )
 where npm >nul 2>&1
-if errorlevel 1 ( echo [ERROR] Î´ÕÒµ½ npm£¨Ðè Node.js£©¡£ & pause & exit /b 1 )
+if errorlevel 1 ( echo [ERROR] æœªæ‰¾åˆ° npmï¼ˆéœ€ Node.jsï¼‰ã€‚ & pause & exit /b 1 )
 where wsl.exe >nul 2>&1
-if errorlevel 1 ( echo [ERROR] Î´ÕÒµ½ WSL¡£ & pause & exit /b 1 )
+if errorlevel 1 ( echo [ERROR] æœªæ‰¾åˆ° WSLã€‚ & pause & exit /b 1 )
 
 echo.
-echo ÕýÔÚÆô¶¯Ò©µê¹ÜÀíÏµÍ³£¬¹² 4 ¸ö×é¼þ£º
+echo æ­£åœ¨å¯åŠ¨è¯åº—ç®¡ç†ç³»ç»Ÿï¼Œå…± 4 ä¸ªç»„ä»¶ï¼š
 echo   1/4 Redis   (WSL %REDIS_DISTRO%)     localhost:6379
-echo   2/4 MySQL   (%MYSQL_SERVICE% ·þÎñ)   localhost:3306
-echo   3/4 ºó¶Ë    (Spring Boot)            localhost:%BACKEND_PORT%
-echo   4/4 Ç°¶Ë    (Vue 3)                  localhost:%FRONTEND_PORT%
+echo   2/4 MySQL   (%MYSQL_SERVICE% æœåŠ¡)   localhost:3306
+echo   3/4 åŽç«¯    (Spring Boot)            localhost:%BACKEND_PORT%
+echo   4/4 å‰ç«¯    (Vue 3)                  localhost:%FRONTEND_PORT%
 echo.
 
-REM ---------- [1/4] Æô¶¯ Redis (WSL) ----------
-echo [1/4] ÕýÔÚÆô¶¯ Redis ...
+REM ---------- [1/4] å¯åŠ¨ Redis (WSL) ----------
+echo [1/4] æ­£åœ¨å¯åŠ¨ Redis ...
 wsl.exe -d %REDIS_DISTRO% -- bash -lc "echo '%REDIS_PASSWORD%' | sudo -S systemctl start redis-server 2>/dev/null"
 del "%TEMP%\redis_ping.txt" >nul 2>&1
 wsl.exe -d %REDIS_DISTRO% -- bash -lc "redis-cli -a %REDIS_PASSWORD% ping" > "%TEMP%\redis_ping.txt" 2>&1
 findstr /i "PONG" "%TEMP%\redis_ping.txt" >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] Redis Î´¾ÍÐ÷¡£Çë¼ì²é WSL ·¢ÐÐ°æ %REDIS_DISTRO% ÊÇ·ñ°²×°ÁË redis¡£
+    echo [ERROR] Redis æœªå°±ç»ªã€‚è¯·æ£€æŸ¥ WSL å‘è¡Œç‰ˆ %REDIS_DISTRO% æ˜¯å¦å®‰è£…äº† redisã€‚
     del "%TEMP%\redis_ping.txt" >nul 2>&1
     pause
     exit /b 1
 )
 del "%TEMP%\redis_ping.txt" >nul 2>&1
-echo       Redis ÒÑ¾ÍÐ÷£ºlocalhost:6379
+echo       Redis å·²å°±ç»ªï¼šlocalhost:6379
 
-REM ---------- [2/4] Æô¶¯ MySQL ·þÎñ ----------
-echo [2/4] ÕýÔÚÆô¶¯ MySQL ·þÎñ (%MYSQL_SERVICE%) ...
+REM ---------- [2/4] å¯åŠ¨ MySQL æœåŠ¡ ----------
+echo [2/4] æ­£åœ¨å¯åŠ¨ MySQL æœåŠ¡ (%MYSQL_SERVICE%) ...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $s=Get-Service -Name '%MYSQL_SERVICE%' -ErrorAction SilentlyContinue; if (-not $s) { Write-Host 'NOT_FOUND'; exit 2 }; if ($s.Status -ne 'Running') { Start-Service -Name '%MYSQL_SERVICE%' }; $s.WaitForStatus('Running','00:20:00'); exit 0"
 if errorlevel 1 (
-    echo [ERROR] MySQL ·þÎñ²»¿ÉÓÃ»òÎ´ÄÜÆô¶¯¡£
-    echo         ÇëÈ·ÈÏ´æÔÚÃûÎª %MYSQL_SERVICE% µÄ Windows ·þÎñ¡£
+    echo [ERROR] MySQL æœåŠ¡ä¸å¯ç”¨æˆ–æœªèƒ½å¯åŠ¨ã€‚
+    echo         è¯·ç¡®è®¤å­˜åœ¨åä¸º %MYSQL_SERVICE% çš„ Windows æœåŠ¡ã€‚
     pause
     exit /b 1
 )
-echo       MySQL ÒÑ¾ÍÐ÷£ºlocalhost:3306
+echo       MySQL å·²å°±ç»ªï¼šlocalhost:3306
 
-REM ---------- [3/4] Æô¶¯ºó¶Ë ----------
-echo [3/4] ÕýÔÚÆô¶¯ºó¶Ë (¶Ë¿Ú %BACKEND_PORT%) ...
+REM ---------- [3/4] å¯åŠ¨åŽç«¯ ----------
+echo [3/4] æ­£åœ¨å¯åŠ¨åŽç«¯ (ç«¯å£ %BACKEND_PORT%) ...
 start "Medicine Backend" /D "%ROOT%" cmd.exe /k mvn spring-boot:run
 
-REM ---------- [4/4] Æô¶¯Ç°¶Ë ----------
-echo [4/4] ÕýÔÚÆô¶¯Ç°¶Ë (¶Ë¿Ú %FRONTEND_PORT%) ...
+REM ---------- [4/4] å¯åŠ¨å‰ç«¯ ----------
+echo [4/4] æ­£åœ¨å¯åŠ¨å‰ç«¯ (ç«¯å£ %FRONTEND_PORT%) ...
 if not exist "%ROOT%vue-medicine\node_modules" (
-    echo       Ê×´ÎÔËÐÐ£¬ÕýÔÚ°²×°Ç°¶ËÒÀÀµ...
+    echo       é¦–æ¬¡è¿è¡Œï¼Œæ­£åœ¨å®‰è£…å‰ç«¯ä¾èµ–...
     pushd "%ROOT%vue-medicine"
     call npm install
     if errorlevel 1 (
-        echo [ERROR] Ç°¶ËÒÀÀµ°²×°Ê§°Ü¡£
+        echo [ERROR] å‰ç«¯ä¾èµ–å®‰è£…å¤±è´¥ã€‚
         popd
         pause
         exit /b 1
@@ -88,19 +89,19 @@ if not exist "%ROOT%vue-medicine\node_modules" (
 )
 start "Medicine Frontend" /D "%ROOT%vue-medicine" cmd.exe /k npm run dev
 
-REM ---------- ´ò¿ªä¯ÀÀÆ÷ ----------
+REM ---------- æ‰“å¼€æµè§ˆå™¨ ----------
 timeout /t 10 /nobreak >nul
 start "" "http://localhost:%FRONTEND_PORT%"
 
 echo.
-echo [OK] Æô¶¯ÃüÁîÒÑÈ«²¿·¢³ö£º
-echo      Ç°¶Ë£º  http://localhost:%FRONTEND_PORT%
-echo      ºó¶Ë£º  http://localhost:%BACKEND_PORT%
-echo      Redis£º localhost:6379
-echo      Êý¾Ý¿â£º localhost:3306
+echo [OK] å¯åŠ¨å‘½ä»¤å·²å…¨éƒ¨å‘å‡ºï¼š
+echo      å‰ç«¯ï¼š  http://localhost:%FRONTEND_PORT%
+echo      åŽç«¯ï¼š  http://localhost:%BACKEND_PORT%
+echo      Redisï¼š localhost:6379
+echo      æ•°æ®åº“ï¼š localhost:3306
 echo.
-echo ¹Ø±Õ "Medicine Backend" Óë "Medicine Frontend" ´°¿Ú¼´¿ÉÍ£Ö¹·þÎñ¡£
-echo ÈçÐèÒ»¼üÍ£Ö¹£¬¿ÉÔËÐÐ stop.bat¡£
+echo å…³é—­ "Medicine Backend" ä¸Ž "Medicine Frontend" çª—å£å³å¯åœæ­¢æœåŠ¡ã€‚
+echo å¦‚éœ€ä¸€é”®åœæ­¢ï¼Œå¯è¿è¡Œ stop.batã€‚
 timeout /t 6 /nobreak >nul
 
 endlocal

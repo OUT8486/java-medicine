@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.SalesOrderItem;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/sales-order-items")
-@CrossOrigin(origins = "*")
 public class SalesOrderItemController {
+
+    private static final Logger log = LoggerFactory.getLogger(SalesOrderItemController.class);
 
     @Autowired
     private SalesOrderItemService salesOrderItemService;
@@ -47,6 +52,7 @@ public class SalesOrderItemController {
      * 新增销售订单项
      * POST /api/sales-order-items
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody SalesOrderItem salesOrderItem) {
         try {
@@ -57,7 +63,8 @@ public class SalesOrderItemController {
                 return Result.error("销售订单项添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "销售订单项添加失败：" + e.getMessage());
+            log.error("销售订单项添加失败", e);
+            return Result.error(500, "销售订单项添加失败，请稍后重试");
         }
     }
 
@@ -65,6 +72,7 @@ public class SalesOrderItemController {
      * 修改销售订单项信息
      * PUT /api/sales-order-items/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody SalesOrderItem salesOrderItem) {
         try {
@@ -72,7 +80,8 @@ public class SalesOrderItemController {
             salesOrderItemService.updateSalesOrderItem(salesOrderItem);
             return Result.success("销售订单项更新成功");
         } catch (Exception e) {
-            return Result.error(500, "销售订单项更新失败：" + e.getMessage());
+            log.error("销售订单项更新失败", e);
+            return Result.error(500, "销售订单项更新失败，请稍后重试");
         }
     }
 
@@ -80,13 +89,15 @@ public class SalesOrderItemController {
      * 删除销售订单项
      * DELETE /api/sales-order-items/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             salesOrderItemService.deleteSalesOrderItem(id);
             return Result.success("销售订单项删除成功");
         } catch (Exception e) {
-            return Result.error(500, "销售订单项删除失败：" + e.getMessage());
+            log.error("销售订单项删除失败", e);
+            return Result.error(500, "销售订单项删除失败，请稍后重试");
         }
     }
 
@@ -94,13 +105,15 @@ public class SalesOrderItemController {
      * 根据销售订单 ID 删除所有订单项
      * DELETE /api/sales-order-items/batch?soId={soId}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/batch")
     public Result<String> deleteBySoId(@RequestParam String soId) {
         try {
             salesOrderItemService.deleteSalesOrderItemsBySoId(soId);
             return Result.success("销售订单项批量删除成功");
         } catch (Exception e) {
-            return Result.error(500, "销售订单项批量删除失败：" + e.getMessage());
+            log.error("销售订单项批量删除失败", e);
+            return Result.error(500, "销售订单项批量删除失败，请稍后重试");
         }
     }
 }

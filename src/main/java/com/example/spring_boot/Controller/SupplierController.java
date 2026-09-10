@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Supplier;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/suppliers")
-@CrossOrigin(origins = "*")
 public class SupplierController {
+
+    private static final Logger log = LoggerFactory.getLogger(SupplierController.class);
 
     @Autowired
     private SupplierService supplierService;
@@ -47,6 +52,7 @@ public class SupplierController {
      * 新增供应商
      * POST /api/suppliers
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Supplier supplier) {
         if (supplier == null) {
@@ -72,7 +78,8 @@ public class SupplierController {
                 return Result.error("供应商添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "供应商添加失败：" + e.getMessage());
+            log.error("供应商添加失败", e);
+            return Result.error(500, "供应商添加失败，请稍后重试");
         }
     }
 
@@ -80,6 +87,7 @@ public class SupplierController {
      * 修改供应商信息
      * PUT /api/suppliers/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Supplier supplier) {
         if (supplier == null) {
@@ -102,7 +110,8 @@ public class SupplierController {
             supplierService.updateSupplier(supplier);
             return Result.success("供应商更新成功");
         } catch (Exception e) {
-            return Result.error(500, "供应商更新失败：" + e.getMessage());
+            log.error("供应商更新失败", e);
+            return Result.error(500, "供应商更新失败，请稍后重试");
         }
     }
 
@@ -110,13 +119,15 @@ public class SupplierController {
      * 删除供应商
      * DELETE /api/suppliers/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             supplierService.deleteSupplier(id);
             return Result.success("供应商删除成功");
         } catch (Exception e) {
-            return Result.error(500, "供应商删除失败：" + e.getMessage());
+            log.error("供应商删除失败", e);
+            return Result.error(500, "供应商删除失败，请稍后重试");
         }
     }
 }

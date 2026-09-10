@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.SalesOrder;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/sales-orders")
-@CrossOrigin(origins = "*")
 public class SalesOrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(SalesOrderController.class);
 
     @Autowired
     private SalesOrderService salesOrderService;
@@ -55,16 +60,10 @@ public class SalesOrderController {
      */
     @GetMapping("/{id}")
     public Result<SalesOrder> getById(@PathVariable String id) {
-        System.out.println("========================================");
-        System.out.println("=== 接收到查询请求，ID: " + id + " ===");
-        System.out.println("=== ID 长度：" + (id != null ? id.length() : "null") + " ===");
         SalesOrder order = salesOrderService.getSalesOrderById(id);
         if (order != null) {
-            System.out.println("=== 查询结果：找到订单，SO_ID: " + order.getSo_id() + " ===");
         } else {
-            System.out.println("=== 查询结果：未找到订单 ===");
         }
-        System.out.println("========================================");
         if (order != null) {
             return Result.success(order);
         } else {
@@ -76,6 +75,7 @@ public class SalesOrderController {
      * 新增销售订单
      * POST /api/sales-orders
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody SalesOrder salesOrder) {
         try {
@@ -86,7 +86,8 @@ public class SalesOrderController {
                 return Result.error("销售订单添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "销售订单添加失败：" + e.getMessage());
+            log.error("销售订单添加失败", e);
+            return Result.error(500, "销售订单添加失败，请稍后重试");
         }
     }
 
@@ -94,6 +95,7 @@ public class SalesOrderController {
      * 修改销售订单信息
      * PUT /api/sales-orders/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody SalesOrder salesOrder) {
         try {
@@ -101,7 +103,8 @@ public class SalesOrderController {
             salesOrderService.updateSalesOrder(salesOrder);
             return Result.success("销售订单更新成功");
         } catch (Exception e) {
-            return Result.error(500, "销售订单更新失败：" + e.getMessage());
+            log.error("销售订单更新失败", e);
+            return Result.error(500, "销售订单更新失败，请稍后重试");
         }
     }
 
@@ -109,6 +112,7 @@ public class SalesOrderController {
      * 删除销售订单
      * DELETE /api/sales-orders/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
@@ -116,7 +120,8 @@ public class SalesOrderController {
             salesOrderService.deleteSalesOrderWithItems(id);
             return Result.success("销售订单删除成功");
         } catch (Exception e) {
-            return Result.error(500, "销售订单删除失败：" + e.getMessage());
+            log.error("销售订单删除失败", e);
+            return Result.error(500, "销售订单删除失败，请稍后重试");
         }
     }
 }

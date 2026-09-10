@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Inventory;
 import com.example.spring_boot.entity.Result;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/inventory")
-@CrossOrigin(origins = "*")
 public class InventoryController {
+
+    private static final Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     @Autowired
     private InventoryService inventoryService;
@@ -47,6 +52,7 @@ public class InventoryController {
      * 新增库存
      * POST /api/inventory
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Inventory inventory) {
         try {
@@ -57,7 +63,8 @@ public class InventoryController {
                 return Result.error("库存添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "库存添加失败：" + e.getMessage());
+            log.error("库存添加失败", e);
+            return Result.error(500, "库存添加失败，请稍后重试");
         }
     }
 
@@ -65,6 +72,7 @@ public class InventoryController {
      * 修改库存信息
      * PUT /api/inventory/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Inventory inventory) {
         try {
@@ -72,7 +80,8 @@ public class InventoryController {
             inventoryService.updateInventory(inventory);
             return Result.success("库存更新成功");
         } catch (Exception e) {
-            return Result.error(500, "库存更新失败：" + e.getMessage());
+            log.error("库存更新失败", e);
+            return Result.error(500, "库存更新失败，请稍后重试");
         }
     }
 
@@ -80,13 +89,15 @@ public class InventoryController {
      * 删除库存
      * DELETE /api/inventory/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             inventoryService.deleteInventory(id);
             return Result.success("库存删除成功");
         } catch (Exception e) {
-            return Result.error(500, "库存删除失败：" + e.getMessage());
+            log.error("库存删除失败", e);
+            return Result.error(500, "库存删除失败，请稍后重试");
         }
     }
 }

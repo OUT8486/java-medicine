@@ -3,6 +3,8 @@ package com.example.spring_boot.service;
 import com.example.spring_boot.dao.SalesOrderItemMapper;
 import com.example.spring_boot.dao.SalesOrderMapper;
 import com.example.spring_boot.entity.SalesOrder;
+import com.example.spring_boot.entity.SalesOrderItem;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,24 @@ public class SalesOrderService {
     private static final String SALES_ORDER_LIST_CACHE_KEY = "sales_order:list";
     private static final long CACHE_EXPIRE_TIME = 30;
 
+    /**
+     * 新增销售订单及其明细，整体在一个事务中执行；主键为空时自动生成。
+     */
+    @Transactional
     public int addSalesOrder(SalesOrder salesOrder) {
+        if (salesOrder.getSo_id() == null || salesOrder.getSo_id().isBlank()) {
+            salesOrder.setSo_id(IdGenerator.next("SO"));
+        }
         int result = salesOrderMapper.insertSalesOrder(salesOrder);
+        if (result > 0 && salesOrder.getItems() != null) {
+            for (SalesOrderItem item : salesOrder.getItems()) {
+                if (item.getSoi_id() == null || item.getSoi_id().isBlank()) {
+                    item.setSoi_id(IdGenerator.next("SI"));
+                }
+                item.setSo_id(salesOrder.getSo_id());
+                salesOrderItemMapper.insertSalesOrderItem(item);
+            }
+        }
         if (result > 0) {
             redisUtils.delete(SALES_ORDER_LIST_CACHE_KEY);
         }
@@ -47,9 +65,6 @@ public class SalesOrderService {
         redisUtils.delete(SALES_ORDER_LIST_CACHE_KEY);
     }
 
-    /**
-     * 删除销售单及其明细，整体在一个事务中执行，避免半删状态。
-     */
     @Transactional
     public void deleteSalesOrderWithItems(String soId) {
         salesOrderItemMapper.deleteSalesOrderItemsBySoId(soId);

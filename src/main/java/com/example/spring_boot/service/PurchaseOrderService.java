@@ -3,6 +3,8 @@ package com.example.spring_boot.service;
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.dao.PurchaseOrderMapper;
 import com.example.spring_boot.entity.PurchaseOrder;
+import com.example.spring_boot.entity.PurchaseOrderItem;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,24 @@ public class PurchaseOrderService {
     private static final String PURCHASE_ORDER_LIST_CACHE_KEY = "purchase_order:list";
     private static final long CACHE_EXPIRE_TIME = 30;
 
+    /**
+     * 新增采购订单及其明细，整体在一个事务中执行；主键为空时自动生成。
+     */
+    @Transactional
     public int addPurchaseOrder(PurchaseOrder purchaseOrder) {
+        if (purchaseOrder.getPo_id() == null || purchaseOrder.getPo_id().isBlank()) {
+            purchaseOrder.setPo_id(IdGenerator.next("PO"));
+        }
         int result = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
+        if (result > 0 && purchaseOrder.getItems() != null) {
+            for (PurchaseOrderItem item : purchaseOrder.getItems()) {
+                if (item.getPoi_id() == null || item.getPoi_id().isBlank()) {
+                    item.setPoi_id(IdGenerator.next("PI"));
+                }
+                item.setPo_id(purchaseOrder.getPo_id());
+                purchaseOrderItemMapper.insertPurchaseOrderItem(item);
+            }
+        }
         if (result > 0) {
             redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
         }
@@ -47,9 +65,6 @@ public class PurchaseOrderService {
         redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
     }
 
-    /**
-     * 删除采购单及其明细，整体在一个事务中执行，避免半删状态。
-     */
     @Transactional
     public void deletePurchaseOrderWithItems(String poId) {
         purchaseOrderItemMapper.deletePurchaseOrderItemsByPoId(poId);

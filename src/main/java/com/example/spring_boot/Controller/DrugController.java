@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Drug;
 import com.example.spring_boot.entity.DrugWithManufacturer;
@@ -16,8 +20,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/drugs")
-@CrossOrigin(origins = "*")
 public class DrugController {
+
+    private static final Logger log = LoggerFactory.getLogger(DrugController.class);
 
     @Autowired
     private DrugService drugService;
@@ -65,6 +70,7 @@ public class DrugController {
      * POST /api/drugs
      * Body: { "generic_name": "感冒灵", "retail_price": 25.5, ... }
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Drug drug) {
         // 基本输入校验
@@ -91,7 +97,8 @@ public class DrugController {
                 return Result.error("药品添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "药品添加失败：" + e.getMessage());
+            log.error("药品添加失败", e);
+            return Result.error(500, "药品添加失败，请稍后重试");
         }
     }
 
@@ -100,6 +107,7 @@ public class DrugController {
      * PUT /api/drugs/{id}
      * Body: { "drug_id": "1", "generic_name": "感冒灵", ... }
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Drug drug) {
         if (drug == null) {
@@ -120,7 +128,8 @@ public class DrugController {
             drugService.updateDrug(drug);
             return Result.success("药品更新成功");
         } catch (Exception e) {
-            return Result.error(500, "药品更新失败：" + e.getMessage());
+            log.error("药品更新失败", e);
+            return Result.error(500, "药品更新失败，请稍后重试");
         }
     }
 
@@ -128,13 +137,15 @@ public class DrugController {
      * 删除药品
      * DELETE /api/drugs/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             drugService.deleteDrug(id);
             return Result.success("药品删除成功");
         } catch (Exception e) {
-            return Result.error(500, "药品删除失败：" + e.getMessage());
+            log.error("药品删除失败", e);
+            return Result.error(500, "药品删除失败，请稍后重试");
         }
     }
 }

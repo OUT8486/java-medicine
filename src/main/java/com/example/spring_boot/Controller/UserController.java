@@ -3,6 +3,7 @@ package com.example.spring_boot.controller;
 import com.example.spring_boot.config.AdminOnly;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Users;
+import com.example.spring_boot.service.LoginAttemptService;
 import com.example.spring_boot.service.UserService;
 import com.example.spring_boot.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 /**
  * 用户管理控制器。
- * 登录走 /api/users/login（兼容旧参数 user_name）；
+ * 登录走 /api/users/login（兼容旧参数 user_name，含失败次数限制）；
  * 注册走 /api/users/register，角色固定为“用户”；
  * 管理员通过 /api/users 创建带角色的账号。
  */
@@ -31,10 +32,9 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * 登录（兼容旧参数名 user_name）。
-     * POST /api/users/login  Body: { "user_name": "admin", "password": "123456" }
-     */
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
         String userName = loginData.get("user_name");
@@ -47,10 +47,17 @@ public class UserController {
             return Result.error(400, "密码不能为空");
         }
 
+        String attemptKey = userName.trim().toLowerCase();
+        if (loginAttemptService.isBlocked(attemptKey)) {
+            return Result.error(429, "登录失败次数过多，请 15 分钟后再试");
+        }
+
         String role = userService.login(userName.trim(), password);
         if (role == null || role.isEmpty()) {
+            loginAttemptService.loginFailed(attemptKey);
             return Result.error(401, "用户名或密码错误");
         }
+        loginAttemptService.loginSucceeded(attemptKey);
 
         Map<String, Object> data = new HashMap<>();
         data.put("user_name", userName.trim());
@@ -59,10 +66,6 @@ public class UserController {
         return Result.success(data);
     }
 
-    /**
-     * 注册：角色由服务端强制为“用户”，user_id 缺省时自动生成。
-     * POST /api/users/register  Body: { "user_name": "...", "password": "..." }
-     */
     @PostMapping("/register")
     public Result<String> register(@RequestBody Users user) {
         if (user.getUser_name() == null || user.getUser_name().trim().isEmpty()) {
@@ -89,10 +92,6 @@ public class UserController {
         }
     }
 
-    /**
-     * 管理员创建账号（可指定角色）。
-     * POST /api/users  Body: { "user_name": "...", "password": "...", "role": "管理员" }
-     */
     @PostMapping
     @AdminOnly
     public Result<String> create(@RequestBody Users user) {

@@ -1,9 +1,13 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
 
 import com.example.spring_boot.entity.Customer;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/customers")
-@CrossOrigin(origins = "*")
 public class CustomerController {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
 
     @Autowired
     private CustomerService customerService;
@@ -47,6 +52,7 @@ public class CustomerController {
      * 新增客户
      * POST /api/customers
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Customer customer) {
         // 基本校验
@@ -72,7 +78,8 @@ public class CustomerController {
                 return Result.error("客户添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "客户添加失败：" + e.getMessage());
+            log.error("客户添加失败", e);
+            return Result.error(500, "客户添加失败，请稍后重试");
         }
     }
 
@@ -80,6 +87,7 @@ public class CustomerController {
      * 修改客户信息
      * PUT /api/customers/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Customer customer) {
         if (customer == null) {
@@ -101,7 +109,8 @@ public class CustomerController {
             customerService.updateCustomer(customer);
             return Result.success("客户更新成功");
         } catch (Exception e) {
-            return Result.error(500, "客户更新失败：" + e.getMessage());
+            log.error("客户更新失败", e);
+            return Result.error(500, "客户更新失败，请稍后重试");
         }
     }
 
@@ -109,13 +118,15 @@ public class CustomerController {
      * 删除客户
      * DELETE /api/customers/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             customerService.deleteCustomer(id);
             return Result.success("客户删除成功");
         } catch (Exception e) {
-            return Result.error(500, "客户删除失败：" + e.getMessage());
+            log.error("客户删除失败", e);
+            return Result.error(500, "客户删除失败，请稍后重试");
         }
     }
 }

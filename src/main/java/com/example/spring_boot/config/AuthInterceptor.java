@@ -1,6 +1,7 @@
 package com.example.spring_boot.config;
 
 import com.example.spring_boot.entity.Result;
+import com.example.spring_boot.service.TokenBlacklistService;
 import com.example.spring_boot.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -14,12 +15,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * 认证拦截器：
- * 1. 校验 Authorization 头中的 JWT；
+ * 1. 校验 Authorization 头中的 JWT（含黑名单吊销校验）；
  * 2. 将当前用户名/角色写入请求属性；
- * 3. 对标注 @AdminOnly 的接口做角色校验。
+ * 3. 对标注 @RequireRole / @AdminOnly 的接口做角色校验。
  */
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
@@ -29,6 +31,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -43,12 +48,12 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        boolean adminOnly = handlerMethod.getMethodAnnotation(AdminOnly.class) != null
-                || handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
-
         String token = resolveToken(request);
         if (token == null) {
             return reject(response, 401, "未登录或缺少令牌");
+        }
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            return reject(response, 401, "令牌已失效，请重新登录");
         }
 
         try {
@@ -60,13 +65,35 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
             request.setAttribute(ATTR_USERNAME, username);
             request.setAttribute(ATTR_ROLE, role == null ? "" : role);
-            if (adminOnly && !"管理员".equals(role)) {
+
+            if (!hasRequiredRole(handlerMethod, role)) {
                 return reject(response, 403, "无权限执行此操作");
             }
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return reject(response, 401, "令牌无效或已过期");
         }
+    }
+
+    private boolean hasRequiredRole(HandlerMethod handlerMethod, String role) {
+        RequireRole requireRole = handlerMethod.getMethodAnnotation(RequireRole.class);
+        if (requireRole == null) {
+            requireRole = handlerMethod.getBeanType().getAnnotation(RequireRole.class);
+        }
+        if (requireRole != null && requireRole.value().length > 0) {
+            String actual = role == null ? "" : role;
+            boolean allowed = Arrays.stream(requireRole.value())
+                    .anyMatch(r -> r.label().equals(actual));
+            if (!allowed) {
+                return false;
+            }
+        }
+        boolean adminOnly = handlerMethod.getMethodAnnotation(AdminOnly.class) != null
+                || handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
+        if (adminOnly && !Role.ADMIN.label().equals(role)) {
+            return false;
+        }
+        return true;
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -77,7 +104,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (header.startsWith("Bearer ")) {
             return header.substring(7).trim();
         }
-        // 兼容直接传裸 token 的旧客户端
         return header.trim();
     }
 

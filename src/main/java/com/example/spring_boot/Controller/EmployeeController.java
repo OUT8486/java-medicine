@@ -1,8 +1,12 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
 
 import com.example.spring_boot.entity.Employee;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.EmployeeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "*")
 public class EmployeeController {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
     private EmployeeService employeeService;
@@ -47,6 +52,7 @@ public class EmployeeController {
      * 新增员工
      * POST /api/employees
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody Employee employee) {
         if (employee == null) {
@@ -67,7 +73,8 @@ public class EmployeeController {
                 return Result.error("员工添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "员工添加失败：" + e.getMessage());
+            log.error("员工添加失败", e);
+            return Result.error(500, "员工添加失败，请稍后重试");
         }
     }
 
@@ -75,6 +82,7 @@ public class EmployeeController {
      * 修改员工信息
      * PUT /api/employees/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody Employee employee) {
         if (employee == null) {
@@ -92,7 +100,8 @@ public class EmployeeController {
             employeeService.updateEmployee(employee);
             return Result.success("员工更新成功");
         } catch (Exception e) {
-            return Result.error(500, "员工更新失败：" + e.getMessage());
+            log.error("员工更新失败", e);
+            return Result.error(500, "员工更新失败，请稍后重试");
         }
     }
 
@@ -100,13 +109,15 @@ public class EmployeeController {
      * 删除员工
      * DELETE /api/employees/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
             employeeService.deleteEmployee(id);
             return Result.success("员工删除成功");
         } catch (Exception e) {
-            return Result.error(500, "员工删除失败：" + e.getMessage());
+            log.error("员工删除失败", e);
+            return Result.error(500, "员工删除失败，请稍后重试");
         }
     }
 }

@@ -1,4 +1,8 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.config.RequireRole;
+import com.example.spring_boot.config.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.PurchaseOrder;
 import com.example.spring_boot.entity.Result;
@@ -13,8 +17,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/purchase-orders")
-@CrossOrigin(origins = "*")
 public class PurchaseOrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(PurchaseOrderController.class);
 
     @Autowired
     private PurchaseOrderService purchaseOrderService;
@@ -35,16 +40,10 @@ public class PurchaseOrderController {
      */
     @GetMapping("/{id}")
     public Result<PurchaseOrder> getById(@PathVariable String id) {
-        System.out.println("========================================");
-        System.out.println("=== 接收到查询请求，ID: " + id + " ===");
-        System.out.println("=== ID 长度：" + (id != null ? id.length() : "null") + " ===");
         PurchaseOrder order = purchaseOrderService.getPurchaseOrderById(id);
         if (order != null) {
-            System.out.println("=== 查询结果：找到订单，PO_ID: " + order.getPo_id() + " ===");
         } else {
-            System.out.println("=== 查询结果：未找到订单 ===");
         }
-        System.out.println("========================================");
         if (order != null) {
             return Result.success(order);
         } else {
@@ -56,6 +55,7 @@ public class PurchaseOrderController {
      * 新增采购订单
      * POST /api/purchase-orders
      */
+    @RequireRole(Role.ADMIN)
     @PostMapping
     public Result<String> add(@RequestBody PurchaseOrder purchaseOrder) {
         try {
@@ -69,7 +69,8 @@ public class PurchaseOrderController {
                 return Result.error("采购订单添加失败");
             }
         } catch (Exception e) {
-            return Result.error(500, "采购订单添加失败：" + e.getMessage());
+            log.error("采购订单添加失败", e);
+            return Result.error(500, "采购订单添加失败，请稍后重试");
         }
     }
 
@@ -77,6 +78,7 @@ public class PurchaseOrderController {
      * 修改采购订单信息
      * PUT /api/purchase-orders/{id}
      */
+    @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @RequestBody PurchaseOrder purchaseOrder) {
         try {
@@ -84,7 +86,8 @@ public class PurchaseOrderController {
             purchaseOrderService.updatePurchaseOrder(purchaseOrder);
             return Result.success("采购订单更新成功");
         } catch (Exception e) {
-            return Result.error(500, "采购订单更新失败：" + e.getMessage());
+            log.error("采购订单更新失败", e);
+            return Result.error(500, "采购订单更新失败，请稍后重试");
         }
     }
 
@@ -92,6 +95,7 @@ public class PurchaseOrderController {
      * 删除采购订单
      * DELETE /api/purchase-orders/{id}
      */
+    @RequireRole(Role.ADMIN)
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable String id) {
         try {
@@ -99,7 +103,8 @@ public class PurchaseOrderController {
             purchaseOrderService.deletePurchaseOrderWithItems(id);
             return Result.success("采购订单删除成功");
         } catch (Exception e) {
-            return Result.error(500, "采购订单删除失败：" + e.getMessage());
+            log.error("采购订单删除失败", e);
+            return Result.error(500, "采购订单删除失败，请稍后重试");
         }
     }
 }
