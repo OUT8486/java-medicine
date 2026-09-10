@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class PurchaseOrderController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody PurchaseOrder purchaseOrder) {
+    public Result<String> add(@Valid @RequestBody PurchaseOrder purchaseOrder) {
         try {
             // 设置订单状态为待收货
             purchaseOrder.setAudit_status(0);
@@ -80,7 +81,7 @@ public class PurchaseOrderController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody PurchaseOrder purchaseOrder) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
         try {
             purchaseOrder.setPo_id(id);
             purchaseOrderService.updatePurchaseOrder(purchaseOrder);

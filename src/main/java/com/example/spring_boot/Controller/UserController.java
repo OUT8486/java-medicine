@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 
 import com.example.spring_boot.config.AdminOnly;
 import com.example.spring_boot.entity.Result;
@@ -36,7 +37,7 @@ public class UserController {
     private LoginAttemptService loginAttemptService;
 
     @PostMapping("/login")
-    public Result<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
+    public Result<Map<String, Object>> login(@Valid @RequestBody Map<String, String> loginData) {
         String userName = loginData.get("user_name");
         String password = loginData.get("password");
 
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public Result<String> register(@RequestBody Users user) {
+    public Result<String> register(@Valid @RequestBody Users user) {
         if (user.getUser_name() == null || user.getUser_name().trim().isEmpty()) {
             return Result.error(400, "用户名不能为空");
         }
@@ -94,7 +95,7 @@ public class UserController {
 
     @PostMapping
     @AdminOnly
-    public Result<String> create(@RequestBody Users user) {
+    public Result<String> create(@Valid @RequestBody Users user) {
         if (user.getUser_name() == null || user.getUser_name().trim().isEmpty()) {
             return Result.error(400, "用户名不能为空");
         }

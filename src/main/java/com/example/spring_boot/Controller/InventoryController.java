@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class InventoryController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody Inventory inventory) {
+    public Result<String> add(@Valid @RequestBody Inventory inventory) {
         try {
             int result = inventoryService.addInventory(inventory);
             if (result > 0) {
@@ -74,7 +75,7 @@ public class InventoryController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody Inventory inventory) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody Inventory inventory) {
         try {
             inventory.setInventory_id(id);
             inventoryService.updateInventory(inventory);

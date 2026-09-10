@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.LoginAttemptService;
@@ -35,7 +36,7 @@ public class AuthController {
     private LoginAttemptService loginAttemptService;
 
     @PostMapping("/login")
-    public Result<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
+    public Result<Map<String, Object>> login(@Valid @RequestBody Map<String, String> loginData) {
         String username = loginData.get("username");
         String password = loginData.get("password");
 

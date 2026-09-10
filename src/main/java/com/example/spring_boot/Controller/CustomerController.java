@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 
@@ -54,7 +55,7 @@ public class CustomerController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody Customer customer) {
+    public Result<String> add(@Valid @RequestBody Customer customer) {
         // 基本校验
         if (customer == null) {
             return Result.error(400, "请求体为空");
@@ -89,7 +90,7 @@ public class CustomerController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody Customer customer) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody Customer customer) {
         if (customer == null) {
             return Result.error(400, "请求体为空");
         }

@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class DrugController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody Drug drug) {
+    public Result<String> add(@Valid @RequestBody Drug drug) {
         // 基本输入校验
         if (drug == null) {
             return Result.error(400, "请求体为空");
@@ -109,7 +110,7 @@ public class DrugController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody Drug drug) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody Drug drug) {
         if (drug == null) {
             return Result.error(400, "请求体为空");
         }

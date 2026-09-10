@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class WarehouseInController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody WarehouseIn warehouseIn) {
+    public Result<String> add(@Valid @RequestBody WarehouseIn warehouseIn) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // 设置入库日期为当前日期
@@ -82,7 +83,7 @@ public class WarehouseInController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody WarehouseIn warehouseIn) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody WarehouseIn warehouseIn) {
         try {
             warehouseIn.setWi_id(id);
             warehouseInService.updateWarehouseIn(warehouseIn);

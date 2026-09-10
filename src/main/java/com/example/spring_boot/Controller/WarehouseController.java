@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class WarehouseController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody Warehouse warehouse) {
+    public Result<String> add(@Valid @RequestBody Warehouse warehouse) {
         if (warehouse == null) {
             return Result.error(400, "请求体为空");
         }
@@ -101,7 +102,7 @@ public class WarehouseController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody Warehouse warehouse) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody Warehouse warehouse) {
         if (warehouse == null) {
             return Result.error(400, "请求体为空");
         }

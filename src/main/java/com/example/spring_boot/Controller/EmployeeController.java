@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 
@@ -54,7 +55,7 @@ public class EmployeeController {
      */
     @RequireRole(Role.ADMIN)
     @PostMapping
-    public Result<String> add(@RequestBody Employee employee) {
+    public Result<String> add(@Valid @RequestBody Employee employee) {
         if (employee == null) {
             return Result.error(400, "请求体为空");
         }
@@ -84,7 +85,7 @@ public class EmployeeController {
      */
     @RequireRole(Role.ADMIN)
     @PutMapping("/{id}")
-    public Result<String> update(@PathVariable String id, @RequestBody Employee employee) {
+    public Result<String> update(@PathVariable String id, @Valid @RequestBody Employee employee) {
         if (employee == null) {
             return Result.error(400, "请求体为空");
         }
