@@ -6,10 +6,11 @@
 docker compose up --build -d
 ```
 
-2. 导入表结构（如果需要）：
+2. 初始化演示数据（可选）：
 
 ```bash
-docker exec -i medicine-mysql mysql -uroot -p123456 medicine < creat_table.sql
+# 表结构由 Flyway 在后端启动时自动迁移，无需手动导入；如需演示数据：
+docker exec -i medicine-mysql mysql -uroot -p123456 medicine < insert_date.sql
 ```
 
 3. 查看日志：
