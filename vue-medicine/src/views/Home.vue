@@ -2,16 +2,18 @@
   <div class="home-container">
     <!-- 导航栏 -->
     <el-menu
+      class="topbar"
       mode="horizontal"
       :ellipsis="false"
-      background-color="#1f2937"
       text-color="#fff"
-      active-text-color="#409EFF"
-      style="margin-bottom: 20px"
+      active-text-color="#bfe9ec"
     >
       <div class="logo">
-        <el-icon><OfficeBuilding /></el-icon>
-        <span>药店管理系统</span>
+        <span class="logo-mark"><el-icon><FirstAidKit /></el-icon></span>
+        <span class="logo-copy">
+          <strong>康宁药房</strong>
+          <small>PHARMACY ADMIN</small>
+        </span>
       </div>
 
       <div class="menu-items">
@@ -62,9 +64,18 @@
 
     <!-- 主要内容 -->
     <div class="main-content">
+      <div class="page-intro">
+        <div>
+          <span class="eyebrow">今日工作台</span>
+          <h2>早上好，{{ userStore.userInfo.user_name || '管理员' }}</h2>
+        </div>
+        <p>把日常经营交给清晰、可靠的数字化管理。</p>
+      </div>
+
       <el-card class="hero-card" shadow="hover">
         <el-row :gutter="20" align="middle">
-          <el-col :span="18">
+          <el-col :xs="24" :sm="18">
+            <div class="hero-kicker"><span></span> 药房运营中心</div>
             <h1 class="welcome-title">欢迎使用 药店管理系统</h1>
             <p class="welcome-desc">
               集中管理供应商、药品、库存与订单。快速进入下面的模块开始操作。
@@ -87,7 +98,7 @@
               </el-button>
             </div>
           </el-col>
-          <el-col :span="6" class="hero-image">
+          <el-col :xs="24" :sm="6" class="hero-image">
             <div class="hero-icon-wrapper">
               <el-icon :size="120" color="#fff"><OfficeBuilding /></el-icon>
             </div>
@@ -97,7 +108,7 @@
 
       <!-- 快捷卡片 -->
       <el-row :gutter="20" class="mt-4">
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/suppliers')">
             <div class="card-content">
               <div class="icon-wrapper primary">
@@ -111,7 +122,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/customers')">
             <div class="card-content">
               <div class="icon-wrapper info">
@@ -125,7 +136,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/drugs')">
             <div class="card-content">
               <div class="icon-wrapper success">
@@ -141,7 +152,7 @@
       </el-row>
 
       <el-row :gutter="20" class="mt-4">
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/inventory')">
             <div class="card-content">
               <div class="icon-wrapper warning">
@@ -155,7 +166,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/purchase-orders')">
             <div class="card-content">
               <div class="icon-wrapper info">
@@ -169,7 +180,7 @@
           </el-card>
         </el-col>
 
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/sales-orders')">
             <div class="card-content">
               <div class="icon-wrapper danger">
@@ -185,7 +196,7 @@
       </el-row>
 
       <el-row :gutter="20" class="mt-4">
-        <el-col :span="8">
+        <el-col :xs="24" :sm="12" :md="8">
           <el-card shadow="hover" class="module-card" @click="$router.push('/warehouses')">
             <div class="card-content">
               <div class="icon-wrapper secondary">
@@ -211,6 +222,7 @@ import { logout } from '../api';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   OfficeBuilding,
+  FirstAidKit,
   House,
   PieChart,
   User,
@@ -247,27 +259,84 @@ const handleLogout = async () => {
 <style scoped>
 .home-container {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background: transparent;
+}
+
+.topbar {
+  min-height: 72px;
+  padding: 0 max(24px, calc((100vw - 1240px) / 2));
+  background: rgba(15, 76, 99, 0.98) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(15, 76, 99, 0.15);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 20px;
-  font-weight: bold;
+  gap: 10px;
   color: #fff;
-  padding: 0 20px;
+  padding: 0 18px 0 0;
+  white-space: nowrap;
+}
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--brand-deep);
+  background: #d9f3f2;
+  font-size: 21px;
+}
+
+.logo-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+  letter-spacing: 0.2px;
+}
+
+.logo-copy strong {
+  font-size: 17px;
+}
+
+.logo-copy small {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 8px;
+  letter-spacing: 1.5px;
 }
 
 .menu-items {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  height: 72px;
+  overflow-x: auto;
+}
+
+.menu-items::-webkit-scrollbar {
+  display: none;
+}
+
+.topbar :deep(.el-menu-item) {
+  height: 72px;
+  padding: 0 16px;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.topbar :deep(.el-menu-item:hover),
+.topbar :deep(.el-menu-item.is-active) {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-bottom-color: #82d6d5;
 }
 
 .user-info {
-  padding: 0 20px;
+  padding: 0 0 0 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .user-dropdown {
@@ -283,18 +352,76 @@ const handleLogout = async () => {
 }
 
 .main-content {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 32px 24px 48px;
+}
+
+.page-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.eyebrow,
+.hero-kicker {
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.page-intro h2 {
+  margin-top: 6px;
+  color: var(--text-main);
+  font-size: 26px;
+  font-weight: 750;
+}
+
+.page-intro p {
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .hero-card {
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  position: relative;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(131, 221, 216, 0.28), transparent 13rem),
+    linear-gradient(120deg, #0f4c63 0%, #176b87 58%, #1e8293 100%);
   color: #fff;
+  border: 0;
+  box-shadow: 0 18px 42px rgba(15, 76, 99, 0.2);
+}
+
+.hero-card :deep(.el-card__body) {
+  padding: 36px 38px;
+}
+
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  color: #9fe3e0;
+  letter-spacing: 1px;
+}
+
+.hero-kicker span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f2c078;
+  box-shadow: 0 0 0 5px rgba(242, 192, 120, 0.14);
 }
 
 .welcome-title {
-  font-size: 28px;
+  color: #fff;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 750;
+  letter-spacing: -0.7px;
   margin-bottom: 16px;
 }
 
@@ -312,13 +439,16 @@ const handleLogout = async () => {
 
 .hero-image {
   text-align: center;
+  min-width: 150px;
 }
 
 .hero-icon-wrapper {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -327,11 +457,19 @@ const handleLogout = async () => {
 
 .module-card {
   cursor: pointer;
-  transition: all 0.3s ease;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .module-card:hover {
   transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.module-card :deep(.el-card__body) {
+  min-height: 112px;
+  display: flex;
+  align-items: center;
 }
 
 .card-content {
@@ -351,27 +489,27 @@ const handleLogout = async () => {
 }
 
 .icon-wrapper.primary {
-  background: linear-gradient(135deg, #409eff, #337ecc);
+  background: linear-gradient(135deg, #3b9fbc, #176b87);
 }
 
 .icon-wrapper.info {
-  background: linear-gradient(135deg, #67c23a, #529b2e);
+  background: linear-gradient(135deg, #5aa9bd, #327b91);
 }
 
 .icon-wrapper.success {
-  background: linear-gradient(135deg, #67c23a, #529b2e);
+  background: linear-gradient(135deg, #3bb6a4, #208b83);
 }
 
 .icon-wrapper.warning {
-  background: linear-gradient(135deg, #e6a23c, #b88230);
+  background: linear-gradient(135deg, #f1b56e, #d58843);
 }
 
 .icon-wrapper.danger {
-  background: linear-gradient(135deg, #f56c6c, #c45656);
+  background: linear-gradient(135deg, #e78682, #bd5b63);
 }
 
 .icon-wrapper.secondary {
-  background: linear-gradient(135deg, #909399, #73767a);
+  background: linear-gradient(135deg, #8496a6, #5b7182);
 }
 
 .card-info {
@@ -380,16 +518,68 @@ const handleLogout = async () => {
 
 .card-title {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 750;
+  color: var(--text-main);
   margin-bottom: 4px;
 }
 
 .card-desc {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-secondary);
 }
 
-.mt-4 {
-  margin-top: 20px;
+@media (max-width: 900px) {
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .logo {
+    padding-right: 12px;
+  }
+
+  .logo-copy small,
+  .username,
+  .user-dropdown > .el-icon {
+    display: none;
+  }
+
+  .topbar :deep(.el-menu-item) {
+    padding: 0 11px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    min-height: 62px;
+  }
+
+  .menu-items {
+    height: 62px;
+  }
+
+  .topbar :deep(.el-menu-item) {
+    height: 62px;
+    font-size: 13px;
+  }
+
+  .main-content {
+    padding: 24px 16px 36px;
+  }
+
+  .page-intro {
+    display: block;
+  }
+
+  .page-intro p {
+    margin-top: 8px;
+  }
+
+  .hero-card :deep(.el-card__body) {
+    padding: 26px 22px;
+  }
+
+  .hero-image {
+    display: none;
+  }
 }
 </style>
