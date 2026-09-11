@@ -14,7 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     private static final String[] PUBLIC_PATHS = {
             "/api/auth/login",
-            "/api/users/login",
             "/api/users/register",
             "/health"
     };
