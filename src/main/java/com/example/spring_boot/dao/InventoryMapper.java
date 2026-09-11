@@ -20,117 +20,117 @@ public interface InventoryMapper {
     
     @Insert("INSERT INTO inventory (" +
             "inventory_id, drug_id, warehouse_id, batch_no, quantity, validity_date) " +
-            "VALUES (#{inventory_id}, #{drug_id}, #{warehouse_id}, #{batch_no}, #{quantity}, #{validity_date})")
-    @Options(useGeneratedKeys = true, keyProperty = "inventory_id")
+            "VALUES (#{inventoryId}, #{drugId}, #{warehouseId}, #{batchNo}, #{quantity}, #{validityDate})")
+    @Options(useGeneratedKeys = true, keyProperty = "inventoryId")
     int insertInventory(Inventory inventory);
     
     @Update("UPDATE inventory SET " +
-            "drug_id = #{drug_id}, warehouse_id = #{warehouse_id}, batch_no = #{batch_no}, " +
-            "quantity = #{quantity}, validity_date = #{validity_date} " +
-            "WHERE inventory_id = #{inventory_id}")
+            "drug_id = #{drugId}, warehouse_id = #{warehouseId}, batch_no = #{batchNo}, " +
+            "quantity = #{quantity}, validity_date = #{validityDate} " +
+            "WHERE inventory_id = #{inventoryId}")
     int updateInventory(Inventory inventory);
     
-    @Delete("DELETE FROM inventory WHERE inventory_id = #{inventory_id}")
+    @Delete("DELETE FROM inventory WHERE inventory_id = #{inventoryId}")
     int deleteInventory(String inventory_id);
     
-    @Select("SELECT * FROM inventory WHERE inventory_id = #{inventory_id}")
+    @Select("SELECT * FROM inventory WHERE inventory_id = #{inventoryId}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     Inventory selectInventoryById(String inventory_id);
     
     @Select("SELECT * FROM inventory ORDER BY inventory_id")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectAllInventories();
     
-    @Select("SELECT * FROM inventory WHERE drug_id = #{drug_id}")
+    @Select("SELECT * FROM inventory WHERE drug_id = #{drugId}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectInventoriesByDrugId(String drug_id);
     
-    @Select("SELECT * FROM inventory WHERE warehouse_id = #{warehouse_id}")
+    @Select("SELECT * FROM inventory WHERE warehouse_id = #{warehouseId}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectInventoriesByWarehouseId(String warehouse_id);
     
-    @Select("SELECT * FROM inventory WHERE batch_no = #{batch_no}")
+    @Select("SELECT * FROM inventory WHERE batch_no = #{batchNo}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectInventoriesByBatchNo(String batch_no);
     
-    @Select("SELECT * FROM inventory WHERE drug_id = #{drug_id} AND warehouse_id = #{warehouse_id}")
+    @Select("SELECT * FROM inventory WHERE drug_id = #{drugId} AND warehouse_id = #{warehouseId}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
-    Inventory selectInventoryByDrugAndWarehouse(@Param("drug_id") String drug_id, @Param("warehouse_id") String warehouse_id);
+    Inventory selectInventoryByDrugAndWarehouse(@Param("drugId") String drug_id, @Param("warehouseId") String warehouse_id);
     
-    @Update("UPDATE inventory SET quantity = #{quantity} WHERE inventory_id = #{inventory_id}")
-    int updateInventoryQuantity(@Param("inventory_id") String inventory_id, @Param("quantity") int quantity);
+    @Update("UPDATE inventory SET quantity = #{quantity} WHERE inventory_id = #{inventoryId}")
+    int updateInventoryQuantity(@Param("inventoryId") String inventory_id, @Param("quantity") int quantity);
 
     @Select("SELECT * FROM inventory WHERE validity_date <= #{daysBeforeExpiry}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectInventoriesNearExpiry(Date daysBeforeExpiry);
 
     @Select("SELECT * FROM inventory WHERE quantity <= #{threshold}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectLowStockInventories(int threshold);
     @Select("SELECT * FROM inventory ORDER BY inventory_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "inventory_id", column = "inventory_id"),
-        @Result(property = "drug_id", column = "drug_id"),
-        @Result(property = "warehouse_id", column = "warehouse_id"),
-        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "inventoryId", column = "inventory_id"),
+        @Result(property = "drugId", column = "drug_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
+        @Result(property = "batchNo", column = "batch_no"),
         @Result(property = "quantity", column = "quantity"),
-        @Result(property = "validity_date", column = "validity_date")
+        @Result(property = "validityDate", column = "validity_date")
     })
     List<Inventory> selectInventoriesPage(@Param("offset") int offset, @Param("size") int size);
 

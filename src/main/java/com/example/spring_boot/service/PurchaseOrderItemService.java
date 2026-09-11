@@ -36,7 +36,7 @@ public class PurchaseOrderItemService {
     // 修改采购订单项
     public void updatePurchaseOrderItem(PurchaseOrderItem purchaseOrderItem) {
         purchaseOrderItemMapper.updatePurchaseOrderItem(purchaseOrderItem);
-        redisUtils.delete(PURCHASE_ORDER_ITEM_CACHE_KEY + purchaseOrderItem.getPoi_id());
+        redisUtils.delete(PURCHASE_ORDER_ITEM_CACHE_KEY + purchaseOrderItem.getPoiId());
         // 清除相关采购订单的列表缓存
         redisUtils.delete("purchase_order:list");
     }

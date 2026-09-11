@@ -9,13 +9,13 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Drug {
-    private String drug_id;          // 药品ID
-    private String generic_name;     // 通用名
-    private String approval_no;      // 批准文号
-    private String dosage_form;      // 剂型
+    private String drugId;          // 药品ID
+    private String genericName;     // 通用名
+    private String approvalNo;      // 批准文号
+    private String dosageForm;      // 剂型
     private String specification;    // 规格
     private String unit;             // 单位
-    private BigDecimal purchase_price; // 采购价
-    private BigDecimal retail_price;   // 零售价
-    private String manufacturer_id;    // 生产厂家ID
+    private BigDecimal purchasePrice; // 采购价
+    private BigDecimal retailPrice;   // 零售价
+    private String manufacturerId;    // 生产厂家ID
 }

@@ -101,7 +101,7 @@ public class SalesOrderController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody SalesOrder salesOrder) {
         try {
-            salesOrder.setSo_id(id);
+            salesOrder.setSoId(id);
             salesOrderService.updateSalesOrder(salesOrder);
             return Result.success("销售订单更新成功");
         } catch (Exception e) {

@@ -34,7 +34,7 @@ public class CustomerService {
     // 修改客户信息
     public void updateCustomer(Customer customer) {
         customerMapper.updateCustomer(customer);
-        redisUtils.delete(CUSTOMER_CACHE_KEY + customer.getCustomer_id());
+        redisUtils.delete(CUSTOMER_CACHE_KEY + customer.getCustomerId());
         redisUtils.delete(CUSTOMER_LIST_CACHE_KEY);
     }
 

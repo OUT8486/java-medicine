@@ -19,21 +19,21 @@ public interface EmployeeMapper {
     
     @Insert("INSERT INTO employee (" +
             "employee_id, name, post) " +
-            "VALUES (#{employee_id}, #{name}, #{post})")
-    @Options(useGeneratedKeys = true, keyProperty = "employee_id")
+            "VALUES (#{employeeId}, #{name}, #{post})")
+    @Options(useGeneratedKeys = true, keyProperty = "employeeId")
     int insertEmployee(Employee employee);
     
     @Update("UPDATE employee SET " +
             "name = #{name}, post = #{post} " +
-            "WHERE employee_id = #{employee_id}")
+            "WHERE employee_id = #{employeeId}")
     int updateEmployee(Employee employee);
     
-    @Delete("DELETE FROM employee WHERE employee_id = #{employee_id}")
+    @Delete("DELETE FROM employee WHERE employee_id = #{employeeId}")
     int deleteEmployee(String employee_id);
     
-    @Select("SELECT * FROM employee WHERE employee_id = #{employee_id}")
+    @Select("SELECT * FROM employee WHERE employee_id = #{employeeId}")
     @Results({
-        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "employeeId", column = "employee_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "post", column = "post")
     })
@@ -41,7 +41,7 @@ public interface EmployeeMapper {
     
     @Select("SELECT * FROM employee ORDER BY employee_id")
     @Results({
-        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "employeeId", column = "employee_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "post", column = "post")
     })
@@ -49,7 +49,7 @@ public interface EmployeeMapper {
     
     @Select("SELECT * FROM employee WHERE name LIKE CONCAT('%', #{name}, '%') ORDER BY employee_id")
     @Results({
-        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "employeeId", column = "employee_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "post", column = "post")
     })
@@ -57,14 +57,14 @@ public interface EmployeeMapper {
     
     @Select("SELECT * FROM employee WHERE post = #{post} ORDER BY employee_id")
     @Results({
-        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "employeeId", column = "employee_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "post", column = "post")
     })
     List<Employee> selectEmployeesByPost(String post);
     @Select("SELECT * FROM employee ORDER BY employee_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "employeeId", column = "employee_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "post", column = "post")
     })

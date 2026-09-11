@@ -62,8 +62,8 @@ public class WarehouseInController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // 设置入库日期为当前日期
-            if (warehouseIn.getIn_date() == null) {
-                warehouseIn.setIn_date(sdf.format(new Date()));
+            if (warehouseIn.getInDate() == null) {
+                warehouseIn.setInDate(sdf.format(new Date()));
             }
             
             int result = warehouseInService.addWarehouseIn(warehouseIn);
@@ -86,7 +86,7 @@ public class WarehouseInController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody WarehouseIn warehouseIn) {
         try {
-            warehouseIn.setWi_id(id);
+            warehouseIn.setWiId(id);
             warehouseInService.updateWarehouseIn(warehouseIn);
             return Result.success("入库单更新成功");
         } catch (Exception e) {

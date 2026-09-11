@@ -21,66 +21,66 @@ public interface PurchaseOrderMapper {
     
     @Insert("INSERT INTO purchaseorder (" +
             "po_id, supplier_id, employee_id, po_date, audit_status) " +
-            "VALUES (#{po_id}, #{supplier_id}, #{employee_id}, #{po_date}, #{audit_status})")
-    @Options(useGeneratedKeys = true, keyProperty = "po_id")
+            "VALUES (#{poId}, #{supplierId}, #{employeeId}, #{poDate}, #{auditStatus})")
+    @Options(useGeneratedKeys = true, keyProperty = "poId")
     int insertPurchaseOrder(PurchaseOrder purchaseOrder);
     
     @Update("UPDATE purchaseorder SET " +
-            "supplier_id = #{supplier_id}, employee_id = #{employee_id}, " +
-            "po_date = #{po_date}, audit_status = #{audit_status} " +
-            "WHERE po_id = #{po_id}")
+            "supplier_id = #{supplierId}, employee_id = #{employeeId}, " +
+            "po_date = #{poDate}, audit_status = #{auditStatus} " +
+            "WHERE po_id = #{poId}")
     int updatePurchaseOrder(PurchaseOrder purchaseOrder);
     
-    @Delete("DELETE FROM purchaseorder WHERE po_id = #{po_id}")
+    @Delete("DELETE FROM purchaseorder WHERE po_id = #{poId}")
     int deletePurchaseOrder(String po_id);
     
-    @Select("SELECT * FROM purchaseorder WHERE po_id = #{po_id}")
+    @Select("SELECT * FROM purchaseorder WHERE po_id = #{poId}")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     PurchaseOrder selectPurchaseOrderById(String po_id);
     
     @Select("SELECT * FROM purchaseorder ORDER BY po_id")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectAllPurchaseOrders();
     
-    @Select("SELECT * FROM purchaseorder WHERE supplier_id = #{supplier_id} ORDER BY po_date DESC")
+    @Select("SELECT * FROM purchaseorder WHERE supplier_id = #{supplierId} ORDER BY po_date DESC")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersBySupplierId(String supplier_id);
     
-    @Select("SELECT * FROM purchaseorder WHERE audit_status = #{audit_status} ORDER BY po_date DESC")
+    @Select("SELECT * FROM purchaseorder WHERE audit_status = #{auditStatus} ORDER BY po_date DESC")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByAuditStatus(Integer audit_status);
     
-    @Select("SELECT * FROM purchaseorder WHERE employee_id = #{employee_id} ORDER BY po_date DESC")
+    @Select("SELECT * FROM purchaseorder WHERE employee_id = #{employeeId} ORDER BY po_date DESC")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByEmployeeId(String employee_id);
     
@@ -90,24 +90,24 @@ public interface PurchaseOrderMapper {
             "ORDER BY po_date DESC",
             "</script>"})
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByDateRangeString(@Param("start_date") String start_date, @Param("end_date") String end_date);
     
-    @Update("UPDATE purchaseorder SET audit_status = #{audit_status} WHERE po_id = #{po_id}")
-    int updatePurchaseOrderAuditStatus(@Param("po_id") String po_id, @Param("audit_status") String audit_status);
+    @Update("UPDATE purchaseorder SET audit_status = #{auditStatus} WHERE po_id = #{poId}")
+    int updatePurchaseOrderAuditStatus(@Param("poId") String po_id, @Param("auditStatus") String audit_status);
 
     @Select("SELECT * FROM purchaseorder WHERE employee_id = #{creator} ORDER BY po_date DESC")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByCreateBy(String creator);
 
@@ -117,21 +117,21 @@ public interface PurchaseOrderMapper {
             "ORDER BY po_date DESC",
             "</script>"})
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByDateRangeDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     @Select("SELECT * FROM purchaseorder WHERE audit_status = #{status} ORDER BY po_date DESC")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersByStatus(String status);
 
@@ -141,11 +141,11 @@ public interface PurchaseOrderMapper {
     BigDecimal calculateOrderTotal(String poId);
     @Select("SELECT * FROM purchaseorder ORDER BY po_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "supplier_id", column = "supplier_id"),
-        @Result(property = "employee_id", column = "employee_id"),
-        @Result(property = "po_date", column = "po_date"),
-        @Result(property = "audit_status", column = "audit_status")
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
+        @Result(property = "employeeId", column = "employee_id"),
+        @Result(property = "poDate", column = "po_date"),
+        @Result(property = "auditStatus", column = "audit_status")
     })
     List<PurchaseOrder> selectPurchaseOrdersPage(@Param("offset") int offset, @Param("size") int size);
 

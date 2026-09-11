@@ -112,7 +112,7 @@ public class WarehouseController {
         }
 
         try {
-            warehouse.setWarehouse_id(id);
+            warehouse.setWarehouseId(id);
             warehouseService.updateWarehouse(warehouse);
             return Result.success("仓库更新成功");
         } catch (Exception e) {

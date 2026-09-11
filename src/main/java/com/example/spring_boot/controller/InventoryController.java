@@ -78,7 +78,7 @@ public class InventoryController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody Inventory inventory) {
         try {
-            inventory.setInventory_id(id);
+            inventory.setInventoryId(id);
             inventoryService.updateInventory(inventory);
             return Result.success("库存更新成功");
         } catch (Exception e) {

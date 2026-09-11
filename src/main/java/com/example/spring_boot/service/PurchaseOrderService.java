@@ -35,16 +35,16 @@ public class PurchaseOrderService {
      */
     @Transactional
     public int addPurchaseOrder(PurchaseOrder purchaseOrder) {
-        if (purchaseOrder.getPo_id() == null || purchaseOrder.getPo_id().isBlank()) {
-            purchaseOrder.setPo_id(IdGenerator.next("PO"));
+        if (purchaseOrder.getPoId() == null || purchaseOrder.getPoId().isBlank()) {
+            purchaseOrder.setPoId(IdGenerator.next("PO"));
         }
         int result = purchaseOrderMapper.insertPurchaseOrder(purchaseOrder);
         if (result > 0 && purchaseOrder.getItems() != null) {
             for (PurchaseOrderItem item : purchaseOrder.getItems()) {
-                if (item.getPoi_id() == null || item.getPoi_id().isBlank()) {
-                    item.setPoi_id(IdGenerator.next("PI"));
+                if (item.getPoiId() == null || item.getPoiId().isBlank()) {
+                    item.setPoiId(IdGenerator.next("PI"));
                 }
-                item.setPo_id(purchaseOrder.getPo_id());
+                item.setPoId(purchaseOrder.getPoId());
                 purchaseOrderItemMapper.insertPurchaseOrderItem(item);
             }
         }
@@ -56,7 +56,7 @@ public class PurchaseOrderService {
 
     public void updatePurchaseOrder(PurchaseOrder purchaseOrder) {
         purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
-        redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + purchaseOrder.getPo_id());
+        redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + purchaseOrder.getPoId());
         redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
     }
 

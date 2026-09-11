@@ -18,47 +18,47 @@ public interface ManufacturerMapper {
     
     @Insert("INSERT INTO manufacturer (" +
             "manufacturer_id, name, credit_code) " +
-            "VALUES (#{manufacturer_id}, #{name}, #{credit_code})")
-    @Options(useGeneratedKeys = true, keyProperty = "manufacturer_id")
+            "VALUES (#{manufacturerId}, #{name}, #{creditCode})")
+    @Options(useGeneratedKeys = true, keyProperty = "manufacturerId")
     int insertManufacturer(Manufacturer manufacturer);
     
     @Update("UPDATE manufacturer SET " +
-            "name = #{name}, credit_code = #{credit_code} " +
-            "WHERE manufacturer_id = #{manufacturer_id}")
+            "name = #{name}, credit_code = #{creditCode} " +
+            "WHERE manufacturer_id = #{manufacturerId}")
     int updateManufacturer(Manufacturer manufacturer);
     
-    @Delete("DELETE FROM manufacturer WHERE manufacturer_id = #{manufacturer_id}")
+    @Delete("DELETE FROM manufacturer WHERE manufacturer_id = #{manufacturerId}")
     int deleteManufacturer(String manufacturer_id);
     
-    @Select("SELECT * FROM manufacturer WHERE manufacturer_id = #{manufacturer_id}")
+    @Select("SELECT * FROM manufacturer WHERE manufacturer_id = #{manufacturerId}")
     @Results({
-        @Result(property = "manufacturer_id", column = "manufacturer_id"),
+        @Result(property = "manufacturerId", column = "manufacturer_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "credit_code", column = "credit_code")
+        @Result(property = "creditCode", column = "credit_code")
     })
     Manufacturer selectManufacturerById(String manufacturer_id);
     
     @Select("SELECT * FROM manufacturer ORDER BY manufacturer_id")
     @Results({
-        @Result(property = "manufacturer_id", column = "manufacturer_id"),
+        @Result(property = "manufacturerId", column = "manufacturer_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "credit_code", column = "credit_code")
+        @Result(property = "creditCode", column = "credit_code")
     })
     List<Manufacturer> selectAllManufacturers();
     
     @Select("SELECT * FROM manufacturer WHERE name LIKE CONCAT('%', #{name}, '%')")
     @Results({
-        @Result(property = "manufacturer_id", column = "manufacturer_id"),
+        @Result(property = "manufacturerId", column = "manufacturer_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "credit_code", column = "credit_code")
+        @Result(property = "creditCode", column = "credit_code")
     })
     List<Manufacturer> selectManufacturersByName(String name);
     
-    @Select("SELECT * FROM manufacturer WHERE credit_code = #{credit_code}")
+    @Select("SELECT * FROM manufacturer WHERE credit_code = #{creditCode}")
     @Results({
-        @Result(property = "manufacturer_id", column = "manufacturer_id"),
+        @Result(property = "manufacturerId", column = "manufacturer_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "credit_code", column = "credit_code")
+        @Result(property = "creditCode", column = "credit_code")
     })
     Manufacturer selectManufacturerByCreditCode(String credit_code);
 }

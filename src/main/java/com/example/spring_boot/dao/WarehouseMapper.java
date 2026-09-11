@@ -19,21 +19,21 @@ public interface WarehouseMapper {
     
     @Insert("INSERT INTO warehouse (" +
             "warehouse_id, name, location) " +
-            "VALUES (#{warehouse_id}, #{name}, #{location})")
-    @Options(useGeneratedKeys = true, keyProperty = "warehouse_id")
+            "VALUES (#{warehouseId}, #{name}, #{location})")
+    @Options(useGeneratedKeys = true, keyProperty = "warehouseId")
     int insertWarehouse(Warehouse warehouse);
     
     @Update("UPDATE warehouse SET " +
             "name = #{name}, location = #{location} " +
-            "WHERE warehouse_id = #{warehouse_id}")
+            "WHERE warehouse_id = #{warehouseId}")
     int updateWarehouse(Warehouse warehouse);
     
-    @Delete("DELETE FROM warehouse WHERE warehouse_id = #{warehouse_id}")
+    @Delete("DELETE FROM warehouse WHERE warehouse_id = #{warehouseId}")
     int deleteWarehouse(String warehouse_id);
     
-    @Select("SELECT * FROM warehouse WHERE warehouse_id = #{warehouse_id}")
+    @Select("SELECT * FROM warehouse WHERE warehouse_id = #{warehouseId}")
     @Results({
-        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "location", column = "location")
     })
@@ -41,7 +41,7 @@ public interface WarehouseMapper {
     
     @Select("SELECT * FROM warehouse ORDER BY warehouse_id")
     @Results({
-        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "location", column = "location")
     })
@@ -49,7 +49,7 @@ public interface WarehouseMapper {
     
     @Select("SELECT * FROM warehouse WHERE name LIKE CONCAT('%', #{name}, '%')")
     @Results({
-        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "location", column = "location")
     })
@@ -57,14 +57,14 @@ public interface WarehouseMapper {
     
     @Select("SELECT * FROM warehouse WHERE location LIKE CONCAT('%', #{location}, '%')")
     @Results({
-        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "location", column = "location")
     })
     List<Warehouse> selectWarehousesByLocation(String location);
     @Select("SELECT * FROM warehouse ORDER BY warehouse_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "warehouseId", column = "warehouse_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "location", column = "location")
     })

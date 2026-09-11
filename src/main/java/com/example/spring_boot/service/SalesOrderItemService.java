@@ -36,7 +36,7 @@ public class SalesOrderItemService {
     // 修改销售订单项
     public void updateSalesOrderItem(SalesOrderItem salesOrderItem) {
         salesOrderItemMapper.updateSalesOrderItem(salesOrderItem);
-        redisUtils.delete(SALES_ORDER_ITEM_CACHE_KEY + salesOrderItem.getSoi_id());
+        redisUtils.delete(SALES_ORDER_ITEM_CACHE_KEY + salesOrderItem.getSoiId());
         // 清除相关销售订单的列表缓存
         redisUtils.delete("sales_order:list");
     }

@@ -34,7 +34,7 @@ public class EmployeeService {
     // 修改员工信息
     public void updateEmployee(Employee employee) {
         employeeMapper.updateEmployee(employee);
-        redisUtils.delete(EMPLOYEE_CACHE_KEY + employee.getEmployee_id());
+        redisUtils.delete(EMPLOYEE_CACHE_KEY + employee.getEmployeeId());
         redisUtils.delete(EMPLOYEE_LIST_CACHE_KEY);
     }
 

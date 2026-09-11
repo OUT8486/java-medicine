@@ -27,7 +27,7 @@ public class UserController {
 
     @PostMapping("/register")
     public Result<String> register(@Valid @RequestBody Users user) {
-        if (user.getUser_name() == null || user.getUser_name().trim().isEmpty()) {
+        if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
             return Result.error(400, "用户名不能为空");
         }
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
@@ -54,7 +54,7 @@ public class UserController {
     @PostMapping
     @AdminOnly
     public Result<String> create(@Valid @RequestBody Users user) {
-        if (user.getUser_name() == null || user.getUser_name().trim().isEmpty()) {
+        if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
             return Result.error(400, "用户名不能为空");
         }
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
@@ -86,9 +86,9 @@ public class UserController {
     }
 
     private void prepareUserForCreate(Users user) {
-        if (user.getUser_id() == null || user.getUser_id().trim().isEmpty()) {
-            user.setUser_id(IdGenerator.next("U"));
+        if (user.getUserId() == null || user.getUserId().trim().isEmpty()) {
+            user.setUserId(IdGenerator.next("U"));
         }
-        user.setUser_name(user.getUser_name().trim());
+        user.setUserName(user.getUserName().trim());
     }
 }

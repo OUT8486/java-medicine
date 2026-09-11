@@ -19,78 +19,78 @@ public interface CustomerMapper {
     
     @Insert("INSERT INTO customer (" +
             "customer_id, name, type, contact_phone) " +
-            "VALUES (#{customer_id}, #{name}, #{type}, #{contact_phone})")
-    @Options(useGeneratedKeys = true, keyProperty = "customer_id")
+            "VALUES (#{customerId}, #{name}, #{type}, #{contactPhone})")
+    @Options(useGeneratedKeys = true, keyProperty = "customerId")
     int insertCustomer(Customer customer);
     
     @Update("UPDATE customer SET " +
-            "name = #{name}, type = #{type}, contact_phone = #{contact_phone} " +
-            "WHERE customer_id = #{customer_id}")
+            "name = #{name}, type = #{type}, contact_phone = #{contactPhone} " +
+            "WHERE customer_id = #{customerId}")
     int updateCustomer(Customer customer);
     
-    @Delete("DELETE FROM customer WHERE customer_id = #{customer_id}")
+    @Delete("DELETE FROM customer WHERE customer_id = #{customerId}")
     int deleteCustomer(String customer_id);
     
-    @Select("SELECT * FROM customer WHERE customer_id = #{customer_id}")
+    @Select("SELECT * FROM customer WHERE customer_id = #{customerId}")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     Customer selectCustomerById(String customer_id);
     
     @Select("SELECT * FROM customer ORDER BY customer_id")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     List<Customer> selectAllCustomers();
     
     @Select("SELECT * FROM customer WHERE name LIKE CONCAT('%', #{name}, '%') ORDER BY customer_id")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     List<Customer> selectCustomersByName(String name);
     
-    @Select("SELECT * FROM customer WHERE contact_phone = #{contact_phone}")
+    @Select("SELECT * FROM customer WHERE contact_phone = #{contactPhone}")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     List<Customer> selectCustomersByContactPhone(String contact_phone);
     
     @Select("SELECT * FROM customer WHERE type = #{type} ORDER BY customer_id")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     List<Customer> selectCustomersByType(String type);
 
     @Select("SELECT * FROM customer WHERE contact_phone = #{phone}")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     Customer selectCustomerByPhone(String phone);
 
     @Select("SELECT * FROM customer ORDER BY customer_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "customerId", column = "customer_id"),
         @Result(property = "name", column = "name"),
         @Result(property = "type", column = "type"),
-        @Result(property = "contact_phone", column = "contact_phone")
+        @Result(property = "contactPhone", column = "contact_phone")
     })
     List<Customer> selectCustomersPage(@Param("offset") int offset, @Param("size") int size);
 

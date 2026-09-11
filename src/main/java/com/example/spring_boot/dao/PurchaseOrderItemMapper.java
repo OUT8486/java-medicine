@@ -20,23 +20,23 @@ public interface PurchaseOrderItemMapper {
     
     @Insert("INSERT INTO purchaseorderitem (" +
             "poi_id, po_id, drug_id, quantity, price) " +
-            "VALUES (#{poi_id}, #{po_id}, #{drug_id}, #{quantity}, #{price})")
-    @Options(useGeneratedKeys = true, keyProperty = "poi_id")
+            "VALUES (#{poiId}, #{poId}, #{drugId}, #{quantity}, #{price})")
+    @Options(useGeneratedKeys = true, keyProperty = "poiId")
     int insertPurchaseOrderItem(PurchaseOrderItem purchaseOrderItem);
     
     @Update("UPDATE purchaseorderitem SET " +
-            "po_id = #{po_id}, drug_id = #{drug_id}, quantity = #{quantity}, price = #{price} " +
-            "WHERE poi_id = #{poi_id}")
+            "po_id = #{poId}, drug_id = #{drugId}, quantity = #{quantity}, price = #{price} " +
+            "WHERE poi_id = #{poiId}")
     int updatePurchaseOrderItem(PurchaseOrderItem purchaseOrderItem);
     
-    @Delete("DELETE FROM purchaseorderitem WHERE poi_id = #{poi_id}")
+    @Delete("DELETE FROM purchaseorderitem WHERE poi_id = #{poiId}")
     int deletePurchaseOrderItem(String poi_id);
     
-    @Select("SELECT * FROM purchaseorderitem WHERE poi_id = #{poi_id}")
+    @Select("SELECT * FROM purchaseorderitem WHERE poi_id = #{poiId}")
     @Results({
-        @Result(property = "poi_id", column = "poi_id"),
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "poiId", column = "poi_id"),
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price")
     })
@@ -44,52 +44,52 @@ public interface PurchaseOrderItemMapper {
     
     @Select("SELECT * FROM purchaseorderitem ORDER BY poi_id")
     @Results({
-        @Result(property = "poi_id", column = "poi_id"),
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "poiId", column = "poi_id"),
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price")
     })
     List<PurchaseOrderItem> selectAllPurchaseOrderItems();
     
-    @Select("SELECT * FROM purchaseorderitem WHERE po_id = #{po_id} ORDER BY poi_id")
+    @Select("SELECT * FROM purchaseorderitem WHERE po_id = #{poId} ORDER BY poi_id")
     @Results({
-        @Result(property = "poi_id", column = "poi_id"),
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "poiId", column = "poi_id"),
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price")
     })
     List<PurchaseOrderItem> selectPurchaseOrderItemsByPoId(String po_id);
     
-    @Select("SELECT * FROM purchaseorderitem WHERE drug_id = #{drug_id} ORDER BY poi_id")
+    @Select("SELECT * FROM purchaseorderitem WHERE drug_id = #{drugId} ORDER BY poi_id")
     @Results({
-        @Result(property = "poi_id", column = "poi_id"),
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "poiId", column = "poi_id"),
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price")
     })
     List<PurchaseOrderItem> selectPurchaseOrderItemsByDrugId(String drug_id);
     
-    @Update("UPDATE purchaseorderitem SET price = #{subtotal} WHERE poi_id = #{poi_id}")
-    int updateSubtotal(@Param("poi_id") String poi_id, @Param("subtotal") BigDecimal subtotal);
+    @Update("UPDATE purchaseorderitem SET price = #{subtotal} WHERE poi_id = #{poiId}")
+    int updateSubtotal(@Param("poiId") String poi_id, @Param("subtotal") BigDecimal subtotal);
     
     @Insert({"<script>",
             "INSERT INTO purchaseorderitem (poi_id, po_id, drug_id, quantity, price) VALUES ",
             "<foreach collection='items' item='item' separator=','>",
-            "(#{item.poi_id}, #{item.po_id}, #{item.drug_id}, #{item.quantity}, #{item.price})",
+            "(#{item.poiId}, #{item.poId}, #{item.drugId}, #{item.quantity}, #{item.price})",
             "</foreach>",
             "</script>"})
     int batchInsertPurchaseOrderItems(@Param("items") List<PurchaseOrderItem> items);
     
-    @Delete("DELETE FROM purchaseorderitem WHERE po_id = #{po_id}")
+    @Delete("DELETE FROM purchaseorderitem WHERE po_id = #{poId}")
     int deletePurchaseOrderItemsByPoId(String po_id);
     @Select("SELECT * FROM purchaseorderitem ORDER BY poi_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "poi_id", column = "poi_id"),
-        @Result(property = "po_id", column = "po_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "poiId", column = "poi_id"),
+        @Result(property = "poId", column = "po_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price")
     })

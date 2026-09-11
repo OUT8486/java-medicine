@@ -20,95 +20,95 @@ public interface SalesOrderItemMapper {
     
     @Insert("INSERT INTO salesorderitem (" +
             "soi_id, so_id, drug_id, quantity, price, batch_no) " +
-            "VALUES (#{soi_id}, #{so_id}, #{drug_id}, #{quantity}, #{price}, #{batch_no})")
-    @Options(useGeneratedKeys = true, keyProperty = "soi_id")
+            "VALUES (#{soiId}, #{soId}, #{drugId}, #{quantity}, #{price}, #{batchNo})")
+    @Options(useGeneratedKeys = true, keyProperty = "soiId")
     int insertSalesOrderItem(SalesOrderItem salesOrderItem);
     
     @Update("UPDATE salesorderitem SET " +
-            "so_id = #{so_id}, drug_id = #{drug_id}, quantity = #{quantity}, " +
-            "price = #{price}, batch_no = #{batch_no} " +
-            "WHERE soi_id = #{soi_id}")
+            "so_id = #{soId}, drug_id = #{drugId}, quantity = #{quantity}, " +
+            "price = #{price}, batch_no = #{batchNo} " +
+            "WHERE soi_id = #{soiId}")
     int updateSalesOrderItem(SalesOrderItem salesOrderItem);
     
-    @Delete("DELETE FROM salesorderitem WHERE soi_id = #{soi_id}")
+    @Delete("DELETE FROM salesorderitem WHERE soi_id = #{soiId}")
     int deleteSalesOrderItem(String soi_id);
     
-    @Select("SELECT * FROM salesorderitem WHERE soi_id = #{soi_id}")
+    @Select("SELECT * FROM salesorderitem WHERE soi_id = #{soiId}")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     SalesOrderItem selectSalesOrderItemById(String soi_id);
     
     @Select("SELECT * FROM salesorderitem ORDER BY soi_id")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     List<SalesOrderItem> selectAllSalesOrderItems();
     
-    @Select("SELECT * FROM salesorderitem WHERE so_id = #{so_id}")
+    @Select("SELECT * FROM salesorderitem WHERE so_id = #{soId}")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     List<SalesOrderItem> selectSalesOrderItemsBySoId(String so_id);
     
-    @Select("SELECT * FROM salesorderitem WHERE drug_id = #{drug_id}")
+    @Select("SELECT * FROM salesorderitem WHERE drug_id = #{drugId}")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     List<SalesOrderItem> selectSalesOrderItemsByDrugId(String drug_id);
     
-    @Select("SELECT * FROM salesorderitem WHERE batch_no = #{batch_no}")
+    @Select("SELECT * FROM salesorderitem WHERE batch_no = #{batchNo}")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     List<SalesOrderItem> selectSalesOrderItemsByBatchNo(String batch_no);
     
     @Insert({"<script>",
             "INSERT INTO salesorderitem (soi_id, so_id, drug_id, quantity, price, batch_no) VALUES ",
             "<foreach collection='items' item='item' separator=','>",
-            "(#{item.soi_id}, #{item.so_id}, #{item.drug_id}, #{item.quantity}, #{item.price}, #{item.batch_no})",
+            "(#{item.soiId}, #{item.soId}, #{item.drugId}, #{item.quantity}, #{item.price}, #{item.batchNo})",
             "</foreach>",
             "</script>"})
     int batchInsertSalesOrderItems(@Param("items") List<SalesOrderItem> items);
     
-    @Update("UPDATE salesorderitem SET price = #{subtotal} WHERE soi_id = #{soi_id}")
-    int updateSubtotal(@Param("soi_id") String soi_id, @Param("subtotal") BigDecimal subtotal);
+    @Update("UPDATE salesorderitem SET price = #{subtotal} WHERE soi_id = #{soiId}")
+    int updateSubtotal(@Param("soiId") String soi_id, @Param("subtotal") BigDecimal subtotal);
     
-    @Delete("DELETE FROM salesorderitem WHERE so_id = #{so_id}")
+    @Delete("DELETE FROM salesorderitem WHERE so_id = #{soId}")
     int deleteSalesOrderItemsBySoId(String so_id);
     @Select("SELECT * FROM salesorderitem ORDER BY soi_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "soi_id", column = "soi_id"),
-        @Result(property = "so_id", column = "so_id"),
-        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "soiId", column = "soi_id"),
+        @Result(property = "soId", column = "so_id"),
+        @Result(property = "drugId", column = "drug_id"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "batch_no", column = "batch_no")
+        @Result(property = "batchNo", column = "batch_no")
     })
     List<SalesOrderItem> selectSalesOrderItemsPage(@Param("offset") int offset, @Param("size") int size);
 

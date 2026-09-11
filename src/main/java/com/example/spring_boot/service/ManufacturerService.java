@@ -33,7 +33,7 @@ public class ManufacturerService {
     // 修改生产厂家信息
     public void updateManufacturer(Manufacturer manufacturer) {
         manufacturerMapper.updateManufacturer(manufacturer);
-        redisUtils.delete(MANUFACTURER_CACHE_KEY + manufacturer.getManufacturer_id());
+        redisUtils.delete(MANUFACTURER_CACHE_KEY + manufacturer.getManufacturerId());
         redisUtils.delete(MANUFACTURER_LIST_CACHE_KEY);
     }
 

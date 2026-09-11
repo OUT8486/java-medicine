@@ -73,7 +73,7 @@ public class SupplierController {
         if (supplier.getName() == null || supplier.getName().trim().isEmpty()) {
             return Result.error(400, "供应商名称不能为空");
         }
-        String phone = supplier.getContact_phone();
+        String phone = supplier.getContactPhone();
         if (phone != null && !phone.matches("^\\d{11}$")) {
             return Result.error(400, "联系电话必须为 11 位数字");
         }
@@ -108,7 +108,7 @@ public class SupplierController {
         if (supplier.getName() == null || supplier.getName().trim().isEmpty()) {
             return Result.error(400, "供应商名称不能为空");
         }
-        String phone = supplier.getContact_phone();
+        String phone = supplier.getContactPhone();
         if (phone != null && !phone.matches("^\\d{11}$")) {
             return Result.error(400, "联系电话必须为 11 位数字");
         }
@@ -118,7 +118,7 @@ public class SupplierController {
         }
 
         try {
-            supplier.setSupplier_id(id);
+            supplier.setSupplierId(id);
             supplierService.updateSupplier(supplier);
             return Result.success("供应商更新成功");
         } catch (Exception e) {

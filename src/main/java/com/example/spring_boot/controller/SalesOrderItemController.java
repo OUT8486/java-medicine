@@ -78,7 +78,7 @@ public class SalesOrderItemController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody SalesOrderItem salesOrderItem) {
         try {
-            salesOrderItem.setSoi_id(id);
+            salesOrderItem.setSoiId(id);
             salesOrderItemService.updateSalesOrderItem(salesOrderItem);
             return Result.success("销售订单项更新成功");
         } catch (Exception e) {

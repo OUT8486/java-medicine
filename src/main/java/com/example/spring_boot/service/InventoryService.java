@@ -34,7 +34,7 @@ public class InventoryService {
     // 修改库存信息
     public void updateInventory(Inventory inventory) {
         inventoryMapper.updateInventory(inventory);
-        redisUtils.delete(INVENTORY_CACHE_KEY + inventory.getInventory_id());
+        redisUtils.delete(INVENTORY_CACHE_KEY + inventory.getInventoryId());
         redisUtils.delete(INVENTORY_LIST_CACHE_KEY);
     }
 

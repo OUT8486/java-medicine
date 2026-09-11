@@ -37,7 +37,7 @@ public class WarehouseInService {
     @Transactional
     public void updateWarehouseIn(WarehouseIn warehouseIn) {
         warehouseInMapper.updateWarehouseIn(warehouseIn);
-        redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + warehouseIn.getWi_id());
+        redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + warehouseIn.getWiId());
         redisUtils.delete(WAREHOUSE_IN_LIST_CACHE_KEY);
     }
 

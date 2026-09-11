@@ -77,7 +77,7 @@ public class CustomerController {
         if (customer.getType() == null || customer.getType().trim().isEmpty()) {
             return Result.error(400, "客户类型不能为空");
         }
-        String phone = customer.getContact_phone();
+        String phone = customer.getContactPhone();
         if (phone != null && !phone.matches("^\\d{11}$")) {
             return Result.error(400, "联系电话必须为 11 位数字");
         }
@@ -111,13 +111,13 @@ public class CustomerController {
         if (customer.getType() == null || customer.getType().trim().isEmpty()) {
             return Result.error(400, "客户类型不能为空");
         }
-        String phone = customer.getContact_phone();
+        String phone = customer.getContactPhone();
         if (phone != null && !phone.matches("^\\d{11}$")) {
             return Result.error(400, "联系电话必须为 11 位数字");
         }
 
         try {
-            customer.setCustomer_id(id);
+            customer.setCustomerId(id);
             customerService.updateCustomer(customer);
             return Result.success("客户更新成功");
         } catch (Exception e) {

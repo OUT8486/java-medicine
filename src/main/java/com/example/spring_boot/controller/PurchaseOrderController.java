@@ -62,7 +62,7 @@ public class PurchaseOrderController {
     public Result<String> add(@Valid @RequestBody PurchaseOrder purchaseOrder) {
         try {
             // 设置订单状态为待收货
-            purchaseOrder.setAudit_status(0);
+            purchaseOrder.setAuditStatus(0);
             
             int result = purchaseOrderService.addPurchaseOrder(purchaseOrder);
             if (result > 0) {
@@ -84,7 +84,7 @@ public class PurchaseOrderController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
         try {
-            purchaseOrder.setPo_id(id);
+            purchaseOrder.setPoId(id);
             purchaseOrderService.updatePurchaseOrder(purchaseOrder);
             return Result.success("采购订单更新成功");
         } catch (Exception e) {

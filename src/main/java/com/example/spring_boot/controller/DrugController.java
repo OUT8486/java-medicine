@@ -89,14 +89,14 @@ public class DrugController {
         if (drug == null) {
             return Result.error(400, "请求体为空");
         }
-        if (drug.getGeneric_name() == null || drug.getGeneric_name().trim().isEmpty()) {
+        if (drug.getGenericName() == null || drug.getGenericName().trim().isEmpty()) {
             return Result.error(400, "药品名称不能为空");
         }
-        BigDecimal retail = drug.getRetail_price();
+        BigDecimal retail = drug.getRetailPrice();
         if (retail == null || retail.compareTo(BigDecimal.ZERO) <= 0) {
             return Result.error(400, "零售价格必须大于 0");
         }
-        BigDecimal purchase = drug.getPurchase_price();
+        BigDecimal purchase = drug.getPurchasePrice();
         if (purchase != null && purchase.compareTo(BigDecimal.ZERO) <= 0) {
             return Result.error(400, "采购价格必须大于 0 或为空");
         }
@@ -126,17 +126,17 @@ public class DrugController {
             return Result.error(400, "请求体为空");
         }
         
-        BigDecimal retail = drug.getRetail_price();
+        BigDecimal retail = drug.getRetailPrice();
         if (retail != null && retail.compareTo(BigDecimal.ZERO) <= 0) {
             return Result.error(400, "零售价格必须大于 0");
         }
-        BigDecimal purchase = drug.getPurchase_price();
+        BigDecimal purchase = drug.getPurchasePrice();
         if (purchase != null && purchase.compareTo(BigDecimal.ZERO) <= 0) {
             return Result.error(400, "采购价格必须大于 0 或为空");
         }
 
         try {
-            drug.setDrug_id(id);
+            drug.setDrugId(id);
             drugService.updateDrug(drug);
             return Result.success("药品更新成功");
         } catch (Exception e) {

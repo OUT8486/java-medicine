@@ -78,7 +78,7 @@ public class PurchaseOrderItemController {
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable String id, @Valid @RequestBody PurchaseOrderItem purchaseOrderItem) {
         try {
-            purchaseOrderItem.setPoi_id(id);
+            purchaseOrderItem.setPoiId(id);
             purchaseOrderItemService.updatePurchaseOrderItem(purchaseOrderItem);
             return Result.success("采购订单项更新成功");
         } catch (Exception e) {

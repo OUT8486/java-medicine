@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Supplier {
-    private String supplier_id;      // 供应商编号
+    private String supplierId;      // 供应商编号
     private String name;             // 供应商名称
-    private String contact_phone;    // 联系电话
+    private String contactPhone;    // 联系电话
     private Integer status;           // 合作状态（0停用/1启用）
 }

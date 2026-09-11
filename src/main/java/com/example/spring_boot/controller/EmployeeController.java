@@ -98,7 +98,7 @@ public class EmployeeController {
         }
 
         try {
-            employee.setEmployee_id(id);
+            employee.setEmployeeId(id);
             employeeService.updateEmployee(employee);
             return Result.success("员工更新成功");
         } catch (Exception e) {

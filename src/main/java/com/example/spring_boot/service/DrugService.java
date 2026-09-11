@@ -36,7 +36,7 @@ public class DrugService {
     // 修改药品
     public void updateDrug(Drug drug) {
         drugMapper.updateDrug(drug);
-        redisUtils.delete(DRUG_CACHE_KEY + drug.getDrug_id());
+        redisUtils.delete(DRUG_CACHE_KEY + drug.getDrugId());
         redisUtils.delete(DRUG_LIST_CACHE_KEY);
     }
 

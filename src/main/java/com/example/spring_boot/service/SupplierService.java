@@ -34,7 +34,7 @@ public class SupplierService {
     // 修改供应商信息
     public void updateSupplier(Supplier supplier) {
         supplierMapper.updateSupplier(supplier);
-        redisUtils.delete(SUPPLIER_CACHE_KEY + supplier.getSupplier_id());
+        redisUtils.delete(SUPPLIER_CACHE_KEY + supplier.getSupplierId());
         redisUtils.delete(SUPPLIER_LIST_CACHE_KEY);
     }
 

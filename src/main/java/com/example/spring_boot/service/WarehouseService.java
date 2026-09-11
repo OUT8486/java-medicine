@@ -34,7 +34,7 @@ public class WarehouseService {
     // 修改仓库信息
     public void updateWarehouse(Warehouse warehouse) {
         warehouseMapper.updateWarehouse(warehouse);
-        redisUtils.delete(WAREHOUSE_CACHE_KEY + warehouse.getWarehouse_id());
+        redisUtils.delete(WAREHOUSE_CACHE_KEY + warehouse.getWarehouseId());
         redisUtils.delete(WAREHOUSE_LIST_CACHE_KEY);
     }
 

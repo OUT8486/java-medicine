@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Inventory {
-    private String inventory_id;     // 库存ID
-    private String drug_id;          // 药品ID
-    private String warehouse_id;     // 仓库ID
-    private String batch_no;         // 批号
+    private String inventoryId;     // 库存ID
+    private String drugId;          // 药品ID
+    private String warehouseId;     // 仓库ID
+    private String batchNo;         // 批号
     private Integer quantity;        // 库存数量
-    private String validity_date;    // 有效期
+    private String validityDate;    // 有效期
 }

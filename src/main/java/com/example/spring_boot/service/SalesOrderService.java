@@ -35,16 +35,16 @@ public class SalesOrderService {
      */
     @Transactional
     public int addSalesOrder(SalesOrder salesOrder) {
-        if (salesOrder.getSo_id() == null || salesOrder.getSo_id().isBlank()) {
-            salesOrder.setSo_id(IdGenerator.next("SO"));
+        if (salesOrder.getSoId() == null || salesOrder.getSoId().isBlank()) {
+            salesOrder.setSoId(IdGenerator.next("SO"));
         }
         int result = salesOrderMapper.insertSalesOrder(salesOrder);
         if (result > 0 && salesOrder.getItems() != null) {
             for (SalesOrderItem item : salesOrder.getItems()) {
-                if (item.getSoi_id() == null || item.getSoi_id().isBlank()) {
-                    item.setSoi_id(IdGenerator.next("SI"));
+                if (item.getSoiId() == null || item.getSoiId().isBlank()) {
+                    item.setSoiId(IdGenerator.next("SI"));
                 }
-                item.setSo_id(salesOrder.getSo_id());
+                item.setSoId(salesOrder.getSoId());
                 salesOrderItemMapper.insertSalesOrderItem(item);
             }
         }
@@ -56,7 +56,7 @@ public class SalesOrderService {
 
     public void updateSalesOrder(SalesOrder salesOrder) {
         salesOrderMapper.updateSalesOrder(salesOrder);
-        redisUtils.delete(SALES_ORDER_CACHE_KEY + salesOrder.getSo_id());
+        redisUtils.delete(SALES_ORDER_CACHE_KEY + salesOrder.getSoId());
         redisUtils.delete(SALES_ORDER_LIST_CACHE_KEY);
     }
 

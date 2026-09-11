@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
-    private String customer_id;      // 客户编号
+    private String customerId;      // 客户编号
     private String name;             // 客户姓名/企业名称
     private String type;             // 客户类型（个人/企业）
-    private String contact_phone;    // 联系电话
+    private String contactPhone;    // 联系电话
 }

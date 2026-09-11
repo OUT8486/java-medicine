@@ -40,6 +40,7 @@ spring:
   # Jackson JSON 序列化配置
   jackson:
     default-property-inclusion: non_null  # 忽略空值字段
+    property-naming-strategy: SNAKE_CASE
     serialization:
       write-dates-as-timestamps: false  # 日期不以时间戳形式返回
 

@@ -19,68 +19,68 @@ public interface SupplierMapper {
     
     @Insert("INSERT INTO supplier (" +
             "supplier_id, name, contact_phone, status) " +
-            "VALUES (#{supplier_id}, #{name}, #{contact_phone}, #{status})")
-    @Options(useGeneratedKeys = true, keyProperty = "supplier_id")
+            "VALUES (#{supplierId}, #{name}, #{contactPhone}, #{status})")
+    @Options(useGeneratedKeys = true, keyProperty = "supplierId")
     int insertSupplier(Supplier supplier);
     
     @Update("UPDATE supplier SET " +
-            "name = #{name}, contact_phone = #{contact_phone}, status = #{status} " +
-            "WHERE supplier_id = #{supplier_id}")
+            "name = #{name}, contact_phone = #{contactPhone}, status = #{status} " +
+            "WHERE supplier_id = #{supplierId}")
     int updateSupplier(Supplier supplier);
     
-    @Delete("DELETE FROM supplier WHERE supplier_id = #{supplier_id}")
+    @Delete("DELETE FROM supplier WHERE supplier_id = #{supplierId}")
     int deleteSupplier(String supplier_id);
     
-    @Select("SELECT * FROM supplier WHERE supplier_id = #{supplier_id}")
+    @Select("SELECT * FROM supplier WHERE supplier_id = #{supplierId}")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     Supplier selectSupplierById(String supplier_id);
     
     @Select("SELECT * FROM supplier ORDER BY supplier_id")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     List<Supplier> selectAllSuppliers();
     
     @Select("SELECT * FROM supplier WHERE name LIKE CONCAT('%', #{name}, '%')")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     List<Supplier> selectSuppliersByName(String name);
     
-    @Select("SELECT * FROM supplier WHERE contact_phone = #{contact_phone}")
+    @Select("SELECT * FROM supplier WHERE contact_phone = #{contactPhone}")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     List<Supplier> selectSuppliersByContactPhone(String contact_phone);
     
     @Select("SELECT * FROM supplier WHERE status = #{status}")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     List<Supplier> selectSuppliersByStatus(Integer status);
 
     @Select("SELECT * FROM supplier ORDER BY supplier_id LIMIT #{offset}, #{size}")
     @Results({
-        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "supplierId", column = "supplier_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "contact_phone", column = "contact_phone"),
+        @Result(property = "contactPhone", column = "contact_phone"),
         @Result(property = "status", column = "status")
     })
     List<Supplier> selectSuppliersPage(@Param("offset") int offset, @Param("size") int size);

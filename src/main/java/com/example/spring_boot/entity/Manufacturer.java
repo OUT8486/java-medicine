@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Manufacturer {
-    private String manufacturer_id;  // 厂家编号
+    private String manufacturerId;  // 厂家编号
     private String name;             // 生产厂家名称
-    private String credit_code;      // 统一社会信用代码
+    private String creditCode;      // 统一社会信用代码
 }
