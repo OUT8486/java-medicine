@@ -112,14 +112,9 @@ const searchForm = reactive({
 const loadData = async () => {
   loading.value = true;
   try {
-    const res = await warehouseApi.getList();
-    const allData = res.data || [];
-    
-    // 前端分页：计算当前页的数据
-    const startIndex = (currentPage.value - 1) * pageSize.value;
-    const endIndex = startIndex + pageSize.value;
-    tableData.value = allData.slice(startIndex, endIndex);
-    total.value = allData.length;
+    const res = await warehouseApi.getPage(currentPage.value, pageSize.value);
+    tableData.value = res.data.list || [];
+    total.value = res.data.total || 0;
   } catch (error) {
     console.error('加载失败:', error);
   } finally {

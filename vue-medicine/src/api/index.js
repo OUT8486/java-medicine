@@ -38,6 +38,7 @@ export function register(data) {
 export const drugApi = {
   // 获取药品列表
   getList: () => request.get('/drugs'),
+  getPage: (page, size) => request.get('/drugs/page', { params: { page, size } }),
   
   // 根据 ID 获取药品
   getById: (id) => request.get(`/drugs/${id}`),
@@ -57,6 +58,7 @@ export const drugApi = {
  */
 export const customerApi = {
   getList: () => request.get('/customers'),
+  getPage: (page, size) => request.get('/customers/page', { params: { page, size } }),
   getById: (id) => request.get(`/customers/${id}`),
   add: (data) => request.post('/customers', data),
   update: (id, data) => request.put(`/customers/${id}`, data),
@@ -68,6 +70,7 @@ export const customerApi = {
  */
 export const supplierApi = {
   getList: () => request.get('/suppliers'),
+  getPage: (page, size) => request.get('/suppliers/page', { params: { page, size } }),
   getById: (id) => request.get(`/suppliers/${id}`),
   add: (data) => request.post('/suppliers', data),
   update: (id, data) => request.put(`/suppliers/${id}`, data),
@@ -79,6 +82,7 @@ export const supplierApi = {
  */
 export const employeeApi = {
   getList: () => request.get('/employees'),
+  getPage: (page, size) => request.get('/employees/page', { params: { page, size } }),
   getById: (id) => request.get(`/employees/${id}`),
   add: (data) => request.post('/employees', data),
   update: (id, data) => request.put(`/employees/${id}`, data),
@@ -90,6 +94,7 @@ export const employeeApi = {
  */
 export const inventoryApi = {
   getList: () => request.get('/inventory'),
+  getPage: (page, size) => request.get('/inventory/page', { params: { page, size } }),
   getById: (id) => request.get(`/inventory/${id}`),
   update: (id, data) => request.put(`/inventory/${id}`, data),
 };
@@ -99,6 +104,7 @@ export const inventoryApi = {
  */
 export const warehouseApi = {
   getList: () => request.get('/warehouses'),
+  getPage: (page, size) => request.get('/warehouses/page', { params: { page, size } }),
   getById: (id) => request.get(`/warehouses/${id}`),
   add: (data) => request.post('/warehouses', data),
   update: (id, data) => request.put(`/warehouses/${id}`, data),
@@ -110,6 +116,7 @@ export const warehouseApi = {
  */
 export const warehouseInApi = {
   getList: () => request.get('/warehouse-in'),
+  getPage: (page, size) => request.get('/warehouse-in/page', { params: { page, size } }),
   getById: (id) => request.get(`/warehouse-in/${id}`),
   add: (data) => request.post('/warehouse-in', data),
 };
@@ -119,6 +126,7 @@ export const warehouseInApi = {
  */
 export const purchaseOrderApi = {
   getList: () => request.get('/purchase-orders'),
+  getPage: (page, size) => request.get('/purchase-orders/page', { params: { page, size } }),
   getById: (id) => request.get(`/purchase-orders/${id}`),
   add: (data) => request.post('/purchase-orders', data),
   update: (id, data) => request.put(`/purchase-orders/${id}`, data),
@@ -130,6 +138,7 @@ export const purchaseOrderApi = {
  */
 export const salesOrderApi = {
   getList: () => request.get('/sales-orders'),
+  getPage: (page, size) => request.get('/sales-orders/page', { params: { page, size } }),
   getById: (id) => request.get(`/sales-orders/${id}`),
   add: (data) => request.post('/sales-orders', data),
   update: (id, data) => request.put(`/sales-orders/${id}`, data),
