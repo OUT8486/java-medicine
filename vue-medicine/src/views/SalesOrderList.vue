@@ -6,7 +6,7 @@
         <span class="page-title"><el-icon><Ticket /></el-icon> 销售订单管理</span>
       </template>
       <template #extra>
-        <el-button type="primary" @click="handleAdd">
+        <el-button v-admin type="primary" @click="handleAdd">
           <el-icon><Plus /></el-icon> 新增销售订单
         </el-button>
         <el-button @click="loadData">
@@ -59,7 +59,7 @@
         <el-table-column prop="customer_id" label="客户 ID" min-width="120" />
         <el-table-column prop="employee_id" label="经办人 ID" width="120" />
         <el-table-column prop="so_date" label="销售日期" width="120" />
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column v-admin label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleView(row)">
               <el-icon><View /></el-icon> 查看

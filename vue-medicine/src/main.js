@@ -6,6 +6,7 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import App from './App.vue';
 import router from './router';
+import adminDirective from './directives/admin';
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -14,6 +15,9 @@ const pinia = createPinia();
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
+
+// 注册权限指令：v-admin 仅管理员可见
+app.directive('admin', adminDirective);
 
 app.use(pinia);
 app.use(router);
