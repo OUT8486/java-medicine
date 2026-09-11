@@ -108,7 +108,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean reject(HttpServletResponse response, int code, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(code);
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(Result.error(code, message)));

@@ -4,6 +4,7 @@ import com.example.spring_boot.config.AdminOnly;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Users;
 import com.example.spring_boot.service.UserService;
+import com.example.spring_boot.utils.IdGenerator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -86,7 +87,7 @@ public class UserController {
 
     private void prepareUserForCreate(Users user) {
         if (user.getUser_id() == null || user.getUser_id().trim().isEmpty()) {
-            user.setUser_id("U" + System.currentTimeMillis());
+            user.setUser_id(IdGenerator.next("U"));
         }
         user.setUser_name(user.getUser_name().trim());
     }
