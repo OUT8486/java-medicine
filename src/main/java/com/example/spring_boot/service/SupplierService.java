@@ -1,6 +1,7 @@
 package com.example.spring_boot.service;
 
 import com.example.spring_boot.dao.SupplierMapper;
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Supplier;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,15 @@ public class SupplierService {
     // 根据名称查询供应商
     public List<Supplier> getSuppliersByName(String name) {
         return supplierMapper.selectSuppliersByName(name);
+    }
+
+    // 分页查询供应商
+    public PageResult<Supplier> getSuppliersPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Supplier> list = supplierMapper.selectSuppliersPage(offset, s);
+        long total = supplierMapper.countSuppliers();
+        return new PageResult<>(list, total, p, s);
     }
 }

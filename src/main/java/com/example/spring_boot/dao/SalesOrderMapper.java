@@ -109,4 +109,16 @@ public interface SalesOrderMapper {
             "FROM salesorderitem " +
             "WHERE so_id = #{so_id}")
     BigDecimal calculateOrderTotal(String so_id);
+    @Select("SELECT * FROM salesorder ORDER BY so_date DESC LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "so_id", column = "so_id"),
+        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "so_date", column = "so_date"),
+        @Result(property = "employee_id", column = "employee_id")
+    })
+    List<SalesOrder> selectSalesOrdersPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM salesorder")
+    long countSalesOrders();
+
 }

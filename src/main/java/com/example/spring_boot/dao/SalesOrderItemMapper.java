@@ -101,4 +101,18 @@ public interface SalesOrderItemMapper {
     
     @Delete("DELETE FROM salesorderitem WHERE so_id = #{so_id}")
     int deleteSalesOrderItemsBySoId(String so_id);
+    @Select("SELECT * FROM salesorderitem ORDER BY soi_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "soi_id", column = "soi_id"),
+        @Result(property = "so_id", column = "so_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price"),
+        @Result(property = "batch_no", column = "batch_no")
+    })
+    List<SalesOrderItem> selectSalesOrderItemsPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM salesorderitem")
+    long countSalesOrderItems();
+
 }

@@ -4,6 +4,7 @@ import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
 
 import com.example.spring_boot.entity.Customer;
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,16 @@ public class CustomerController {
     public Result<List<Customer>> list() {
         List<Customer> customers = customerService.getAllCustomers();
         return Result.success(customers);
+    }
+
+    /**
+     * 分页获取客户列表
+     * GET /api/customers/page?page=1&size=10
+     */
+    @GetMapping("/page")
+    public Result<PageResult<Customer>> page(@RequestParam(defaultValue = "1") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return Result.success(customerService.getCustomersPage(page, size));
     }
 
     /**

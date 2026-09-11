@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.EmployeeMapper;
 import com.example.spring_boot.entity.Employee;
@@ -83,6 +84,15 @@ public class EmployeeService {
     // 根据岗位查询员工
     public List<Employee> getEmployeesByPost(String post) {
         return employeeMapper.selectEmployeesByPost(post);
+    }
+
+    public PageResult<Employee> getEmployeesPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Employee> list = employeeMapper.selectEmployeesPage(offset, s);
+        long total = employeeMapper.countEmployees();
+        return new PageResult<>(list, total, p, s);
     }
 
 }

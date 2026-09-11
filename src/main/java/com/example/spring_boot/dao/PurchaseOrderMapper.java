@@ -139,4 +139,17 @@ public interface PurchaseOrderMapper {
             "FROM purchaseorderitem " +
             "WHERE po_id = #{poId}")
     BigDecimal calculateOrderTotal(String poId);
+    @Select("SELECT * FROM purchaseorder ORDER BY po_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "supplier_id", column = "supplier_id"),
+        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "po_date", column = "po_date"),
+        @Result(property = "audit_status", column = "audit_status")
+    })
+    List<PurchaseOrder> selectPurchaseOrdersPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM purchaseorder")
+    long countPurchaseOrders();
+
 }

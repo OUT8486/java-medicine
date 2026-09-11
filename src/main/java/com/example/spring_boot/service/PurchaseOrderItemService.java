@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.entity.PurchaseOrderItem;
@@ -108,4 +109,13 @@ public class PurchaseOrderItemService {
         // 清除相关采购订单的列表缓存
         redisUtils.delete("purchase_order:list");
     }
+    public PageResult<PurchaseOrderItem> getPurchaseOrderItemsPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<PurchaseOrderItem> list = purchaseOrderItemMapper.selectPurchaseOrderItemsPage(offset, s);
+        long total = purchaseOrderItemMapper.countPurchaseOrderItems();
+        return new PageResult<>(list, total, p, s);
+    }
+
 }

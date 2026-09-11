@@ -123,4 +123,18 @@ public interface InventoryMapper {
         @Result(property = "validity_date", column = "validity_date")
     })
     List<Inventory> selectLowStockInventories(int threshold);
+    @Select("SELECT * FROM inventory ORDER BY inventory_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "inventory_id", column = "inventory_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
+    List<Inventory> selectInventoriesPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM inventory")
+    long countInventories();
+
 }

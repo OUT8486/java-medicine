@@ -3,6 +3,7 @@ package com.example.spring_boot.service;
 import com.example.spring_boot.dao.DrugMapper;
 import com.example.spring_boot.entity.Drug;
 import com.example.spring_boot.entity.DrugWithManufacturer;
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.utils.RedisUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +81,15 @@ public class DrugService {
     // 联表查询（可选）
     public DrugWithManufacturer getDrugWithManufacturer(String drugId) {
         return drugMapper.selectDrugWithManufacturer(drugId);
+    }
+
+    // 分页查询
+    public PageResult<Drug> getDrugsPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Drug> list = drugMapper.selectDrugsPage(offset, s);
+        long total = drugMapper.countDrugs();
+        return new PageResult<>(list, total, p, s);
     }
 }

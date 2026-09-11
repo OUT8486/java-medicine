@@ -1,4 +1,5 @@
 package com.example.spring_boot.dao;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.spring_boot.entity.WarehouseIn;
 import org.apache.ibatis.annotations.Delete;
@@ -85,4 +86,18 @@ public interface WarehouseInMapper {
             @Result(property = "validity_date", column = "validity_date")
     })
     List<WarehouseIn> selectWarehouseInsByBatchNo(String batch_no);
+    @Select("SELECT * FROM warehousein ORDER BY wi_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "wi_id", column = "wi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "warehouse_id", column = "warehouse_id"),
+        @Result(property = "in_date", column = "in_date"),
+        @Result(property = "batch_no", column = "batch_no"),
+        @Result(property = "validity_date", column = "validity_date")
+    })
+    List<WarehouseIn> selectWarehouseInsPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM warehousein")
+    long countWarehouseIns();
+
 }

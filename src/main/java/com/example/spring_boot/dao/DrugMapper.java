@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -81,4 +82,21 @@ public interface DrugMapper {
         @Result(property = "manufacturer_name", column = "manufacturer_name")
     })
     DrugWithManufacturer selectDrugWithManufacturer(String drug_id);
+
+    @Select("SELECT * FROM drug ORDER BY drug_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "generic_name", column = "generic_name"),
+        @Result(property = "approval_no", column = "approval_no"),
+        @Result(property = "dosage_form", column = "dosage_form"),
+        @Result(property = "specification", column = "specification"),
+        @Result(property = "unit", column = "unit"),
+        @Result(property = "purchase_price", column = "purchase_price"),
+        @Result(property = "retail_price", column = "retail_price"),
+        @Result(property = "manufacturer_id", column = "manufacturer_id")
+    })
+    List<Drug> selectDrugsPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM drug")
+    long countDrugs();
 }

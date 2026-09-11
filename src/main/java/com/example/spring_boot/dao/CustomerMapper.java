@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -83,4 +84,16 @@ public interface CustomerMapper {
         @Result(property = "contact_phone", column = "contact_phone")
     })
     Customer selectCustomerByPhone(String phone);
+
+    @Select("SELECT * FROM customer ORDER BY customer_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "customer_id", column = "customer_id"),
+        @Result(property = "name", column = "name"),
+        @Result(property = "type", column = "type"),
+        @Result(property = "contact_phone", column = "contact_phone")
+    })
+    List<Customer> selectCustomersPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM customer")
+    long countCustomers();
 }

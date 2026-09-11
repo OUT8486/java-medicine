@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.SalesOrderItemMapper;
 import com.example.spring_boot.dao.SalesOrderMapper;
@@ -109,4 +110,13 @@ public class SalesOrderService {
     public List<SalesOrder> getSalesOrdersByDateRange(String startDate, String endDate) {
         return salesOrderMapper.selectSalesOrdersByDateRangeString(startDate, endDate);
     }
+    public PageResult<SalesOrder> getSalesOrdersPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<SalesOrder> list = salesOrderMapper.selectSalesOrdersPage(offset, s);
+        long total = salesOrderMapper.countSalesOrders();
+        return new PageResult<>(list, total, p, s);
+    }
+
 }

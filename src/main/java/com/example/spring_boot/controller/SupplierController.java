@@ -5,6 +5,7 @@ import com.example.spring_boot.config.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.entity.Supplier;
 import com.example.spring_boot.service.SupplierService;
@@ -33,6 +34,16 @@ public class SupplierController {
     public Result<List<Supplier>> list() {
         List<Supplier> suppliers = supplierService.getAllSuppliers();
         return Result.success(suppliers);
+    }
+
+    /**
+     * 分页获取供应商列表
+     * GET /api/suppliers/page?page=1&size=10
+     */
+    @GetMapping("/page")
+    public Result<PageResult<Supplier>> page(@RequestParam(defaultValue = "1") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        return Result.success(supplierService.getSuppliersPage(page, size));
     }
 
     /**

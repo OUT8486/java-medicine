@@ -1,4 +1,5 @@
 package com.example.spring_boot.dao;
+import org.apache.ibatis.annotations.Param;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -61,4 +62,15 @@ public interface EmployeeMapper {
         @Result(property = "post", column = "post")
     })
     List<Employee> selectEmployeesByPost(String post);
+    @Select("SELECT * FROM employee ORDER BY employee_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "employee_id", column = "employee_id"),
+        @Result(property = "name", column = "name"),
+        @Result(property = "post", column = "post")
+    })
+    List<Employee> selectEmployeesPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM employee")
+    long countEmployees();
+
 }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Drug;
 import com.example.spring_boot.entity.DrugWithManufacturer;
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.DrugService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,16 @@ public class DrugController {
     public Result<List<Drug>> list() {
         List<Drug> drugs = drugService.getAllDrugs();
         return Result.success(drugs);
+    }
+
+    /**
+     * 分页获取药品列表
+     * GET /api/drugs/page?page=1&size=10
+     */
+    @GetMapping("/page")
+    public Result<PageResult<Drug>> page(@RequestParam(defaultValue = "1") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
+        return Result.success(drugService.getDrugsPage(page, size));
     }
 
     /**

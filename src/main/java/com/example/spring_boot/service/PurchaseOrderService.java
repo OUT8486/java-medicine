@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.PurchaseOrderItemMapper;
 import com.example.spring_boot.dao.PurchaseOrderMapper;
@@ -119,4 +120,13 @@ public class PurchaseOrderService {
         redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + poId);
         redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
     }
+    public PageResult<PurchaseOrder> getPurchaseOrdersPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<PurchaseOrder> list = purchaseOrderMapper.selectPurchaseOrdersPage(offset, s);
+        long total = purchaseOrderMapper.countPurchaseOrders();
+        return new PageResult<>(list, total, p, s);
+    }
+
 }

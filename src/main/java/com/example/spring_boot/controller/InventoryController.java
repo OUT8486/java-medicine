@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.entity.PageResult;
 import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
@@ -101,4 +102,10 @@ public class InventoryController {
             return Result.error(500, "库存删除失败，请稍后重试");
         }
     }
+    @GetMapping("/page")
+    public Result<PageResult<Inventory>> page(@RequestParam(defaultValue = "1") int page,
+                                                 @RequestParam(defaultValue = "10") int size) {
+        return Result.success(inventoryService.getInventoriesPage(page, size));
+    }
+
 }

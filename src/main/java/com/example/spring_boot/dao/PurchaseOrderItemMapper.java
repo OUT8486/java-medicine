@@ -85,4 +85,17 @@ public interface PurchaseOrderItemMapper {
     
     @Delete("DELETE FROM purchaseorderitem WHERE po_id = #{po_id}")
     int deletePurchaseOrderItemsByPoId(String po_id);
+    @Select("SELECT * FROM purchaseorderitem ORDER BY poi_id LIMIT #{offset}, #{size}")
+    @Results({
+        @Result(property = "poi_id", column = "poi_id"),
+        @Result(property = "po_id", column = "po_id"),
+        @Result(property = "drug_id", column = "drug_id"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
+    List<PurchaseOrderItem> selectPurchaseOrderItemsPage(@Param("offset") int offset, @Param("size") int size);
+
+    @Select("SELECT COUNT(*) FROM purchaseorderitem")
+    long countPurchaseOrderItems();
+
 }

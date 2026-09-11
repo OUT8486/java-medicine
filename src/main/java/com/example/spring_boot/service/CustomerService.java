@@ -2,6 +2,7 @@ package com.example.spring_boot.service;
 
 import com.example.spring_boot.dao.CustomerMapper;
 import com.example.spring_boot.entity.Customer;
+import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,16 @@ public class CustomerService {
     // 根据姓名查询客户
     public List<Customer> getCustomersByName(String name) {
         return customerMapper.selectCustomersByName(name);
+    }
+
+    // 分页查询客户
+    public PageResult<Customer> getCustomersPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Customer> list = customerMapper.selectCustomersPage(offset, s);
+        long total = customerMapper.countCustomers();
+        return new PageResult<>(list, total, p, s);
     }
 
 }

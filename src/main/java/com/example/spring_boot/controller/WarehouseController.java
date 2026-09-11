@@ -1,4 +1,5 @@
 package com.example.spring_boot.controller;
+import com.example.spring_boot.entity.PageResult;
 import jakarta.validation.Valid;
 import com.example.spring_boot.config.RequireRole;
 import com.example.spring_boot.config.Role;
@@ -135,4 +136,10 @@ public class WarehouseController {
             return Result.error(500, "仓库删除失败，请稍后重试");
         }
     }
+    @GetMapping("/page")
+    public Result<PageResult<Warehouse>> page(@RequestParam(defaultValue = "1") int page,
+                                                 @RequestParam(defaultValue = "10") int size) {
+        return Result.success(warehouseService.getWarehousesPage(page, size));
+    }
+
 }

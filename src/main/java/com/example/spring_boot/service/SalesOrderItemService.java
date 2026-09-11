@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.SalesOrderItemMapper;
 import com.example.spring_boot.entity.SalesOrderItem;
@@ -113,4 +114,13 @@ public class SalesOrderItemService {
         // 清除相关销售订单的列表缓存
         redisUtils.delete("sales_order:list");
     }
+    public PageResult<SalesOrderItem> getSalesOrderItemsPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<SalesOrderItem> list = salesOrderItemMapper.selectSalesOrderItemsPage(offset, s);
+        long total = salesOrderItemMapper.countSalesOrderItems();
+        return new PageResult<>(list, total, p, s);
+    }
+
 }

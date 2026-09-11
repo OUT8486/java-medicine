@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.InventoryMapper;
 import com.example.spring_boot.entity.Inventory;
@@ -88,6 +89,15 @@ public class InventoryService {
     // 根据批号查询库存
     public List<Inventory> getInventoriesByBatchNo(String batchNo) {
         return inventoryMapper.selectInventoriesByBatchNo(batchNo);
+    }
+
+    public PageResult<Inventory> getInventoriesPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Inventory> list = inventoryMapper.selectInventoriesPage(offset, s);
+        long total = inventoryMapper.countInventories();
+        return new PageResult<>(list, total, p, s);
     }
 
 }

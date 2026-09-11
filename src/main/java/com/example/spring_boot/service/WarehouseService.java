@@ -1,4 +1,5 @@
 package com.example.spring_boot.service;
+import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.WarehouseMapper;
 import com.example.spring_boot.entity.Warehouse;
@@ -84,4 +85,13 @@ public class WarehouseService {
     public List<Warehouse> getWarehousesByLocation(String location) {
         return warehouseMapper.selectWarehousesByLocation(location);
     }
+    public PageResult<Warehouse> getWarehousesPage(int page, int size) {
+        int p = Math.max(page, 1);
+        int s = Math.min(Math.max(size, 1), 100);
+        int offset = (p - 1) * s;
+        List<Warehouse> list = warehouseMapper.selectWarehousesPage(offset, s);
+        long total = warehouseMapper.countWarehouses();
+        return new PageResult<>(list, total, p, s);
+    }
+
 }
