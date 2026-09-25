@@ -12,7 +12,6 @@ import org.apache.ibatis.annotations.Update;
 
 import com.example.spring_boot.entity.SalesOrderItem;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper

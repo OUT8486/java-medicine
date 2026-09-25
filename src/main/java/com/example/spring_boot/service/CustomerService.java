@@ -80,11 +80,6 @@ public class CustomerService {
         return customers;
     }
 
-    // 根据姓名查询客户
-    public List<Customer> getCustomersByName(String name) {
-        return customerMapper.selectCustomersByName(name);
-    }
-
     // 分页查询客户
     public PageResult<Customer> getCustomersPage(int page, int size) {
         int p = Math.max(page, 1);

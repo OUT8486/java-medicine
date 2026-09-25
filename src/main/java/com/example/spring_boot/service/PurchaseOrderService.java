@@ -99,22 +99,6 @@ public class PurchaseOrderService {
         return orders;
     }
 
-    public List<PurchaseOrder> getPurchaseOrdersBySupplierId(String supplierId) {
-        return purchaseOrderMapper.selectPurchaseOrdersBySupplierId(supplierId);
-    }
-
-    public List<PurchaseOrder> getPurchaseOrdersByAuditStatus(Integer auditStatus) {
-        return purchaseOrderMapper.selectPurchaseOrdersByAuditStatus(auditStatus);
-    }
-
-    public List<PurchaseOrder> getPurchaseOrdersByEmployeeId(String employeeId) {
-        return purchaseOrderMapper.selectPurchaseOrdersByEmployeeId(employeeId);
-    }
-
-    public List<PurchaseOrder> getPurchaseOrdersByDateRange(String startDate, String endDate) {
-        return purchaseOrderMapper.selectPurchaseOrdersByDateRangeString(startDate, endDate);
-    }
-
     public void updatePurchaseOrderAuditStatus(String poId, String auditStatus) {
         purchaseOrderMapper.updatePurchaseOrderAuditStatus(poId, auditStatus);
         redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + poId);

@@ -80,11 +80,6 @@ public class SupplierService {
         return suppliers;
     }
 
-    // 根据名称查询供应商
-    public List<Supplier> getSuppliersByName(String name) {
-        return supplierMapper.selectSuppliersByName(name);
-    }
-
     // 分页查询供应商
     public PageResult<Supplier> getSuppliersPage(int page, int size) {
         int p = Math.max(page, 1);

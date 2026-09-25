@@ -107,9 +107,6 @@ public class SalesOrderService {
         return salesOrderMapper.selectSalesOrdersByEmployeeId(employeeId);
     }
 
-    public List<SalesOrder> getSalesOrdersByDateRange(String startDate, String endDate) {
-        return salesOrderMapper.selectSalesOrdersByDateRangeString(startDate, endDate);
-    }
     public PageResult<SalesOrder> getSalesOrdersPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);

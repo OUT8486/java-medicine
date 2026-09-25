@@ -73,16 +73,6 @@ public class SalesOrderItemService {
         return salesOrderItemMapper.selectSalesOrderItemsBySoId(soId);
     }
 
-    // 根据药品ID查询销售订单项
-    public List<SalesOrderItem> getSalesOrderItemsByDrugId(String drugId) {
-        return salesOrderItemMapper.selectSalesOrderItemsByDrugId(drugId);
-    }
-
-    // 根据批号查询销售订单项
-    public List<SalesOrderItem> getSalesOrderItemsByBatchNo(String batchNo) {
-        return salesOrderItemMapper.selectSalesOrderItemsByBatchNo(batchNo);
-    }
-
     // 计算销售订单项小计
     public BigDecimal calculateSubtotal(Integer quantity, BigDecimal price) {
         return price.multiply(new BigDecimal(quantity));

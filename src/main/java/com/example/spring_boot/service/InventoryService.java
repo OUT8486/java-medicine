@@ -80,21 +80,6 @@ public class InventoryService {
         return inventories;
     }
 
-    // 根据药品ID查询库存
-    public List<Inventory> getInventoriesByDrugId(String drugId) {
-        return inventoryMapper.selectInventoriesByDrugId(drugId);
-    }
-
-    // 根据仓库ID查询库存
-    public List<Inventory> getInventoriesByWarehouseId(String warehouseId) {
-        return inventoryMapper.selectInventoriesByWarehouseId(warehouseId);
-    }
-
-    // 根据批号查询库存
-    public List<Inventory> getInventoriesByBatchNo(String batchNo) {
-        return inventoryMapper.selectInventoriesByBatchNo(batchNo);
-    }
-
     public PageResult<Inventory> getInventoriesPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);

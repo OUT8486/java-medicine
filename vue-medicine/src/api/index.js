@@ -36,8 +36,6 @@ export function register(data) {
  * 药品管理 API
  */
 export const drugApi = {
-  // 获取药品列表
-  getList: () => request.get('/drugs'),
   getPage: (page, size) => request.get('/drugs/page', { params: { page, size } }),
   
   // 根据 ID 获取药品
@@ -57,7 +55,6 @@ export const drugApi = {
  * 客户管理 API
  */
 export const customerApi = {
-  getList: () => request.get('/customers'),
   getPage: (page, size) => request.get('/customers/page', { params: { page, size } }),
   getById: (id) => request.get(`/customers/${id}`),
   add: (data) => request.post('/customers', data),
@@ -69,7 +66,6 @@ export const customerApi = {
  * 供应商管理 API
  */
 export const supplierApi = {
-  getList: () => request.get('/suppliers'),
   getPage: (page, size) => request.get('/suppliers/page', { params: { page, size } }),
   getById: (id) => request.get(`/suppliers/${id}`),
   add: (data) => request.post('/suppliers', data),
@@ -81,7 +77,6 @@ export const supplierApi = {
  * 员工管理 API
  */
 export const employeeApi = {
-  getList: () => request.get('/employees'),
   getPage: (page, size) => request.get('/employees/page', { params: { page, size } }),
   getById: (id) => request.get(`/employees/${id}`),
   add: (data) => request.post('/employees', data),
@@ -95,7 +90,6 @@ export const employeeApi = {
 export const inventoryApi = {
   add: (data) => request.post('/inventory', data),
   delete: (id) => request.delete('/inventory/' + id),
-  getList: () => request.get('/inventory'),
   getPage: (page, size) => request.get('/inventory/page', { params: { page, size } }),
   getById: (id) => request.get(`/inventory/${id}`),
   update: (id, data) => request.put(`/inventory/${id}`, data),
@@ -105,7 +99,6 @@ export const inventoryApi = {
  * 仓库管理 API
  */
 export const warehouseApi = {
-  getList: () => request.get('/warehouses'),
   getPage: (page, size) => request.get('/warehouses/page', { params: { page, size } }),
   getById: (id) => request.get(`/warehouses/${id}`),
   add: (data) => request.post('/warehouses', data),
@@ -114,20 +107,9 @@ export const warehouseApi = {
 };
 
 /**
- * 入库管理 API
- */
-export const warehouseInApi = {
-  getList: () => request.get('/warehouse-in'),
-  getPage: (page, size) => request.get('/warehouse-in/page', { params: { page, size } }),
-  getById: (id) => request.get(`/warehouse-in/${id}`),
-  add: (data) => request.post('/warehouse-in', data),
-};
-
-/**
  * 采购订单 API
  */
 export const purchaseOrderApi = {
-  getList: () => request.get('/purchase-orders'),
   getPage: (page, size) => request.get('/purchase-orders/page', { params: { page, size } }),
   getById: (id) => request.get(`/purchase-orders/${id}`),
   add: (data) => request.post('/purchase-orders', data),
@@ -139,7 +121,6 @@ export const purchaseOrderApi = {
  * 销售订单 API
  */
 export const salesOrderApi = {
-  getList: () => request.get('/sales-orders'),
   getPage: (page, size) => request.get('/sales-orders/page', { params: { page, size } }),
   getById: (id) => request.get(`/sales-orders/${id}`),
   add: (data) => request.post('/sales-orders', data),

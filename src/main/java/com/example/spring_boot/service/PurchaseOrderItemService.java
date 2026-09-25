@@ -73,11 +73,6 @@ public class PurchaseOrderItemService {
         return purchaseOrderItemMapper.selectPurchaseOrderItemsByPoId(poId);
     }
 
-    // 根据药品ID查询采购订单项
-    public List<PurchaseOrderItem> getPurchaseOrderItemsByDrugId(String drugId) {
-        return purchaseOrderItemMapper.selectPurchaseOrderItemsByDrugId(drugId);
-    }
-
     // 计算采购订单项小计
     public BigDecimal calculateSubtotal(Integer quantity, BigDecimal price) {
         return price.multiply(new BigDecimal(quantity));

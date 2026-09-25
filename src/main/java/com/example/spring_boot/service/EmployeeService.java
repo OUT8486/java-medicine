@@ -80,16 +80,6 @@ public class EmployeeService {
         return employees;
     }
 
-    // 根据姓名查询员工
-    public List<Employee> getEmployeesByName(String name) {
-        return employeeMapper.selectEmployeesByName(name);
-    }
-
-    // 根据岗位查询员工
-    public List<Employee> getEmployeesByPost(String post) {
-        return employeeMapper.selectEmployeesByPost(post);
-    }
-
     public PageResult<Employee> getEmployeesPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);

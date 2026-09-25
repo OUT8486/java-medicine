@@ -80,20 +80,6 @@ public class WarehouseInService {
         return warehouseIns;
     }
 
-    // 根据采购订单ID查询入库单
-    public List<WarehouseIn> getWarehouseInsByPoId(String poId) {
-        return warehouseInMapper.selectWarehouseInsByPoId(poId);
-    }
-
-    // 根据仓库ID查询入库单
-    public List<WarehouseIn> getWarehouseInsByWarehouseId(String warehouseId) {
-        return warehouseInMapper.selectWarehouseInsByWarehouseId(warehouseId);
-    }
-
-    // 根据批号查询入库单
-    public List<WarehouseIn> getWarehouseInsByBatchNo(String batchNo) {
-        return warehouseInMapper.selectWarehouseInsByBatchNo(batchNo);
-    }
     public PageResult<WarehouseIn> getWarehouseInsPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);
