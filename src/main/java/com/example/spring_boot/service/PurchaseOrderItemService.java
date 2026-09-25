@@ -83,16 +83,6 @@ public class PurchaseOrderItemService {
         return price.multiply(new BigDecimal(quantity));
     }
 
-    // 更新采购订单项小计
-    public void updateSubtotal(String poiId) {
-        PurchaseOrderItem item = getPurchaseOrderItemById(poiId);
-        if (item != null) {
-            BigDecimal subtotal = calculateSubtotal(item.getQuantity(), item.getPrice());
-            purchaseOrderItemMapper.updateSubtotal(poiId, subtotal);
-            redisUtils.delete(PURCHASE_ORDER_ITEM_CACHE_KEY + poiId);
-        }
-    }
-
     // 批量添加采购订单项
     public int batchInsertPurchaseOrderItems(List<PurchaseOrderItem> items) {
         int result = purchaseOrderItemMapper.batchInsertPurchaseOrderItems(items);

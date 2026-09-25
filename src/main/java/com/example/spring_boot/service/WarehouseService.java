@@ -3,6 +3,7 @@ import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.WarehouseMapper;
 import com.example.spring_boot.entity.Warehouse;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class WarehouseService {
 
     // 新增仓库
     public int addWarehouse(Warehouse warehouse) {
+        if (warehouse.getWarehouseId() == null || warehouse.getWarehouseId().isBlank()) {
+            warehouse.setWarehouseId(IdGenerator.next("WH"));
+        }
         int result = warehouseMapper.insertWarehouse(warehouse);
         if (result > 0) {
             redisUtils.delete(WAREHOUSE_LIST_CACHE_KEY);

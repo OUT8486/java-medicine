@@ -81,20 +81,15 @@ const formRules = {
 const loadData = async () => {
   if (!isEdit.value) return;
   
-  console.log('=== 编辑模式 ===');
-  console.log('路由参数 ID:', route.query.id);
-  console.log('是否为编辑:', isEdit.value);
   
   try {
     const res = await purchaseOrderApi.getById(route.query.id);
-    console.log('API 返回数据:', res);
     const data = res.data;
     formData.po_id = data.po_id;
     formData.supplier_id = data.supplier_id;
     formData.employee_id = data.employee_id;
     formData.po_date = data.po_date;
     formData.audit_status = data.audit_status ?? 0;
-    console.log('表单数据已填充:', formData);
   } catch (error) {
     console.error('加载失败:', error);
     ElMessage.error('加载采购订单信息失败：' + (error.message || '未知错误'));

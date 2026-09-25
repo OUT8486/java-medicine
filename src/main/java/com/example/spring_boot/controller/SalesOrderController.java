@@ -64,9 +64,6 @@ public class SalesOrderController {
     public Result<SalesOrder> getById(@PathVariable String id) {
         SalesOrder order = salesOrderService.getSalesOrderById(id);
         if (order != null) {
-        } else {
-        }
-        if (order != null) {
             return Result.success(order);
         } else {
             return Result.error(404, "销售订单不存在，ID: " + id);

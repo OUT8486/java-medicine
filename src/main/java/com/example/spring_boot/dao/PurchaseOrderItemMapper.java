@@ -72,9 +72,6 @@ public interface PurchaseOrderItemMapper {
     })
     List<PurchaseOrderItem> selectPurchaseOrderItemsByDrugId(String drug_id);
     
-    @Update("UPDATE purchaseorderitem SET price = #{subtotal} WHERE poi_id = #{poiId}")
-    int updateSubtotal(@Param("poiId") String poi_id, @Param("subtotal") BigDecimal subtotal);
-    
     @Insert({"<script>",
             "INSERT INTO purchaseorderitem (poi_id, po_id, drug_id, quantity, price) VALUES ",
             "<foreach collection='items' item='item' separator=','>",

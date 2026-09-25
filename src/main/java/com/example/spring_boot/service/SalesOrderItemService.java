@@ -88,16 +88,6 @@ public class SalesOrderItemService {
         return price.multiply(new BigDecimal(quantity));
     }
 
-    // 更新销售订单项小计
-    public void updateSubtotal(String soiId) {
-        SalesOrderItem item = getSalesOrderItemById(soiId);
-        if (item != null) {
-            BigDecimal subtotal = calculateSubtotal(item.getQuantity(), item.getPrice());
-            salesOrderItemMapper.updateSubtotal(soiId, subtotal);
-            redisUtils.delete(SALES_ORDER_ITEM_CACHE_KEY + soiId);
-        }
-    }
-
     // 批量添加销售订单项
     public int batchInsertSalesOrderItems(List<SalesOrderItem> items) {
         int result = salesOrderItemMapper.batchInsertSalesOrderItems(items);

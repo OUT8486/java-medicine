@@ -96,9 +96,6 @@ public interface SalesOrderItemMapper {
             "</script>"})
     int batchInsertSalesOrderItems(@Param("items") List<SalesOrderItem> items);
     
-    @Update("UPDATE salesorderitem SET price = #{subtotal} WHERE soi_id = #{soiId}")
-    int updateSubtotal(@Param("soiId") String soi_id, @Param("subtotal") BigDecimal subtotal);
-    
     @Delete("DELETE FROM salesorderitem WHERE so_id = #{soId}")
     int deleteSalesOrderItemsBySoId(String so_id);
     @Select("SELECT * FROM salesorderitem ORDER BY soi_id LIMIT #{offset}, #{size}")

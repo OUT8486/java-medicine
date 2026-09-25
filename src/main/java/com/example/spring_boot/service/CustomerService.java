@@ -3,6 +3,7 @@ package com.example.spring_boot.service;
 import com.example.spring_boot.dao.CustomerMapper;
 import com.example.spring_boot.entity.Customer;
 import com.example.spring_boot.entity.PageResult;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class CustomerService {
 
     // 新增客户
     public int addCustomer(Customer customer) {
+        if (customer.getCustomerId() == null || customer.getCustomerId().isBlank()) {
+            customer.setCustomerId(IdGenerator.next("CU"));
+        }
         int result = customerMapper.insertCustomer(customer);
         if (result > 0) {
             redisUtils.delete(CUSTOMER_LIST_CACHE_KEY);

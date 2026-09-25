@@ -245,14 +245,19 @@ const handleLogout = async () => {
       cancelButtonText: '取消',
       type: 'warning',
     });
-
-    await logout();
-    userStore.clearUserInfo();
-    ElMessage.success('登出成功！');
-    router.push('/login');
   } catch {
-    // 用户取消
+    return;
   }
+
+  try {
+    await logout();
+  } catch {
+    // 令牌可能已失效，忽略接口异常，仍然完成本地登出
+  }
+
+  userStore.clearUserInfo();
+  ElMessage.success('登出成功！');
+  router.push('/login');
 };
 </script>
 

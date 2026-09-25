@@ -3,6 +3,7 @@ import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.InventoryMapper;
 import com.example.spring_boot.entity.Inventory;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class InventoryService {
 
     // 新增库存记录
     public int addInventory(Inventory inventory) {
+        if (inventory.getInventoryId() == null || inventory.getInventoryId().isBlank()) {
+            inventory.setInventoryId(IdGenerator.next("IV"));
+        }
         int result = inventoryMapper.insertInventory(inventory);
         if (result > 0) {
             redisUtils.delete(INVENTORY_LIST_CACHE_KEY);

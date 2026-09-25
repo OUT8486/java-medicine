@@ -93,6 +93,8 @@ export const employeeApi = {
  * 库存管理 API
  */
 export const inventoryApi = {
+  add: (data) => request.post('/inventory', data),
+  delete: (id) => request.delete('/inventory/' + id),
   getList: () => request.get('/inventory'),
   getPage: (page, size) => request.get('/inventory/page', { params: { page, size } }),
   getById: (id) => request.get(`/inventory/${id}`),

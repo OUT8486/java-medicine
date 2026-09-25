@@ -3,6 +3,7 @@ import com.example.spring_boot.entity.PageResult;
 
 import com.example.spring_boot.dao.EmployeeMapper;
 import com.example.spring_boot.entity.Employee;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class EmployeeService {
 
     // 新增员工
     public int addEmployee(Employee employee) {
+        if (employee.getEmployeeId() == null || employee.getEmployeeId().isBlank()) {
+            employee.setEmployeeId(IdGenerator.next("EM"));
+        }
         int result = employeeMapper.insertEmployee(employee);
         if (result > 0) {
             redisUtils.delete(EMPLOYEE_LIST_CACHE_KEY);

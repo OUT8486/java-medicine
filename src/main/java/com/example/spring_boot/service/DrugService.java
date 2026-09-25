@@ -4,6 +4,7 @@ import com.example.spring_boot.dao.DrugMapper;
 import com.example.spring_boot.entity.Drug;
 import com.example.spring_boot.entity.DrugWithManufacturer;
 import com.example.spring_boot.entity.PageResult;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class DrugService {
 
     // 新增药品
     public int addDrug(Drug drug) {
+        if (drug.getDrugId() == null || drug.getDrugId().isBlank()) {
+            drug.setDrugId(IdGenerator.next("DR"));
+        }
         int result = drugMapper.insertDrug(drug);
         if (result > 0) {
             redisUtils.delete(DRUG_LIST_CACHE_KEY);

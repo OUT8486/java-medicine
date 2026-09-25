@@ -3,6 +3,7 @@ package com.example.spring_boot.service;
 import com.example.spring_boot.dao.SupplierMapper;
 import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Supplier;
+import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class SupplierService {
 
     // 新增供应商
     public int addSupplier(Supplier supplier) {
+        if (supplier.getSupplierId() == null || supplier.getSupplierId().isBlank()) {
+            supplier.setSupplierId(IdGenerator.next("SU"));
+        }
         int result = supplierMapper.insertSupplier(supplier);
         if (result > 0) {
             redisUtils.delete(SUPPLIER_LIST_CACHE_KEY);

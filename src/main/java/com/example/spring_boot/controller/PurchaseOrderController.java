@@ -44,9 +44,6 @@ public class PurchaseOrderController {
     public Result<PurchaseOrder> getById(@PathVariable String id) {
         PurchaseOrder order = purchaseOrderService.getPurchaseOrderById(id);
         if (order != null) {
-        } else {
-        }
-        if (order != null) {
             return Result.success(order);
         } else {
             return Result.error(404, "采购订单不存在，ID: " + id);
