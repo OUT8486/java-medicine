@@ -9,7 +9,6 @@
 - [环境要求](#环境要求)
 - [快速开始（Windows 一键）](#快速开始windows-一键)
 - [手动启动](#手动启动)
-- [Docker 部署](#docker-部署)
 - [配置项（环境变量）](#配置项环境变量)
 - [默认账号](#默认账号)
 - [认证与权限](#认证与权限)
@@ -30,10 +29,6 @@
 ├── vue-medicine/            # Vue 3 前端（结构见「前端说明」）
 ├── insert_date.sql          # 演示数据（纯 INSERT，可选导入）
 ├── start.bat / stop.bat     # Windows 一键启动 / 停止
-├── docker-compose.yml       # Docker 编排（后端 + 前端 + MySQL + Redis）
-├── docker-compose.dev.yml   # Docker 开发编排（源码挂载 + 热重载）
-├── Dockerfile               # 后端镜像
-├── .env.example             # Docker 环境变量示例
 └── pom.xml
 ```
 
@@ -78,33 +73,9 @@ npm run dev
 # http://localhost:5173
 ```
 
-## Docker 部署
-
-```bash
-# 构建并启动全部服务
-docker compose up --build -d
-
-# 可选：导入演示数据
-docker exec -i medicine-mysql mysql -uroot -p123456 medicine < insert_date.sql
-
-# 查看日志
-docker compose logs -f backend
-docker compose logs -f frontend
-```
-
-- 前端（nginx）：http://localhost:5173
-- 后端 API：http://localhost:8080（前端通过 `/api` 代理访问）
-- 若本机已有 MySQL/Redis 在运行，注意端口冲突，可停止本机服务或修改 `docker-compose.yml` 的端口映射。
-
-开发模式（源码挂载 + 热重载）：
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
-```
-
 ## 配置项（环境变量）
 
-生产环境请通过环境变量覆盖默认值，避免硬编码。示例见 `.env.example`。
+生产环境请通过环境变量覆盖默认值，避免硬编码。
 
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
@@ -117,8 +88,6 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 | `SPRING_DATA_REDIS_PASSWORD` | Redis 密码 | `123456` |
 | `JWT_SECRET` | JWT 密钥（至少 32 字节） | 开发用默认值 |
 | `JWT_EXPIRATION_MS` | JWT 有效期（毫秒） | `86400000` |
-| `MYSQL_ROOT_PASSWORD` | 仅 docker-compose 使用 | `123456` |
-| `REDIS_PASSWORD` | 仅 docker-compose 使用 | `123456` |
 
 ## 默认账号
 
@@ -153,7 +122,6 @@ vue-medicine/
 │   ├── directives/admin.js # v-admin：仅管理员可见
 │   └── views/              # 页面组件（登录、注册、首页、各业务列表/表单）
 ├── public/
-├── nginx.conf              # 生产镜像用 nginx 配置
 └── vite.config.js          # 开发服务器与 /api 代理
 ```
 
@@ -195,4 +163,4 @@ cd vue-medicine && npm run build                  # 前端生产构建
 - 登录提示“网络错误”：确认后端已启动、`/api` 代理或 CORS 配置正确（前端开发由 Vite 代理到 8080）。
 - Redis 连接失败：确认 `redis-cli ping` 返回 `PONG`；未启动时后端会自动降级为直连数据库，仅性能下降。
 - 旧数据库登录失败：密码已升级为 BCrypt，需重新导入 `insert_date.sql`，或手动把 `users` 表密码更新为 BCrypt 哈希。
-- 端口被占用：修改 `application.yml`（后端）、`vite.config.js`（前端）或 `docker-compose.yml` 的端口映射。
+- 端口被占用：修改 `application.yml`（后端）或 `vite.config.js`（前端）中的端口配置。
