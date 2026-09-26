@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.vscode
+target
+vue-medicine
+*.log
+*.iml
+README.md
+start.bat
+stop.bat
