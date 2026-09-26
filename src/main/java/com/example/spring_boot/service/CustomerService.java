@@ -38,46 +38,25 @@ public class CustomerService {
     // 修改客户信息
     public void updateCustomer(Customer customer) {
         customerMapper.updateCustomer(customer);
-        redisUtils.delete(CUSTOMER_CACHE_KEY + customer.getCustomerId());
-        redisUtils.delete(CUSTOMER_LIST_CACHE_KEY);
+        redisUtils.evict(CUSTOMER_CACHE_KEY + customer.getCustomerId(), CUSTOMER_LIST_CACHE_KEY);
     }
 
     // 删除客户
     public void deleteCustomer(String customerId) {
         customerMapper.deleteCustomer(customerId);
-        redisUtils.delete(CUSTOMER_CACHE_KEY + customerId);
-        redisUtils.delete(CUSTOMER_LIST_CACHE_KEY);
+        redisUtils.evict(CUSTOMER_CACHE_KEY + customerId, CUSTOMER_LIST_CACHE_KEY);
     }
 
     // 根据ID查询客户
     public Customer getCustomerById(String customerId) {
-        String cacheKey = CUSTOMER_CACHE_KEY + customerId;
-        Customer customer = (Customer) redisUtils.get(cacheKey);
-        
-        if (customer != null) {
-            return customer;
-        }
-        
-        customer = customerMapper.selectCustomerById(customerId);
-        if (customer != null) {
-            redisUtils.set(cacheKey, customer, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return customer;
+        return redisUtils.getOrLoad(CUSTOMER_CACHE_KEY + customerId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> customerMapper.selectCustomerById(customerId));
     }
 
     // 查询所有客户
     public List<Customer> getAllCustomers() {
-        List<Customer> customers = (List<Customer>) redisUtils.get(CUSTOMER_LIST_CACHE_KEY);
-        
-        if (customers != null) {
-            return customers;
-        }
-        
-        customers = customerMapper.selectAllCustomers();
-        if (customers != null && !customers.isEmpty()) {
-            redisUtils.set(CUSTOMER_LIST_CACHE_KEY, customers, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return customers;
+        return redisUtils.getListOrLoad(CUSTOMER_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                customerMapper::selectAllCustomers);
     }
 
     // 分页查询客户

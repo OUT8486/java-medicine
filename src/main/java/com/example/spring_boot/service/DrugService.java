@@ -2,7 +2,6 @@ package com.example.spring_boot.service;
 
 import com.example.spring_boot.dao.DrugMapper;
 import com.example.spring_boot.entity.Drug;
-import com.example.spring_boot.entity.DrugWithManufacturer;
 import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.utils.IdGenerator;
 import com.example.spring_boot.utils.RedisUtils;
@@ -40,52 +39,27 @@ public class DrugService {
     // 修改药品
     public void updateDrug(Drug drug) {
         drugMapper.updateDrug(drug);
-        redisUtils.delete(DRUG_CACHE_KEY + drug.getDrugId());
-        redisUtils.delete(DRUG_LIST_CACHE_KEY);
+        redisUtils.evict(DRUG_CACHE_KEY + drug.getDrugId(), DRUG_LIST_CACHE_KEY);
     }
 
     // 删除药品
     public void deleteDrug(String drugId) {
         drugMapper.deleteDrug(drugId);
-        redisUtils.delete(DRUG_CACHE_KEY + drugId);
-        redisUtils.delete(DRUG_LIST_CACHE_KEY);
+        redisUtils.evict(DRUG_CACHE_KEY + drugId, DRUG_LIST_CACHE_KEY);
     }
 
     // 根据ID查询
     public Drug getDrugById(String drugId) {
-        String cacheKey = DRUG_CACHE_KEY + drugId;
-        Drug drug = (Drug) redisUtils.get(cacheKey);
-        
-        if (drug != null) {
-            return drug;
-        }
-        
-        drug = drugMapper.selectDrugById(drugId);
-        if (drug != null) {
-            redisUtils.set(cacheKey, drug, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return drug;
+        return redisUtils.getOrLoad(DRUG_CACHE_KEY + drugId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> drugMapper.selectDrugById(drugId));
     }
 
     // 查询所有药品
     public List<Drug> getAllDrugs() {
-        List<Drug> drugs = (List<Drug>) redisUtils.get(DRUG_LIST_CACHE_KEY);
-        
-        if (drugs != null) {
-            return drugs;
-        }
-        
-        drugs = drugMapper.selectAllDrugs();
-        if (drugs != null && !drugs.isEmpty()) {
-            redisUtils.set(DRUG_LIST_CACHE_KEY, drugs, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return drugs;
+        return redisUtils.getListOrLoad(DRUG_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                drugMapper::selectAllDrugs);
     }
 
-    // 联表查询（可选）
-    public DrugWithManufacturer getDrugWithManufacturer(String drugId) {
-        return drugMapper.selectDrugWithManufacturer(drugId);
-    }
 
     // 分页查询
     public PageResult<Drug> getDrugsPage(int page, int size) {

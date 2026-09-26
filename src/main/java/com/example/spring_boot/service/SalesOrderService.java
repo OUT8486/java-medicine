@@ -56,15 +56,9 @@ public class SalesOrderService {
 
     public void updateSalesOrder(SalesOrder salesOrder) {
         salesOrderMapper.updateSalesOrder(salesOrder);
-        redisUtils.delete(SALES_ORDER_CACHE_KEY + salesOrder.getSoId());
-        redisUtils.delete(SALES_ORDER_LIST_CACHE_KEY);
+        redisUtils.evict(SALES_ORDER_CACHE_KEY + salesOrder.getSoId(), SALES_ORDER_LIST_CACHE_KEY);
     }
 
-    public void deleteSalesOrder(String soId) {
-        salesOrderMapper.deleteSalesOrder(soId);
-        redisUtils.delete(SALES_ORDER_CACHE_KEY + soId);
-        redisUtils.delete(SALES_ORDER_LIST_CACHE_KEY);
-    }
 
     @Transactional
     public void deleteSalesOrderWithItems(String soId) {
@@ -75,37 +69,15 @@ public class SalesOrderService {
     }
 
     public SalesOrder getSalesOrderById(String soId) {
-        String cacheKey = SALES_ORDER_CACHE_KEY + soId;
-        SalesOrder order = (SalesOrder) redisUtils.get(cacheKey);
-        if (order != null) {
-            return order;
-        }
-        order = salesOrderMapper.selectSalesOrderById(soId);
-        if (order != null) {
-            redisUtils.set(cacheKey, order, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return order;
+        return redisUtils.getOrLoad(SALES_ORDER_CACHE_KEY + soId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> salesOrderMapper.selectSalesOrderById(soId));
     }
 
     public List<SalesOrder> getAllSalesOrders() {
-        List<SalesOrder> orders = (List<SalesOrder>) redisUtils.get(SALES_ORDER_LIST_CACHE_KEY);
-        if (orders != null) {
-            return orders;
-        }
-        orders = salesOrderMapper.selectAllSalesOrders();
-        if (orders != null && !orders.isEmpty()) {
-            redisUtils.set(SALES_ORDER_LIST_CACHE_KEY, orders, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return orders;
+        return redisUtils.getListOrLoad(SALES_ORDER_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                salesOrderMapper::selectAllSalesOrders);
     }
 
-    public List<SalesOrder> getSalesOrdersByCustomerId(String customerId) {
-        return salesOrderMapper.selectSalesOrdersByCustomerId(customerId);
-    }
-
-    public List<SalesOrder> getSalesOrdersByEmployeeId(String employeeId) {
-        return salesOrderMapper.selectSalesOrdersByEmployeeId(employeeId);
-    }
 
     public PageResult<SalesOrder> getSalesOrdersPage(int page, int size) {
         int p = Math.max(page, 1);

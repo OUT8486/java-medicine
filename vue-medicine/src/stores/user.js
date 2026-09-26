@@ -1,11 +1,9 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '');
   const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'));
-
-  const isAdmin = computed(() => userInfo.value && userInfo.value.role === '管理员');
 
   const setUserInfo = (data) => {
     token.value = data.token;
@@ -24,7 +22,6 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     userInfo,
-    isAdmin,
     setUserInfo,
     clearUserInfo,
   };

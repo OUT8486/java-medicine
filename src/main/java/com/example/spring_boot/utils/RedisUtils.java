@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Redis 工具类。
@@ -107,4 +109,48 @@ public class RedisUtils {
             log.error("Redis expire 失败，key = {}", key, e);
         }
     }
+
+    /**
+     * 缓存读取：命中直接返回，未命中则调用 loader 加载并在非空时写回缓存。
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getOrLoad(String key, long timeout, TimeUnit unit, Supplier<T> loader) {
+        Object cached = get(key);
+        if (cached != null) {
+            return (T) cached;
+        }
+        T value = loader.get();
+        if (value != null) {
+            set(key, value, timeout, unit);
+        }
+        return value;
+    }
+
+    /**
+     * 列表缓存读取：命中直接返回，未命中则加载并在非空时写回缓存。
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getListOrLoad(String key, long timeout, TimeUnit unit, Supplier<List<T>> loader) {
+        Object cached = get(key);
+        if (cached != null) {
+            return (List<T>) cached;
+        }
+        List<T> value = loader.get();
+        if (value != null && !value.isEmpty()) {
+            set(key, value, timeout, unit);
+        }
+        return value;
+    }
+
+    /**
+     * 批量失效缓存键，忽略 null。
+     */
+    public void evict(String... keys) {
+        for (String key : keys) {
+            if (key != null) {
+                delete(key);
+            }
+        }
+    }
+
 }

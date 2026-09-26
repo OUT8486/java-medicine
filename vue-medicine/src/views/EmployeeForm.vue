@@ -30,17 +30,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { employeeApi } from '../api';
-
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-const isEdit = computed(() => !!route.query.id);
 
 const formData = reactive({
   employee_id: '',
@@ -58,52 +50,17 @@ const formRules = {
   ],
 };
 
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  try {
-    const res = await employeeApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: employeeApi,
+  idKey: 'employee_id',
+  listPath: '/employees',
+  formData,
+  applyData: (data) => {
     formData.employee_id = data.employee_id;
     formData.name = data.name;
     formData.post = data.post;
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载员工信息失败');
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await employeeApi.update(formData.employee_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await employeeApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/employees');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载员工信息失败',
 });
 </script>
 

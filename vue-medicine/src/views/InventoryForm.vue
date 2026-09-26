@@ -46,17 +46,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { inventoryApi } from '../api';
-
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-const isEdit = computed(() => !!route.query.id);
 
 const formData = reactive({
   inventory_id: '',
@@ -86,55 +78,20 @@ const formRules = {
   ],
 };
 
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  try {
-    const res = await inventoryApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: inventoryApi,
+  idKey: 'inventory_id',
+  listPath: '/inventory',
+  formData,
+  applyData: (data) => {
     formData.inventory_id = data.inventory_id;
     formData.drug_id = data.drug_id;
     formData.warehouse_id = data.warehouse_id;
     formData.batch_no = data.batch_no;
     formData.quantity = data.quantity;
     formData.validity_date = data.validity_date;
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载库存信息失败');
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await inventoryApi.update(formData.inventory_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await inventoryApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/inventory');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载库存信息失败',
 });
 </script>
 

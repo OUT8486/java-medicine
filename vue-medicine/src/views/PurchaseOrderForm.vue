@@ -46,17 +46,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { purchaseOrderApi } from '../api';
-
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-const isEdit = computed(() => !!route.query.id);
 
 const formData = reactive({
   po_id: '',
@@ -78,55 +70,19 @@ const formRules = {
   ],
 };
 
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  
-  try {
-    const res = await purchaseOrderApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: purchaseOrderApi,
+  idKey: 'po_id',
+  listPath: '/purchase-orders',
+  formData,
+  applyData: (data) => {
     formData.po_id = data.po_id;
     formData.supplier_id = data.supplier_id;
     formData.employee_id = data.employee_id;
     formData.po_date = data.po_date;
     formData.audit_status = data.audit_status ?? 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载采购订单信息失败：' + (error.message || '未知错误'));
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await purchaseOrderApi.update(formData.po_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await purchaseOrderApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/purchase-orders');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载采购订单信息失败：' + (error.message || '未知错误'),
 });
 </script>
 

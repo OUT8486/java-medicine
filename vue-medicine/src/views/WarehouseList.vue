@@ -90,98 +90,36 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCrudList } from '../composables/useCrudList';
 import { warehouseApi } from '../api';
 import { OfficeBuilding, Plus, Refresh, Search, RefreshLeft, View, Edit, Delete } from '@element-plus/icons-vue';
 
-const router = useRouter();
-const loading = ref(false);
-const tableData = ref([]);
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const searchForm = reactive({
+const {
+  loading,
+  tableData,
+  total,
+  currentPage,
+  pageSize,
+  searchForm,
+  loadData,
+  handleSearch,
+  handleReset,
+  handleAdd,
+  handleView,
+  handleEdit,
+  handleDelete,
+  handleSizeChange,
+  handleCurrentChange,
+} = useCrudList({
+  api: warehouseApi,
+  basePath: '/warehouses',
+  idKey: 'warehouse_id',
+  entityLabel: '仓库',
+  confirmText: '确定要删除这个仓库吗？',
+  searchDefaults: {
   name: '',
   location: '',
-});
-
-// 加载仓库数据
-const loadData = async () => {
-  loading.value = true;
-  try {
-    const res = await warehouseApi.getPage(currentPage.value, pageSize.value);
-    tableData.value = res.data.list || [];
-    total.value = res.data.total || 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-// 重置
-const handleReset = () => {
-  searchForm.name = '';
-  searchForm.location = '';
-  currentPage.value = 1;
-  loadData();
-};
-
-// 新增
-const handleAdd = () => {
-  router.push('/warehouses/form');
-};
-
-// 查看
-const handleView = (row) => {
-  router.push(`/warehouses/form?id=${row.warehouse_id}`);
-};
-
-// 编辑
-const handleEdit = (row) => {
-  router.push(`/warehouses/form?id=${row.warehouse_id}`);
-};
-
-// 删除
-const handleDelete = async (row) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这个仓库吗？', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-
-    await warehouseApi.delete(row.warehouse_id);
-    ElMessage.success('删除成功');
-    loadData();
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除失败:', error);
-    }
-  }
-};
-
-// 分页大小变化
-const handleSizeChange = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleCurrentChange = () => {
-  loadData();
-};
-
-onMounted(() => {
-  loadData();
+},
 });
 </script>
 

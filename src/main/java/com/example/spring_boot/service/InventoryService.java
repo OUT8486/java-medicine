@@ -38,46 +38,25 @@ public class InventoryService {
     // 修改库存信息
     public void updateInventory(Inventory inventory) {
         inventoryMapper.updateInventory(inventory);
-        redisUtils.delete(INVENTORY_CACHE_KEY + inventory.getInventoryId());
-        redisUtils.delete(INVENTORY_LIST_CACHE_KEY);
+        redisUtils.evict(INVENTORY_CACHE_KEY + inventory.getInventoryId(), INVENTORY_LIST_CACHE_KEY);
     }
 
     // 删除库存记录
     public void deleteInventory(String inventoryId) {
         inventoryMapper.deleteInventory(inventoryId);
-        redisUtils.delete(INVENTORY_CACHE_KEY + inventoryId);
-        redisUtils.delete(INVENTORY_LIST_CACHE_KEY);
+        redisUtils.evict(INVENTORY_CACHE_KEY + inventoryId, INVENTORY_LIST_CACHE_KEY);
     }
 
     // 根据ID查询库存
     public Inventory getInventoryById(String inventoryId) {
-        String cacheKey = INVENTORY_CACHE_KEY + inventoryId;
-        Inventory inventory = (Inventory) redisUtils.get(cacheKey);
-        
-        if (inventory != null) {
-            return inventory;
-        }
-        
-        inventory = inventoryMapper.selectInventoryById(inventoryId);
-        if (inventory != null) {
-            redisUtils.set(cacheKey, inventory, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return inventory;
+        return redisUtils.getOrLoad(INVENTORY_CACHE_KEY + inventoryId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> inventoryMapper.selectInventoryById(inventoryId));
     }
 
     // 查询所有库存
     public List<Inventory> getAllInventories() {
-        List<Inventory> inventories = (List<Inventory>) redisUtils.get(INVENTORY_LIST_CACHE_KEY);
-        
-        if (inventories != null) {
-            return inventories;
-        }
-        
-        inventories = inventoryMapper.selectAllInventories();
-        if (inventories != null && !inventories.isEmpty()) {
-            redisUtils.set(INVENTORY_LIST_CACHE_KEY, inventories, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return inventories;
+        return redisUtils.getListOrLoad(INVENTORY_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                inventoryMapper::selectAllInventories);
     }
 
     public PageResult<Inventory> getInventoriesPage(int page, int size) {

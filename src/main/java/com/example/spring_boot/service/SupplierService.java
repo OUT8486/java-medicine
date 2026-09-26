@@ -38,46 +38,25 @@ public class SupplierService {
     // 修改供应商信息
     public void updateSupplier(Supplier supplier) {
         supplierMapper.updateSupplier(supplier);
-        redisUtils.delete(SUPPLIER_CACHE_KEY + supplier.getSupplierId());
-        redisUtils.delete(SUPPLIER_LIST_CACHE_KEY);
+        redisUtils.evict(SUPPLIER_CACHE_KEY + supplier.getSupplierId(), SUPPLIER_LIST_CACHE_KEY);
     }
 
     // 删除供应商
     public void deleteSupplier(String supplierId) {
         supplierMapper.deleteSupplier(supplierId);
-        redisUtils.delete(SUPPLIER_CACHE_KEY + supplierId);
-        redisUtils.delete(SUPPLIER_LIST_CACHE_KEY);
+        redisUtils.evict(SUPPLIER_CACHE_KEY + supplierId, SUPPLIER_LIST_CACHE_KEY);
     }
 
     // 根据ID查询供应商
     public Supplier getSupplierById(String supplierId) {
-        String cacheKey = SUPPLIER_CACHE_KEY + supplierId;
-        Supplier supplier = (Supplier) redisUtils.get(cacheKey);
-        
-        if (supplier != null) {
-            return supplier;
-        }
-        
-        supplier = supplierMapper.selectSupplierById(supplierId);
-        if (supplier != null) {
-            redisUtils.set(cacheKey, supplier, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return supplier;
+        return redisUtils.getOrLoad(SUPPLIER_CACHE_KEY + supplierId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> supplierMapper.selectSupplierById(supplierId));
     }
 
     // 查询所有供应商
     public List<Supplier> getAllSuppliers() {
-        List<Supplier> suppliers = (List<Supplier>) redisUtils.get(SUPPLIER_LIST_CACHE_KEY);
-        
-        if (suppliers != null) {
-            return suppliers;
-        }
-        
-        suppliers = supplierMapper.selectAllSuppliers();
-        if (suppliers != null && !suppliers.isEmpty()) {
-            redisUtils.set(SUPPLIER_LIST_CACHE_KEY, suppliers, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return suppliers;
+        return redisUtils.getListOrLoad(SUPPLIER_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                supplierMapper::selectAllSuppliers);
     }
 
     // 分页查询供应商

@@ -59,17 +59,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { drugApi } from '../api';
-
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-const isEdit = computed(() => !!route.query.id);
 
 const formData = reactive({
   drug_id: '',
@@ -110,12 +102,12 @@ const formRules = {
   ],
 };
 
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  try {
-    const res = await drugApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: drugApi,
+  idKey: 'drug_id',
+  listPath: '/drugs',
+  formData,
+  applyData: (data) => {
     formData.drug_id = data.drug_id;
     formData.generic_name = data.generic_name;
     formData.approval_no = data.approval_no;
@@ -125,43 +117,8 @@ const loadData = async () => {
     formData.purchase_price = parseFloat(data.purchase_price) || 0.01;
     formData.retail_price = parseFloat(data.retail_price) || 0.01;
     formData.manufacturer_id = data.manufacturer_id || '';
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载药品信息失败');
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await drugApi.update(formData.drug_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await drugApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/drugs');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载药品信息失败',
 });
 </script>
 

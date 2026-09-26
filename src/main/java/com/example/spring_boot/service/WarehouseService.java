@@ -38,57 +38,28 @@ public class WarehouseService {
     // 修改仓库信息
     public void updateWarehouse(Warehouse warehouse) {
         warehouseMapper.updateWarehouse(warehouse);
-        redisUtils.delete(WAREHOUSE_CACHE_KEY + warehouse.getWarehouseId());
-        redisUtils.delete(WAREHOUSE_LIST_CACHE_KEY);
+        redisUtils.evict(WAREHOUSE_CACHE_KEY + warehouse.getWarehouseId(), WAREHOUSE_LIST_CACHE_KEY);
     }
 
     // 删除仓库
     public void deleteWarehouse(String id) {
         warehouseMapper.deleteWarehouse(id);
-        redisUtils.delete(WAREHOUSE_CACHE_KEY + id);
-        redisUtils.delete(WAREHOUSE_LIST_CACHE_KEY);
+        redisUtils.evict(WAREHOUSE_CACHE_KEY + id, WAREHOUSE_LIST_CACHE_KEY);
     }
 
     // 根据ID查询仓库
     public Warehouse getWarehouseById(String id) {
-        String cacheKey = WAREHOUSE_CACHE_KEY + id;
-        Warehouse warehouse = (Warehouse) redisUtils.get(cacheKey);
-        
-        if (warehouse != null) {
-            return warehouse;
-        }
-        
-        warehouse = warehouseMapper.selectWarehouseById(id);
-        if (warehouse != null) {
-            redisUtils.set(cacheKey, warehouse, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return warehouse;
+        return redisUtils.getOrLoad(WAREHOUSE_CACHE_KEY + id, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> warehouseMapper.selectWarehouseById(id));
     }
 
     // 查询所有仓库
     public List<Warehouse> getAllWarehouses() {
-        List<Warehouse> warehouses = (List<Warehouse>) redisUtils.get(WAREHOUSE_LIST_CACHE_KEY);
-        
-        if (warehouses != null) {
-            return warehouses;
-        }
-        
-        warehouses = warehouseMapper.selectAllWarehouses();
-        if (warehouses != null && !warehouses.isEmpty()) {
-            redisUtils.set(WAREHOUSE_LIST_CACHE_KEY, warehouses, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return warehouses;
+        return redisUtils.getListOrLoad(WAREHOUSE_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                warehouseMapper::selectAllWarehouses);
     }
 
-    // 根据名称查询仓库
-    public List<Warehouse> getWarehousesByName(String name) {
-        return warehouseMapper.selectWarehousesByName(name);
-    }
 
-    // 根据位置查询仓库
-    public List<Warehouse> getWarehousesByLocation(String location) {
-        return warehouseMapper.selectWarehousesByLocation(location);
-    }
     public PageResult<Warehouse> getWarehousesPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);

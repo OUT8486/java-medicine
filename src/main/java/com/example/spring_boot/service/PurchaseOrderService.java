@@ -56,15 +56,9 @@ public class PurchaseOrderService {
 
     public void updatePurchaseOrder(PurchaseOrder purchaseOrder) {
         purchaseOrderMapper.updatePurchaseOrder(purchaseOrder);
-        redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + purchaseOrder.getPoId());
-        redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
+        redisUtils.evict(PURCHASE_ORDER_CACHE_KEY + purchaseOrder.getPoId(), PURCHASE_ORDER_LIST_CACHE_KEY);
     }
 
-    public void deletePurchaseOrder(String poId) {
-        purchaseOrderMapper.deletePurchaseOrder(poId);
-        redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + poId);
-        redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
-    }
 
     @Transactional
     public void deletePurchaseOrderWithItems(String poId) {
@@ -75,35 +69,16 @@ public class PurchaseOrderService {
     }
 
     public PurchaseOrder getPurchaseOrderById(String poId) {
-        String cacheKey = PURCHASE_ORDER_CACHE_KEY + poId;
-        PurchaseOrder order = (PurchaseOrder) redisUtils.get(cacheKey);
-        if (order != null) {
-            return order;
-        }
-        order = purchaseOrderMapper.selectPurchaseOrderById(poId);
-        if (order != null) {
-            redisUtils.set(cacheKey, order, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return order;
+        return redisUtils.getOrLoad(PURCHASE_ORDER_CACHE_KEY + poId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> purchaseOrderMapper.selectPurchaseOrderById(poId));
     }
 
     public List<PurchaseOrder> getAllPurchaseOrders() {
-        List<PurchaseOrder> orders = (List<PurchaseOrder>) redisUtils.get(PURCHASE_ORDER_LIST_CACHE_KEY);
-        if (orders != null) {
-            return orders;
-        }
-        orders = purchaseOrderMapper.selectAllPurchaseOrders();
-        if (orders != null && !orders.isEmpty()) {
-            redisUtils.set(PURCHASE_ORDER_LIST_CACHE_KEY, orders, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return orders;
+        return redisUtils.getListOrLoad(PURCHASE_ORDER_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                purchaseOrderMapper::selectAllPurchaseOrders);
     }
 
-    public void updatePurchaseOrderAuditStatus(String poId, String auditStatus) {
-        purchaseOrderMapper.updatePurchaseOrderAuditStatus(poId, auditStatus);
-        redisUtils.delete(PURCHASE_ORDER_CACHE_KEY + poId);
-        redisUtils.delete(PURCHASE_ORDER_LIST_CACHE_KEY);
-    }
+
     public PageResult<PurchaseOrder> getPurchaseOrdersPage(int page, int size) {
         int p = Math.max(page, 1);
         int s = Math.min(Math.max(size, 1), 100);

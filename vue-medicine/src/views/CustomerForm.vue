@@ -36,20 +36,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { customerApi } from '../api';
 
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-// 判断是否为编辑模式
-const isEdit = computed(() => !!route.query.id);
-
-// 表单数据
 const formData = reactive({
   customer_id: '',
   name: '',
@@ -57,7 +47,6 @@ const formData = reactive({
   contact_phone: '',
 });
 
-// 表单验证规则
 const formRules = {
   name: [
     { required: true, message: '请输入客户名称', trigger: 'blur' },
@@ -71,56 +60,18 @@ const formRules = {
   ],
 };
 
-// 加载数据（编辑模式）
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  try {
-    const res = await customerApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: customerApi,
+  idKey: 'customer_id',
+  listPath: '/customers',
+  formData,
+  applyData: (data) => {
     formData.customer_id = data.customer_id;
     formData.name = data.name;
     formData.type = data.type;
     formData.contact_phone = data.contact_phone || '';
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载客户信息失败');
-  }
-};
-
-// 提交表单
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await customerApi.update(formData.customer_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await customerApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/customers');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-// 取消操作
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载客户信息失败',
 });
 </script>
 

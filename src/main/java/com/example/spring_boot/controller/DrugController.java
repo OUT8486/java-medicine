@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.spring_boot.entity.Drug;
-import com.example.spring_boot.entity.DrugWithManufacturer;
 import com.example.spring_boot.entity.PageResult;
 import com.example.spring_boot.entity.Result;
 import com.example.spring_boot.service.DrugService;
@@ -63,19 +62,6 @@ public class DrugController {
         }
     }
 
-    /**
-     * 获取药品及其生产厂家信息
-     * GET /api/drugs/{id}/manufacturer
-     */
-    @GetMapping("/{id}/manufacturer")
-    public Result<DrugWithManufacturer> getWithManufacturer(@PathVariable String id) {
-        DrugWithManufacturer drug = drugService.getDrugWithManufacturer(id);
-        if (drug != null) {
-            return Result.success(drug);
-        } else {
-            return Result.error(404, "药品信息不存在");
-        }
-    }
 
     /**
      * 新增药品

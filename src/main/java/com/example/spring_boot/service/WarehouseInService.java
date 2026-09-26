@@ -37,47 +37,26 @@ public class WarehouseInService {
     @Transactional
     public void updateWarehouseIn(WarehouseIn warehouseIn) {
         warehouseInMapper.updateWarehouseIn(warehouseIn);
-        redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + warehouseIn.getWiId());
-        redisUtils.delete(WAREHOUSE_IN_LIST_CACHE_KEY);
+        redisUtils.evict(WAREHOUSE_IN_CACHE_KEY + warehouseIn.getWiId(), WAREHOUSE_IN_LIST_CACHE_KEY);
     }
 
     // 删除入库单
     @Transactional
     public void deleteWarehouseIn(String wiId) {
         warehouseInMapper.deleteWarehouseIn(wiId);
-        redisUtils.delete(WAREHOUSE_IN_CACHE_KEY + wiId);
-        redisUtils.delete(WAREHOUSE_IN_LIST_CACHE_KEY);
+        redisUtils.evict(WAREHOUSE_IN_CACHE_KEY + wiId, WAREHOUSE_IN_LIST_CACHE_KEY);
     }
 
     // 根据ID查询入库单
     public WarehouseIn getWarehouseInById(String wiId) {
-        String cacheKey = WAREHOUSE_IN_CACHE_KEY + wiId;
-        WarehouseIn warehouseIn = (WarehouseIn) redisUtils.get(cacheKey);
-        
-        if (warehouseIn != null) {
-            return warehouseIn;
-        }
-        
-        warehouseIn = warehouseInMapper.selectWarehouseInById(wiId);
-        if (warehouseIn != null) {
-            redisUtils.set(cacheKey, warehouseIn, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return warehouseIn;
+        return redisUtils.getOrLoad(WAREHOUSE_IN_CACHE_KEY + wiId, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> warehouseInMapper.selectWarehouseInById(wiId));
     }
 
     // 查询所有入库单
     public List<WarehouseIn> getAllWarehouseIns() {
-        List<WarehouseIn> warehouseIns = (List<WarehouseIn>) redisUtils.get(WAREHOUSE_IN_LIST_CACHE_KEY);
-        
-        if (warehouseIns != null) {
-            return warehouseIns;
-        }
-        
-        warehouseIns = warehouseInMapper.selectAllWarehouseIns();
-        if (warehouseIns != null && !warehouseIns.isEmpty()) {
-            redisUtils.set(WAREHOUSE_IN_LIST_CACHE_KEY, warehouseIns, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return warehouseIns;
+        return redisUtils.getListOrLoad(WAREHOUSE_IN_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                warehouseInMapper::selectAllWarehouseIns);
     }
 
     public PageResult<WarehouseIn> getWarehouseInsPage(int page, int size) {

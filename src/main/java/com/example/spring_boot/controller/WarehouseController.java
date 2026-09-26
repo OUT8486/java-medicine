@@ -50,25 +50,6 @@ public class WarehouseController {
         }
     }
 
-    /**
-     * 根据名称查询仓库
-     * GET /api/warehouses/name/{name}
-     */
-    @GetMapping("/name/{name}")
-    public Result<List<Warehouse>> getByName(@PathVariable String name) {
-        List<Warehouse> warehouses = warehouseService.getWarehousesByName(name);
-        return Result.success(warehouses);
-    }
-
-    /**
-     * 根据位置查询仓库
-     * GET /api/warehouses/location/{location}
-     */
-    @GetMapping("/location/{location}")
-    public Result<List<Warehouse>> getByLocation(@PathVariable String location) {
-        List<Warehouse> warehouses = warehouseService.getWarehousesByLocation(location);
-        return Result.success(warehouses);
-    }
 
     /**
      * 新增仓库

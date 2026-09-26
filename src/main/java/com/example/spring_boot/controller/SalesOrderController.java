@@ -36,25 +36,6 @@ public class SalesOrderController {
         return Result.success(orders);
     }
 
-    /**
-     * 根据客户 ID 查询销售订单列表
-     * GET /api/sales-orders/customer/{customerId}
-     */
-    @GetMapping("/customer/{customerId}")
-    public Result<List<SalesOrder>> getByCustomerId(@PathVariable String customerId) {
-        List<SalesOrder> orders = salesOrderService.getSalesOrdersByCustomerId(customerId);
-        return Result.success(orders);
-    }
-
-    /**
-     * 根据员工 ID 查询销售订单列表
-     * GET /api/sales-orders/employee/{employeeId}
-     */
-    @GetMapping("/employee/{employeeId}")
-    public Result<List<SalesOrder>> getByEmployeeId(@PathVariable String employeeId) {
-        List<SalesOrder> orders = salesOrderService.getSalesOrdersByEmployeeId(employeeId);
-        return Result.success(orders);
-    }
 
     /**
      * 根据 ID 获取销售订单详情

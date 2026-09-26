@@ -112,9 +112,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCrudList } from '../composables/useCrudList';
 import { drugApi } from '../api';
 import {
   PieChart,
@@ -127,95 +125,33 @@ import {
   Delete,
 } from '@element-plus/icons-vue';
 
-const router = useRouter();
-const loading = ref(false);
-const tableData = ref([]);
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const searchForm = reactive({
+const {
+  loading,
+  tableData,
+  total,
+  currentPage,
+  pageSize,
+  searchForm,
+  loadData: loadDrugs,
+  handleSearch,
+  handleReset,
+  handleAdd,
+  handleView,
+  handleEdit,
+  handleDelete,
+  handleSizeChange,
+  handleCurrentChange,
+} = useCrudList({
+  api: drugApi,
+  basePath: '/drugs',
+  idKey: 'drug_id',
+  entityLabel: '药品',
+  confirmText: '确定要删除这个药品吗？此操作不可恢复！',
+  searchDefaults: {
   generic_name: '',
   approval_no: '',
   dosage_form: '',
-});
-
-// 加载药品数据
-const loadDrugs = async () => {
-  loading.value = true;
-  try {
-    const res = await drugApi.getPage(currentPage.value, pageSize.value);
-    tableData.value = res.data.list || [];
-    total.value = res.data.total || 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1;
-  loadDrugs();
-};
-
-// 重置
-const handleReset = () => {
-  searchForm.generic_name = '';
-  searchForm.approval_no = '';
-  searchForm.dosage_form = '';
-  currentPage.value = 1;
-  loadDrugs();
-};
-
-// 新增
-const handleAdd = () => {
-  router.push('/drugs/form');
-};
-
-// 查看
-const handleView = (row) => {
-  router.push(`/drugs/form?id=${row.drug_id}`);
-};
-
-// 编辑
-const handleEdit = (row) => {
-  router.push(`/drugs/form?id=${row.drug_id}`);
-};
-
-// 删除
-const handleDelete = async (row) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这个药品吗？此操作不可恢复！', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-
-    await drugApi.delete(row.drug_id);
-    ElMessage.success('删除成功');
-    loadDrugs();
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除失败:', error);
-    }
-  }
-};
-
-// 处理每页条数变化
-const handleSizeChange = () => {
-  currentPage.value = 1; // 重置到第一页
-  loadDrugs();
-};
-
-// 处理页码变化
-const handleCurrentChange = () => {
-  loadDrugs();
-};
-
-onMounted(() => {
-  loadDrugs();
+},
 });
 </script>
 

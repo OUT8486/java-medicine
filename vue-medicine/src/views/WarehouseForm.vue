@@ -30,17 +30,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { reactive } from 'vue';
+import { useCrudForm } from '../composables/useCrudForm';
 import { warehouseApi } from '../api';
-
-const router = useRouter();
-const route = useRoute();
-const formRef = ref(null);
-const submitting = ref(false);
-
-const isEdit = computed(() => !!route.query.id);
 
 const formData = reactive({
   warehouse_id: '',
@@ -55,52 +47,17 @@ const formRules = {
   ],
 };
 
-const loadData = async () => {
-  if (!isEdit.value) return;
-  
-  try {
-    const res = await warehouseApi.getById(route.query.id);
-    const data = res.data;
+const { formRef, submitting, isEdit, handleSubmit, handleCancel } = useCrudForm({
+  api: warehouseApi,
+  idKey: 'warehouse_id',
+  listPath: '/warehouses',
+  formData,
+  applyData: (data) => {
     formData.warehouse_id = data.warehouse_id;
     formData.name = data.name;
     formData.location = data.location || '';
-  } catch (error) {
-    console.error('加载失败:', error);
-    ElMessage.error('加载仓库信息失败');
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    
-    submitting.value = true;
-    try {
-      if (isEdit.value) {
-        await warehouseApi.update(formData.warehouse_id, formData);
-        ElMessage.success('修改成功');
-      } else {
-        await warehouseApi.add(formData);
-        ElMessage.success('创建成功');
-      }
-      router.push('/warehouses');
-    } catch (error) {
-      console.error('提交失败:', error);
-      ElMessage.error(isEdit.value ? '修改失败' : '创建失败');
-    } finally {
-      submitting.value = false;
-    }
-  });
-};
-
-const handleCancel = () => {
-  router.back();
-};
-
-onMounted(() => {
-  loadData();
+  },
+  loadErrorMessage: (error) => '加载仓库信息失败',
 });
 </script>
 

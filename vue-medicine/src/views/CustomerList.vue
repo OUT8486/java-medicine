@@ -98,89 +98,37 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCrudList } from '../composables/useCrudList';
 import { customerApi } from '../api';
 import { User, Plus, Refresh, Search, RefreshLeft, View, Edit, Delete } from '@element-plus/icons-vue';
 
-const router = useRouter();
-const loading = ref(false);
-const tableData = ref([]);
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const searchForm = reactive({
+const {
+  loading,
+  tableData,
+  total,
+  currentPage,
+  pageSize,
+  searchForm,
+  loadData,
+  handleSearch,
+  handleReset,
+  handleAdd,
+  handleView,
+  handleEdit,
+  handleDelete,
+  handleSizeChange,
+  handleCurrentChange,
+} = useCrudList({
+  api: customerApi,
+  basePath: '/customers',
+  idKey: 'customer_id',
+  entityLabel: '客户',
+  confirmText: '确定要删除这个客户吗？',
+  searchDefaults: {
   name: '',
   contact_phone: '',
   type: '',
-});
-
-const loadData = async () => {
-  loading.value = true;
-  try {
-    const res = await customerApi.getPage(currentPage.value, pageSize.value);
-    tableData.value = res.data.list || [];
-    total.value = res.data.total || 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleSearch = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleReset = () => {
-  searchForm.name = '';
-  searchForm.contact_phone = '';
-  searchForm.type = '';
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleAdd = () => {
-  router.push('/customers/form');
-};
-
-const handleView = (row) => {
-  router.push(`/customers/form?id=${row.customer_id}`);
-};
-
-const handleEdit = (row) => {
-  router.push(`/customers/form?id=${row.customer_id}`);
-};
-
-const handleDelete = async (row) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这个客户吗？', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-    await customerApi.delete(row.customer_id);
-    ElMessage.success('删除成功');
-    loadData();
-  } catch (error) {
-    if (error !== 'cancel') console.error('删除失败:', error);
-  }
-};
-
-const handleSizeChange = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleCurrentChange = () => {
-  loadData();
-};
-
-onMounted(() => {
-  loadData();
+},
 });
 </script>
 

@@ -102,111 +102,37 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCrudList } from '../composables/useCrudList';
 import { purchaseOrderApi } from '../api';
 import { ShoppingCart, Plus, Refresh, Search, RefreshLeft, View, Edit, Delete } from '@element-plus/icons-vue';
 
-const router = useRouter();
-const loading = ref(false);
-const tableData = ref([]);
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const searchForm = reactive({
+const {
+  loading,
+  tableData,
+  total,
+  currentPage,
+  pageSize,
+  searchForm,
+  loadData,
+  handleSearch,
+  handleReset,
+  handleAdd,
+  handleView,
+  handleEdit,
+  handleDelete,
+  handleSizeChange,
+  handleCurrentChange,
+} = useCrudList({
+  api: purchaseOrderApi,
+  basePath: '/purchase-orders',
+  idKey: 'po_id',
+  entityLabel: '采购订单',
+  confirmText: '确定要删除这个采购订单吗？',
+  searchDefaults: {
   po_id: '',
   supplier_id: '',
   audit_status: null,
-});
-
-// 加载采购订单数据
-const loadData = async () => {
-  loading.value = true;
-  try {
-    const res = await purchaseOrderApi.getPage(currentPage.value, pageSize.value);
-    tableData.value = res.data.list || [];
-    total.value = res.data.total || 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 获取状态标签类型
-const getStatusType = (status) => {
-  switch(status) {
-    case '待审核': return 'warning';
-    case '已审核': return 'primary';
-    case '已完成': return 'success';
-    case '已取消': return 'info';
-    default: return '';
-  }
-};
-
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-// 重置
-const handleReset = () => {
-  searchForm.po_id = '';
-  searchForm.supplier_id = '';
-  searchForm.audit_status = null;
-  currentPage.value = 1;
-  loadData();
-};
-
-// 新增
-const handleAdd = () => {
-  router.push('/purchase-orders/form');
-};
-
-// 查看
-const handleView = (row) => {
-  router.push(`/purchase-orders/form?id=${row.po_id}`);
-};
-
-// 编辑
-const handleEdit = (row) => {
-  router.push(`/purchase-orders/form?id=${row.po_id}`);
-};
-
-// 删除
-const handleDelete = async (row) => {
-  try {
-    await ElMessageBox.confirm('确定要删除这个采购订单吗？', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    });
-
-    await purchaseOrderApi.delete(row.po_id);
-    ElMessage.success('删除成功');
-    loadData();
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('删除失败:', error);
-    }
-  }
-};
-
-// 分页大小变化
-const handleSizeChange = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleCurrentChange = () => {
-  loadData();
-};
-
-onMounted(() => {
-  loadData();
+},
 });
 </script>
 

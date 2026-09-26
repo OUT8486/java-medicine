@@ -38,46 +38,25 @@ public class EmployeeService {
     // 修改员工信息
     public void updateEmployee(Employee employee) {
         employeeMapper.updateEmployee(employee);
-        redisUtils.delete(EMPLOYEE_CACHE_KEY + employee.getEmployeeId());
-        redisUtils.delete(EMPLOYEE_LIST_CACHE_KEY);
+        redisUtils.evict(EMPLOYEE_CACHE_KEY + employee.getEmployeeId(), EMPLOYEE_LIST_CACHE_KEY);
     }
 
     // 删除员工
     public void deleteEmployee(String id) {
         employeeMapper.deleteEmployee(id);
-        redisUtils.delete(EMPLOYEE_CACHE_KEY + id);
-        redisUtils.delete(EMPLOYEE_LIST_CACHE_KEY);
+        redisUtils.evict(EMPLOYEE_CACHE_KEY + id, EMPLOYEE_LIST_CACHE_KEY);
     }
 
     // 根据ID查询员工
     public Employee getEmployeeById(String id) {
-        String cacheKey = EMPLOYEE_CACHE_KEY + id;
-        Employee employee = (Employee) redisUtils.get(cacheKey);
-        
-        if (employee != null) {
-            return employee;
-        }
-        
-        employee = employeeMapper.selectEmployeeById(id);
-        if (employee != null) {
-            redisUtils.set(cacheKey, employee, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return employee;
+        return redisUtils.getOrLoad(EMPLOYEE_CACHE_KEY + id, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                () -> employeeMapper.selectEmployeeById(id));
     }
 
     // 查询所有员工
     public List<Employee> getAllEmployees() {
-        List<Employee> employees = (List<Employee>) redisUtils.get(EMPLOYEE_LIST_CACHE_KEY);
-        
-        if (employees != null) {
-            return employees;
-        }
-        
-        employees = employeeMapper.selectAllEmployees();
-        if (employees != null && !employees.isEmpty()) {
-            redisUtils.set(EMPLOYEE_LIST_CACHE_KEY, employees, CACHE_EXPIRE_TIME, TimeUnit.MINUTES);
-        }
-        return employees;
+        return redisUtils.getListOrLoad(EMPLOYEE_LIST_CACHE_KEY, CACHE_EXPIRE_TIME, TimeUnit.MINUTES,
+                employeeMapper::selectAllEmployees);
     }
 
     public PageResult<Employee> getEmployeesPage(int page, int size) {

@@ -96,70 +96,40 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCrudList } from '../composables/useCrudList';
 import { inventoryApi } from '../api';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { Box, Plus, Refresh, Search, RefreshLeft, View, Edit, Delete } from '@element-plus/icons-vue';
 
-const router = useRouter();
-const loading = ref(false);
-const tableData = ref([]);
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const searchForm = reactive({
+const {
+  loading,
+  tableData,
+  total,
+  currentPage,
+  pageSize,
+  searchForm,
+  loadData,
+  handleSearch,
+  handleReset,
+  handleAdd,
+  handleView,
+  handleEdit,
+  handleSizeChange,
+  handleCurrentChange,
+} = useCrudList({
+  api: inventoryApi,
+  basePath: '/inventory',
+  idKey: 'inventory_id',
+  entityLabel: '库存记录',
+  confirmText: '确定要删除这条库存记录吗？',
+  searchDefaults: {
   drug_id: '',
   batch_no: '',
   warehouse_id: '',
+},
 });
 
-// 加载库存数据
-const loadData = async () => {
-  loading.value = true;
-  try {
-    const res = await inventoryApi.getPage(currentPage.value, pageSize.value);
-    tableData.value = res.data.list || [];
-    total.value = res.data.total || 0;
-  } catch (error) {
-    console.error('加载失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-// 重置
-const handleReset = () => {
-  searchForm.drug_id = '';
-  searchForm.batch_no = '';
-  searchForm.warehouse_id = '';
-  currentPage.value = 1;
-  loadData();
-};
-
-// 新增
-const handleAdd = () => {
-  router.push('/inventory/form');
-};
-
-// 查看
-const handleView = (row) => {
-  router.push(`/inventory/form?id=${row.inventory_id}`);
-};
-
-// 编辑
-const handleEdit = (row) => {
-  router.push(`/inventory/form?id=${row.inventory_id}`);
-};
-
-// 删除
+// 删除（该模块删除功能待后端完善，暂不调用接口）
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm('确定要删除这条库存记录吗？', '警告', {
@@ -167,9 +137,6 @@ const handleDelete = async (row) => {
       cancelButtonText: '取消',
       type: 'warning',
     });
-
-    // TODO: 实现删除 API
-    // await inventoryApi.delete(row.inventory_id);
     ElMessage.success('删除功能待实现');
     loadData();
   } catch (error) {
@@ -178,20 +145,6 @@ const handleDelete = async (row) => {
     }
   }
 };
-
-// 分页大小变化
-const handleSizeChange = () => {
-  currentPage.value = 1;
-  loadData();
-};
-
-const handleCurrentChange = () => {
-  loadData();
-};
-
-onMounted(() => {
-  loadData();
-});
 </script>
 
 <style scoped>
